@@ -5,13 +5,38 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'loginView',
-      component: () => import('../views/Login.vue'),
+      name: 'LoginView',
+      component: () => import('../views/LoginView.vue'),
     },
     {
       path: '/dashboard',
-      name: 'dashboardView',
-      component: () => import('../views/Dashboard.vue'),
+      name: 'DashboardView',
+      component: () => import('../views/DashboardView.vue'),
+      children: [
+        {
+          path: 'home',
+          name: 'DashboardHomeView',
+          component: () => import('../views/dashboard/HomeView.vue'),
+        },
+        {
+          path: 'equipments/:id',
+          name: 'EquipmentDetailView',
+          component: () => import('../views/dashboard/EquipmentDetailsView.vue'),
+          props: true,
+        },
+        {
+          path: 'customers/:id',
+          name: 'CustomerDetailView',
+          component: () => import('../views/dashboard/CustomerDetailsView.vue'),
+          props: true,
+        },
+        {
+          path: 'rentals/:id',
+          name: 'RentalDetailView',
+          component: () => import('../views/dashboard/RentalDetailsView.vue'),
+          props: true,
+        },
+      ],
     },
   ],
 })

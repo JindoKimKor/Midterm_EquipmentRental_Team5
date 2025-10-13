@@ -1,5 +1,8 @@
 <template>
   <NavigationDrawer />
+  <v-container class="d-flex flex-column">
+    <RouterView />
+  </v-container>
 </template>
 
 <script setup>
