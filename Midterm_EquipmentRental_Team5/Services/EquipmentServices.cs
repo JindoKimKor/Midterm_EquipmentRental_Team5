@@ -1,5 +1,6 @@
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Repositories;
+using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Services
 {
@@ -7,7 +8,7 @@ namespace Midterm_EquipmentRental_Team5.Services
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public CustomerServices(IUnitOfWork unitOfWork)
+        public EquipmentService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
