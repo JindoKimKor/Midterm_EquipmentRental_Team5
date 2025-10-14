@@ -1,10 +1,11 @@
 ﻿using Midterm_EquipmentRental_Team5.Data;
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Midterm_EquipmentRental_Team5.Repositories
 {
-    public class RentalRepository: IRentalRepository
+    public class RentalRepository : IRentalRepository
     {
         private readonly AppDbContext _context;
 
@@ -13,54 +14,98 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             _context = context;
         }
 
-        public void CancelRental(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ExtendRental(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Rental> GetActiveRentals()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Rental> GetAllRentals()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Rental> GetCompletedRentals()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Rental> GetEquipmentRentalHistory(int equipmentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Rental> GetOverdueRentals()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Rental? GetRentalDetails(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         public Rental IssueEquipment(Rental rental)
         {
-            throw new NotImplementedException();
+            // When issuing a rental, StartDate = now, EndDate = null, IsCancelled = false
+            rental.StartDate = DateTime.UtcNow;
+            rental.EndDate = null;
+            rental.IsCancelled = false;
+            _context.Rentals.Add(rental);
+            _context.SaveChanges();
+            return rental;
         }
 
         public Rental ReturnEquipment(int id)
         {
-            throw new NotImplementedException();
+            var rental = _context.Rentals.Find(id);
+            if (rental == null) return null;
+
+            rental.EndDate = DateTime.UtcNow;
+            _context.SaveChanges();
+            return rental;
+        }
+
+        public void CancelRental(int id)
+        {
+            var rental = _context.Rentals.Find(id);
+            if (rental == null) return;
+
+            rental.IsCancelled = true;
+            _context.SaveChanges();
+        }
+
+        public void ExtendRental(int id)
+        {
+            var rental = _context.Rentals.Find(id);
+            if (rental == null) return;
+
+            // Example: extend due date by 7 days (adjust as needed)
+            rental.DueDate = rental.DueDate.AddDays(7);
+            _context.SaveChanges();
+        }
+
+        public IEnumerable<Rental> GetActiveRentals()
+        {
+            // Active: Not cancelled, EndDate null, and DueDate not passed
+            return _context.Rentals
+                .Where(r => !r.IsCancelled && r.EndDate == null && r.DueDate >= DateTime.UtcNow)
+                .Include(r => r.Customer)
+                .Include(r => r.Equipment)
+                .ToList();
+        }
+
+        public IEnumerable<Rental> GetAllRentals()
+        {
+            return _context.Rentals
+                .Include(r => r.Customer)
+                .Include(r => r.Equipment)
+                .ToList();
+        }
+
+        public IEnumerable<Rental> GetCompletedRentals()
+        {
+            // Completed: EndDate not null and not cancelled
+            return _context.Rentals
+                .Where(r => r.EndDate != null && !r.IsCancelled)
+                .Include(r => r.Customer)
+                .Include(r => r.Equipment)
+                .ToList();
+        }
+
+        public IEnumerable<Rental> GetEquipmentRentalHistory(int equipmentId)
+        {
+            return _context.Rentals
+                .Where(r => r.EquipmentId == equipmentId)
+                .Include(r => r.Customer)
+                .ToList();
+        }
+
+        public IEnumerable<Rental> GetOverdueRentals()
+        {
+            // Overdue: Not cancelled, EndDate null, DueDate in the past
+            return _context.Rentals
+                .Where(r => !r.IsCancelled && r.EndDate == null && r.DueDate < DateTime.UtcNow)
+                .Include(r => r.Customer)
+                .Include(r => r.Equipment)
+                .ToList();
+        }
+
+        public Rental? GetRentalDetails(int id)
+        {
+            return _context.Rentals
+                .Include(r => r.Customer)
+                .Include(r => r.Equipment)
+                .FirstOrDefault(r => r.Id == id);
         }
     }
 }

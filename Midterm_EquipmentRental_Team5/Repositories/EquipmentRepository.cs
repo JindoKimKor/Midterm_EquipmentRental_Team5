@@ -15,37 +15,48 @@ namespace Midterm_EquipmentRental_Team5.Repositories
 
         public Equipment AddNewEquipment(Equipment equipment)
         {
-            throw new NotImplementedException();
+            _context.Equipment.Add(equipment);
+            return equipment;
         }
 
         public void DeleteEquipment(int id)
         {
-            throw new NotImplementedException();
+            var equipment = _context.Equipment.Find(id);
+            if (equipment != null)
+            {
+                _context.Equipment.Remove(equipment);
+            }
         }
 
         public IEnumerable<Equipment> GetAllEquipment()
         {
-            throw new NotImplementedException();
+            return _context.Equipment.ToList();
         }
 
         public IEnumerable<Equipment> GetRentedEquipment()
         {
-            throw new NotImplementedException();
+            // Assuming Equipment has a property like bool IsRented or RentalStatus
+            return _context.Equipment.Where(e => e.IsRented).ToList();
         }
 
         public Equipment? GetSpecificEquipment(int id)
         {
-            throw new NotImplementedException();
+            return _context.Equipment.Find(id);
         }
 
         public IEnumerable<Equipment> ListAvailableEquipment()
         {
-            throw new NotImplementedException();
+            // Assuming equipment with IsRented == false means available
+            return _context.Equipment.Where(e => !e.IsRented).ToList();
         }
 
         public void UpdateEquipment(Equipment equipment)
         {
-            throw new NotImplementedException();
+            var existingEquipment = _context.Equipment.Find(equipment.Id);
+            if (existingEquipment != null)
+            {
+                _context.Entry(existingEquipment).CurrentValues.SetValues(equipment);
+            }
         }
     }
 }
