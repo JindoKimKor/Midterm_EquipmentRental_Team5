@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
+using Midterm_EquipmentRental_Team5.Services;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
 {
@@ -8,21 +8,72 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [ApiController]
     public class EquipmentController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly EquipmentService _equipmentService;
 
-        public EquipmentController(IUnitOfWork unitOfWork)
+        public EquipmentController(EquipmentService equipmentService)
         {
-            _unitOfWork = unitOfWork;
+            _equipmentService = equipmentService;
         }
 
-        // TODO: Implement 7 endpoints
-        // TODO: GET /api/equipment - Get all equipment
-        // TODO: GET /api/equipment/{id} - Get specific equipment
-        // TODO: POST /api/equipment - Add new equipment [Authorize(Roles="Admin")]
-        // TODO: PUT /api/equipment/{id} - Update equipment [Authorize(Roles="Admin")]
-        // TODO: DELETE /api/equipment/{id} - Delete equipment [Authorize(Roles="Admin")]
-        // TODO: GET /api/equipment/available - List available equipment
-        // TODO: GET /api/equipment/rented - Get rented equipment [Authorize(Roles="Admin")]
+        // GET /api/equipment
+        [HttpGet]
+        public ActionResult<IEnumerable<object>> GetAllEquipment(int page = 1)
+        {
+            // TODO: Return paginated list
+            return Ok();
+        }
+
+        // GET /api/equipment/{id}
+        [HttpGet("{id}")]
+        public ActionResult<object> GetEquipment(int id)
+        {
+            // TODO: Return details for equipment id
+            return Ok();
+        }
+
+        // POST /api/equipment
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public ActionResult AddEquipment([FromBody] object newEquipment)
+        {
+            // TODO: Add new equipment
+            return CreatedAtAction(nameof(GetEquipment), new { id = 0 }, null);
+        }
+
+        // PUT /api/equipment/{id}
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult UpdateEquipment(int id, [FromBody] object updatedEquipment)
+        {
+            // TODO: Update equipment by id
+            return NoContent();
+        }
+
+        // DELETE /api/equipment/{id}
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult DeleteEquipment(int id)
+        {
+            // TODO: Delete equipment by id
+            return NoContent();
+        }
+
+        // GET /api/equipment/available
+        [HttpGet("available")]
+        public ActionResult<IEnumerable<object>> GetAvailableEquipment()
+        {
+            // TODO: Return list of available equipment
+            return Ok();
+        }
+
+        // GET /api/equipment/rented
+        [HttpGet("rented")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult<object> GetRentedEquipmentSummary()
+        {
+            // TODO: Return rented equipment summary
+            return Ok();
+        }
 
     }
 }

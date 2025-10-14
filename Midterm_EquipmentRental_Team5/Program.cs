@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Midterm_EquipmentRental_Team5.Data;
 using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Repositories;
 using Midterm_EquipmentRental_Team5.Services;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.UnitOfWork;
@@ -15,6 +16,16 @@ var builder = WebApplication.CreateBuilder(args);
 var jwtSettings = new JwtSettings();
 builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);
 builder.Services.AddSingleton(jwtSettings);
+
+builder.Services.AddScoped<CustomerRepository>();
+builder.Services.AddScoped<EquipmentRepository>();
+builder.Services.AddScoped<RentalRepository>();
+
+// DI Injection - UnitOfWork - Data Accee layer and the Center of Data Access Transaction
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// DI Injection - Authorization Service
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // DI injection - Database - InMemory Database - infrastructure layer
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("EquipmentRentalDb"));
@@ -37,12 +48,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Authorization - Security Layer
 builder.Services.AddAuthorization();
-
-// DI Injection - UnitOfWork - Data Accee layer and the Center of Data Access Transaction
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// DI Injection - Authorization Service
-builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -109,7 +114,5 @@ app.UseAuthorization();
 
 // MapControllers
 app.MapControllers();
-
-//app.MapGet("/", () => "Hello World!");
 
 app.Run();
