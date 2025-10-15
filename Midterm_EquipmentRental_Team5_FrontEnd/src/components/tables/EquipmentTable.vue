@@ -3,10 +3,7 @@
     <v-card-title>
       Equipment List
       <v-spacer />
-      <v-btn v-if="isAdmin" color="primary" @click="goToCreateEquipment">
-        <v-icon start>mdi-plus</v-icon>
-        Add Equipment
-      </v-btn>
+      <add-equipment-dialog v-model="isAddEquipmentDialogOpen" />
     </v-card-title>
 
     <v-data-table :headers="headers" :items="equipment" :items-per-page="10" class="elevation-1">
@@ -17,10 +14,6 @@
       </template>
 
       <template #item.actions="{ item }">
-        <v-btn icon size="small" @click="viewDetails(item.id)">
-          <v-icon>mdi-eye</v-icon>
-        </v-btn>
-
         <v-btn v-if="isAdmin" icon size="small" color="blue" @click="editEquipment(item.id)">
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
@@ -35,10 +28,11 @@
 
 <script setup>
 import { ref } from 'vue'
+import AddEquipmentDialog from '../dialog/AddEquipmentDialog.vue'
 
-// Simulated role check
-const isAdmin = true // Replace with actual logic
+const isAdmin = true
 const isUser = !isAdmin
+let isAddEquipmentDialogOpen = ref(false)
 
 // Headers for table
 const headers = [
@@ -46,7 +40,7 @@ const headers = [
   { title: 'Category', value: 'category' },
   { title: 'Condition', value: 'condition' },
   { title: 'Status', value: 'status' },
-  { title: 'Actions', value: 'actions', sortable: false },
+  isAdmin ? { title: 'Actions', value: 'actions', sortable: false } : {},
 ]
 
 // Example equipment data (replace with API call)
@@ -67,7 +61,6 @@ const equipment = ref([
   },
 ])
 
-// Action handlers (stubbed for now)
 const goToCreateEquipment = () => {
   console.log('Navigate to create equipment form')
 }
@@ -77,7 +70,7 @@ const viewDetails = (id) => {
 }
 
 const editEquipment = (id) => {
-  console.log('Editing equipment', id)
+  isAddEquipmentDialogOpen.value = true
 }
 
 const deleteEquipment = (id) => {
