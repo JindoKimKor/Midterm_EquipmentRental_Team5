@@ -1,19 +1,28 @@
-﻿using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
+﻿using Midterm_EquipmentRental_Team5.Data;
+using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
 using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 
-namespace Midterm_EquipmentRental_Team5.UnitOfWork
+public class UnitOfWork : IUnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    private readonly AppDbContext _context;
+
+    public IEquipmentRepository Equipment { get; }
+    public ICustomerRepository Customers { get; }
+    public IRentalRepository Rentals { get; }
+
+    public UnitOfWork(AppDbContext context,
+                      IEquipmentRepository equipmentRepository,
+                      ICustomerRepository customerRepository,
+                      IRentalRepository rentalRepository)
     {
-        public IEquipmentRepository Equipment => throw new NotImplementedException();
+        _context = context;
+        Equipment = equipmentRepository;
+        Customers = customerRepository;
+        Rentals = rentalRepository;
+    }
 
-        public ICustomerRepository Customers => throw new NotImplementedException();
-
-        public IRentalRepository Rentals => throw new NotImplementedException();
-
-        public int SaveChanges()
-        {
-            throw new NotImplementedException();
-        }
+    public int SaveChanges()
+    {
+        return _context.SaveChanges();
     }
 }

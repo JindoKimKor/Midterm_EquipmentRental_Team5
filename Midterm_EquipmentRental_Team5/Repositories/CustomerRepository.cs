@@ -1,6 +1,7 @@
 ﻿using Midterm_EquipmentRental_Team5.Data;
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Midterm_EquipmentRental_Team5.Repositories
 {
@@ -15,37 +16,55 @@ namespace Midterm_EquipmentRental_Team5.Repositories
 
         public Customer CreateCustomer(Customer customer)
         {
-            throw new NotImplementedException();
+            _context.Customers.Add(customer);
+            return customer;
         }
 
         public void DeleteCustomer(int id)
         {
-            throw new NotImplementedException();
+            var customer = _context.Customers.Find(id);
+            if (customer != null)
+            {
+                _context.Customers.Remove(customer);
+            }
         }
 
         public Rental? GetCustomerActiveRental(int id)
         {
-            throw new NotImplementedException();
+            // Pulls records from rentals table and compares the customerId to the agrument id and chesk if active
+            return _context.Rentals
+                .Include(r => r.EquipmentId)
+                .FirstOrDefault(r => r.CustomerId == id && r.IsActive);
         }
 
         public Customer? GetCustomerDetails(int id)
         {
-            throw new NotImplementedException();
+            return _context.Customers
+                .Include(c => c.Id)
+                .FirstOrDefault(c => c.Id == id);
         }
 
         public IEnumerable<Rental> GetCustomerRentalHistory(int id)
         {
-            throw new NotImplementedException();
+            return _context.Rentals
+                .Include(r => r.Equipment)
+                .Where(r => r.CustomerId == id)
+                .ToList();
         }
 
         public IEnumerable<Customer> ListAllCustomers()
         {
-            throw new NotImplementedException();
+            return _context.Customers.ToList();
         }
 
         public void UpdateCustomer(Customer customer)
         {
-            throw new NotImplementedException();
+            var existingCustomer = _context.Customers.Find(customer.Id);
+            if (existingCustomer != null)
+            {
+                //Uses existing customer to grab entry from db and sets current value to new
+                _context.Entry(existingCustomer).CurrentValues.SetValues(customer);
+            }
         }
     }
 }
