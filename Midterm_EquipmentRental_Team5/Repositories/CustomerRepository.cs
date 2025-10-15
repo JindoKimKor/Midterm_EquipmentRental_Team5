@@ -17,7 +17,6 @@ namespace Midterm_EquipmentRental_Team5.Repositories
         public Customer CreateCustomer(Customer customer)
         {
             _context.Customers.Add(customer);
-            _context.SaveChanges();
             return customer;
         }
 
@@ -27,12 +26,12 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             if (customer != null)
             {
                 _context.Customers.Remove(customer);
-                _context.SaveChanges();
             }
         }
 
         public Rental? GetCustomerActiveRental(int id)
         {
+            // Pulls records from rentals table and compares the customerId to the agrument id and chesk if active
             return _context.Rentals
                 .Include(r => r.EquipmentId)
                 .FirstOrDefault(r => r.CustomerId == id && r.IsActive);
@@ -40,16 +39,15 @@ namespace Midterm_EquipmentRental_Team5.Repositories
 
         public Customer? GetCustomerDetails(int id)
         {
-            // Include related rentals or other navigation properties as needed
             return _context.Customers
-                .Include(c => c.) // Optional: load rental history
+                .Include(c => c.Id)
                 .FirstOrDefault(c => c.Id == id);
         }
 
         public IEnumerable<Rental> GetCustomerRentalHistory(int id)
         {
             return _context.Rentals
-                .Include(r => r.EquipmentId) // Optional: load related equipment details
+                .Include(r => r.Equipment)
                 .Where(r => r.CustomerId == id)
                 .ToList();
         }
@@ -64,8 +62,8 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             var existingCustomer = _context.Customers.Find(customer.Id);
             if (existingCustomer != null)
             {
+                //Uses existing customer to grab entry from db and sets current value to new
                 _context.Entry(existingCustomer).CurrentValues.SetValues(customer);
-                _context.SaveChanges();
             }
         }
     }

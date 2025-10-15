@@ -2,6 +2,7 @@
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace Midterm_EquipmentRental_Team5.Repositories
 {
@@ -14,24 +15,39 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             _context = context;
         }
 
-        public Rental IssueEquipment(Rental rental)
+        public IEnumerable<Rental> GetAllRentals()
         {
-            // When issuing a rental, StartDate = now, EndDate = null, IsCancelled = false
-            rental.StartDate = DateTime.UtcNow;
-            rental.EndDate = null;
-            rental.IsCancelled = false;
+            return _context.Rentals
+                .Include(r => r.Customer)
+                .Include(r => r.Equipment)
+                .ToList();
+        }
+
+        public Rental? GetRentalDetails(int id)
+        {
+            return _context.Rentals
+                .Include(r => r.Customer)
+                .Include(r => r.Equipment)
+                .FirstOrDefault(r => r.Id == id);
+        }
+
+        public Rental IssueEquipment(Rental rental, DateTime dueDate)
+        {
+            rental.IssuedAt = DateTime.UtcNow;
+            rental.DueDate = dueDate;
+            rental.IsActive = true;
             _context.Rentals.Add(rental);
-            _context.SaveChanges();
             return rental;
         }
 
-        public Rental ReturnEquipment(int id)
+        public Rental? ReturnEquipment(int id)
         {
             var rental = _context.Rentals.Find(id);
             if (rental == null) return null;
 
-            rental.EndDate = DateTime.UtcNow;
-            _context.SaveChanges();
+            rental.ReturnedAt = DateTime.UtcNow;
+            rental.IsActive = false;
+            _context.Rentals.Update(rental);
             return rental;
         }
 
@@ -39,9 +55,7 @@ namespace Midterm_EquipmentRental_Team5.Repositories
         {
             var rental = _context.Rentals.Find(id);
             if (rental == null) return;
-
-            rental.IsCancelled = true;
-            _context.SaveChanges();
+            _context.Rentals.Remove(rental);
         }
 
         public void ExtendRental(int id)
@@ -49,24 +63,14 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             var rental = _context.Rentals.Find(id);
             if (rental == null) return;
 
-            // Example: extend due date by 7 days (adjust as needed)
             rental.DueDate = rental.DueDate.AddDays(7);
-            _context.SaveChanges();
+            _context.Rentals.Update(rental);
         }
 
         public IEnumerable<Rental> GetActiveRentals()
         {
-            // Active: Not cancelled, EndDate null, and DueDate not passed
             return _context.Rentals
-                .Where(r => !r.IsCancelled && r.EndDate == null && r.DueDate >= DateTime.UtcNow)
-                .Include(r => r.Customer)
-                .Include(r => r.Equipment)
-                .ToList();
-        }
-
-        public IEnumerable<Rental> GetAllRentals()
-        {
-            return _context.Rentals
+                .Where(r => r.IsActive)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
                 .ToList();
@@ -76,7 +80,7 @@ namespace Midterm_EquipmentRental_Team5.Repositories
         {
             // Completed: EndDate not null and not cancelled
             return _context.Rentals
-                .Where(r => r.EndDate != null && !r.IsCancelled)
+                .Where(r => !r.IsActive && r.ReturnedAt != null)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
                 .ToList();
@@ -92,20 +96,11 @@ namespace Midterm_EquipmentRental_Team5.Repositories
 
         public IEnumerable<Rental> GetOverdueRentals()
         {
-            // Overdue: Not cancelled, EndDate null, DueDate in the past
             return _context.Rentals
-                .Where(r => !r.IsCancelled && r.EndDate == null && r.DueDate < DateTime.UtcNow)
+                .Where(r => !r.IsActive && r.DueDate < DateTime.UtcNow)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
                 .ToList();
-        }
-
-        public Rental? GetRentalDetails(int id)
-        {
-            return _context.Rentals
-                .Include(r => r.Customer)
-                .Include(r => r.Equipment)
-                .FirstOrDefault(r => r.Id == id);
         }
     }
 }

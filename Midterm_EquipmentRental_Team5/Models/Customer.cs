@@ -1,7 +1,10 @@
-﻿namespace Midterm_EquipmentRental_Team5.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Midterm_EquipmentRental_Team5.Models
 {
     public class Customer
     {
+        [Key]
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }

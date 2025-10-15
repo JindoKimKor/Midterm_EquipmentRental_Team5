@@ -35,8 +35,7 @@ namespace Midterm_EquipmentRental_Team5.Repositories
 
         public IEnumerable<Equipment> GetRentedEquipment()
         {
-            // Assuming Equipment has a property like bool IsRented or RentalStatus
-            return _context.Equipment.Where(e => e.IsRented).ToList();
+            return _context.Equipment.Where(e => !e.IsAvailable).ToList();
         }
 
         public Equipment? GetSpecificEquipment(int id)
@@ -46,8 +45,7 @@ namespace Midterm_EquipmentRental_Team5.Repositories
 
         public IEnumerable<Equipment> ListAvailableEquipment()
         {
-            // Assuming equipment with IsRented == false means available
-            return _context.Equipment.Where(e => !e.IsRented).ToList();
+            return _context.Equipment.Where(e => e.IsAvailable).ToList();
         }
 
         public void UpdateEquipment(Equipment equipment)
