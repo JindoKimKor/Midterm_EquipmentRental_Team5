@@ -3,10 +3,7 @@
     <v-card-title>
       Customer List
       <v-spacer />
-      <v-btn v-if="isAdmin" color="primary" @click="goToCreateCustomer">
-        <v-icon start>mdi-account-plus</v-icon>
-        Add Customer
-      </v-btn>
+      <add-customer-dialog v-model="isAddCustomerDialogOpen" />
     </v-card-title>
 
     <v-data-table :headers="headers" :items="customers" :items-per-page="10" class="elevation-1">
@@ -34,12 +31,12 @@
 
 <script setup>
 import { ref } from 'vue'
+import AddCustomerDialog from '../dialog/AddCustomerDialog.vue'
 
-// Simulated role check
 const isAdmin = true // Replace with real logic
 const userId = 5 // Replace with logged-in user ID
+let isAddCustomerDialogOpen = ref(false)
 
-// Table headers
 const headers = [
   { title: 'Name', value: 'name' },
   { title: 'Username', value: 'username' },
@@ -48,7 +45,6 @@ const headers = [
   { title: 'Actions', value: 'actions', sortable: false },
 ]
 
-// Dummy customer data
 const customers = ref([
   {
     id: 1,
@@ -66,7 +62,6 @@ const customers = ref([
   },
 ])
 
-// Action methods (stubbed)
 const goToCreateCustomer = () => {
   console.log('Navigate to create customer form')
 }
@@ -76,7 +71,7 @@ const viewCustomer = (id) => {
 }
 
 const editCustomer = (id) => {
-  console.log('Editing customer', id)
+  isAddCustomerDialogOpen.value = true
 }
 
 const deleteCustomer = (id) => {
