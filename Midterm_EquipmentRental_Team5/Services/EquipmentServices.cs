@@ -4,7 +4,7 @@ using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Services
 {
-    public class EquipmentService
+    public class EquipmentService : IEquipmentService
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -54,5 +54,9 @@ namespace Midterm_EquipmentRental_Team5.Services
             // TODO: Return list of rented equipment
             throw new NotImplementedException();
         }
+    }
+
+    public interface IEquipmentService
+    {
     }
 }

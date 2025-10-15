@@ -1,9 +1,10 @@
 using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Services
 {
-    public class RentalServices
+    public class RentalServices : IRentalServices
     {
         private readonly IUnitOfWork _unitOfWork;
 
