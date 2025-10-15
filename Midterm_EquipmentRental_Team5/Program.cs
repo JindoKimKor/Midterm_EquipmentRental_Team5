@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Midterm_EquipmentRental_Team5.Data;
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Repositories;
+using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
 using Midterm_EquipmentRental_Team5.Services;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
@@ -16,14 +17,15 @@ var jwtSettings = new JwtSettings();
 builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);
 builder.Services.AddSingleton(jwtSettings);
 
-builder.Services.AddSingleton<CustomerRepository>();
-builder.Services.AddSingleton<EquipmentRepository>();
-builder.Services.AddSingleton<RentalRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+builder.Services.AddScoped<IRentalRepository, RentalRepository>();
 
-// DI Injection - UnitOfWork - Data Accee layer and the Center of Data Access Transaction
+builder.Services.AddScoped<ICustomerServices, CustomerServices>();
+builder.Services.AddScoped<IEquipmentServices, EquipmentService>();
+builder.Services.AddScoped<IRentalServices, RentalServices>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// DI Injection - Authorization Service
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // DI injection - Database - InMemory Database - infrastructure layer

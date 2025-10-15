@@ -23,15 +23,15 @@ namespace Midterm_EquipmentRental_Team5.Services
             throw new NotImplementedException();
         }
 
-        public Task CreateCustomerAsync(CreateCustomerRequest request)
-        {
-            throw new NotImplementedException();
-        }
+        // public Task CreateCustomerAsync(CreateCustomerRequest request)
+        // {
+        //     throw new NotImplementedException();
+        // }
 
-        public Task UpdateCustomerAsync(int id, UpdateCustomerRequest request)
-        {
-            throw new NotImplementedException();
-        }
+        // public Task UpdateCustomerAsync(int id, UpdateCustomerRequest request)
+        // {
+        //     throw new NotImplementedException();
+        // }
 
         public Task DeleteCustomerAsync(int id)
         {
