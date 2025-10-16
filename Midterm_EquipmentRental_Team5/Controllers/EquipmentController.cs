@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Services;
+using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
 {
@@ -10,9 +11,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [Authorize] // All endpoints require authentication
     public class EquipmentController : ControllerBase
     {
-        private readonly EquipmentService _equipmentService;
+        private readonly IEquipmentServices _equipmentService; // ✅ Use interface
 
-        public EquipmentController(EquipmentService equipmentService)
+        public EquipmentController(IEquipmentServices equipmentService) // ✅ Inject interface
         {
             _equipmentService = equipmentService;
         }
