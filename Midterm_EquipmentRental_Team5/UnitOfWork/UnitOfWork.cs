@@ -5,20 +5,22 @@ using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _context;
-
-    public IEquipmentRepository Equipment { get; }
+    public IUserRespository Users { get; set; }
+    public IEquipmentRepository Equipments { get; }
     public ICustomerRepository Customers { get; }
     public IRentalRepository Rentals { get; }
 
     public UnitOfWork(AppDbContext context,
                       IEquipmentRepository equipmentRepository,
                       ICustomerRepository customerRepository,
-                      IRentalRepository rentalRepository)
+                      IRentalRepository rentalRepository,
+                      IUserRespository user)
     {
         _context = context;
-        Equipment = equipmentRepository;
+        Equipments = equipmentRepository;
         Customers = customerRepository;
         Rentals = rentalRepository;
+        Users = user;
     }
 
     public int SaveChanges()

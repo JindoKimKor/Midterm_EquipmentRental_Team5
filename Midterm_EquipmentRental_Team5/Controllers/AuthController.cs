@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models.DTOs;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
@@ -10,17 +9,32 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IUserServices _userServices;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IUserServices userServices)
         {
             _authService = authService;
+            _userServices = userServices;
         }
 
-        // TODO: POST /api/auth/login - Authenticate user & return JWT token with role claims
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = _userServices.(request);
+                var token = GenerateJwtToken(user);
+                return Ok(new { Token = token });
+            }
+            catch (KeyNotFoundException)
+            {
+                return Unauthorized("Invalid username and password");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Problem("An error occurred while retrieving by id.");
+            }
         }
     }
 }
