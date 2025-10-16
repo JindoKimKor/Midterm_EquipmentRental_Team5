@@ -1,32 +1,33 @@
 ﻿using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Repositories.Interfaces
 {
     public interface IRentalRepository
     {
 
-        Rental CreateRental(Rental rental); // Fixed: should take Rental and return Rental
-        IEnumerable<Rental> GetAllRentals();
-        
-        Rental? GetRentalDetails(int id);
+        IRental CreateRental(IRental rental); // Fixed: should take Rental and return Rental
+        IEnumerable<IRental> GetAllRentals();
 
-        Rental IssueEquipment(Rental rental, DateTime dueDate);
+        IRental? GetRentalDetails(int id);
 
-        Rental? ReturnEquipment(int id);
+        IRental IssueEquipment(IRental rental, DateTime dueDate);
+
+        IRental? ReturnEquipment(int id);
 
         void CancelRental(int id);
 
         void ExtendRental(int id);
 
-        IEnumerable<Rental> GetActiveRentals();
+        IEnumerable<IRental> GetActiveRentals();
 
-        IEnumerable<Rental> GetCompletedRentals();
+        IEnumerable<IRental> GetCompletedRentals();
 
-        IEnumerable<Rental> GetEquipmentRentalHistory(int equipmentId);
+        IEnumerable<IRental> GetEquipmentRentalHistory(int equipmentId);
 
-        IEnumerable<Rental> GetOverdueRentals();
+        IEnumerable<IRental> GetOverdueRentals();
 
-        void UpdateRental(Rental rental);
+        void UpdateRental(IRental rental);
 
     }
 }

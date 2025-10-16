@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.IdentityModel.Tokens;
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Models.Interfaces;
@@ -21,7 +22,7 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public ICustomer? ValidateLogin(ILoginRequest loginRequest)
         {
-            var user = _unitOfWork.Customers.GetCustomerByPasswordAndUsername(loginRequest) as ICustomer ?? null;
+            var user = _unitOfWork.Customers.GetCustomerByPasswordAndUsername((ILoginRequest)loginRequest) as ICustomer ?? null;
             return user;
         }
 

@@ -22,7 +22,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var user = _authService.ValidateLogin((ILoginRequest)request) ?? throw new KeyNotFoundException("User not found");
+                var user = _authService.ValidateLogin(request) ?? throw new KeyNotFoundException("User not found");
                 var token = _authService.GenerateJwtToken(user);
                 return Ok(new { Token = token });
             }

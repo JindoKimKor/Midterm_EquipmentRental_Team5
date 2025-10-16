@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models;
-using Midterm_EquipmentRental_Team5.Services;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Controllers

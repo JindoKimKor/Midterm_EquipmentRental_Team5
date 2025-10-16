@@ -1,6 +1,8 @@
-﻿namespace Midterm_EquipmentRental_Team5.Models
+﻿using Midterm_EquipmentRental_Team5.Models.Interfaces;
+
+namespace Midterm_EquipmentRental_Team5.Models
 {
-    public class JwtSettings
+    public class JwtSettings : IJwtSettings
     {
         // JWT Token configs
         public string SecretKey { get; set; } = string.Empty;

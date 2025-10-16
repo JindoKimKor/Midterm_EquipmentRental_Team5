@@ -1,6 +1,8 @@
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
+
 namespace Midterm_EquipmentRental_Team5.Models.DTOs
 {
-    public class IssueRequest
+    public class IssueRequest : IIssueRequest
     {
         public int EquipmentId { get; set; }
         public int CustomerId { get; set; }

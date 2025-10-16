@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Models
 {
-    public class Rental
+    public class Rental : IRental
     {
         [Key]
         public int Id { get; set; }
@@ -20,8 +21,7 @@ namespace Midterm_EquipmentRental_Team5.Models
         public DateTime IssuedAt { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime? ReturnedAt { get; set; }
-        public bool IsActive { get; internal set; }
-        
+        public bool IsActive { get; set; }
         public decimal? OverdueFee { get; set; }
         public string? ExtensionReason { get; set; }
     }

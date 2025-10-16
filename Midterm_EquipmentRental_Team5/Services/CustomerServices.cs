@@ -1,4 +1,5 @@
 using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 
@@ -14,7 +15,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IEnumerable<Customer>> GetAllCustomersAsync(int page = 1)
+        public Task<IEnumerable<ICustomer>> GetAllCustomersAsync(int page = 1)
         {
             var allCustomers = _unitOfWork.Customers.ListAllCustomers();
             int skip = (page - 1) * PageSize;
@@ -22,27 +23,22 @@ namespace Midterm_EquipmentRental_Team5.Services
             return Task.FromResult(paginatedCustomers);
         }
 
-        public Task<Customer> GetCustomerByIdAsync(int id)
+        public Task<ICustomer> GetCustomerByIdAsync(int id)
         {
             var customer = _unitOfWork.Customers.GetCustomerDetails(id);
             return Task.FromResult(customer);
         }
 
-        public Task AddCustomerAsync(Customer newCustomer)
+        public Task AddCustomerAsync(ICustomer newCustomer)
         {
             _unitOfWork.Customers.CreateCustomer(newCustomer);
             _unitOfWork.SaveChanges();
             return Task.CompletedTask;
         }
 
-        public Task UpdateCustomerAsync(int id, Customer updatedCustomer)
+        public Task UpdateCustomerAsync(int id, ICustomer updatedCustomer)
         {
-            var existingCustomer = _unitOfWork.Customers.GetCustomerDetails(id);
-            if (existingCustomer == null)
-            {
-                throw new KeyNotFoundException($"Customer with ID {id} not found.");
-            }
-
+            var existingCustomer = _unitOfWork.Customers.GetCustomerDetails(id) ?? throw new KeyNotFoundException($"Customer with ID {id} not found.");
             existingCustomer.Name = updatedCustomer.Name;
             existingCustomer.Email = updatedCustomer.Email;
             existingCustomer.UserName = updatedCustomer.UserName;
@@ -56,12 +52,7 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public Task DeleteCustomerAsync(int id)
         {
-            var customer = _unitOfWork.Customers.GetCustomerDetails(id);
-            if (customer == null)
-            {
-                throw new KeyNotFoundException($"Customer with ID {id} not found.");
-            }
-
+            var customer = _unitOfWork.Customers.GetCustomerDetails(id) ?? throw new KeyNotFoundException($"Customer with ID {id} not found.");
             _unitOfWork.Customers.DeleteCustomer(id);
             _unitOfWork.SaveChanges();
             return Task.CompletedTask;

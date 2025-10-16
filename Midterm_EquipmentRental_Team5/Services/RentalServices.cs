@@ -1,5 +1,6 @@
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Models.DTOs;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 
@@ -16,7 +17,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IEnumerable<Rental>> GetAllRentalsAsync(int page = 1)
+        public Task<IEnumerable<IRental>> GetAllRentalsAsync(int page = 1)
         {
             var allRentals = _unitOfWork.Rentals.GetAllRentals();
             int skip = (page - 1) * PageSize;
@@ -24,13 +25,13 @@ namespace Midterm_EquipmentRental_Team5.Services
             return Task.FromResult(paginatedRentals);
         }
 
-        public Task<Rental> GetRentalByIdAsync(int id)
+        public Task<IRental> GetRentalByIdAsync(int id)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(id);
             return Task.FromResult(rental);
         }
 
-        public Task IssueEquipmentAsync(IssueRequest request)
+        public Task IssueEquipmentAsync(IIssueRequest request)
         {
             var equipment = _unitOfWork.Equipments.GetSpecificEquipment(request.EquipmentId) ?? throw new KeyNotFoundException($"Equipment with ID {request.EquipmentId} not found.");
             if (!equipment.IsAvailable)
@@ -62,7 +63,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             return Task.CompletedTask;
         }
 
-        public Task ReturnEquipmentAsync(ReturnRequest request)
+        public Task ReturnEquipmentAsync(IReturnRequest request)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(request.RentalId) ?? throw new KeyNotFoundException($"Rental with ID {request.RentalId} not found.");
             if (rental.ReturnedAt.HasValue)
@@ -93,31 +94,31 @@ namespace Midterm_EquipmentRental_Team5.Services
             return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<Rental>> GetActiveRentalsAsync()
+        public Task<IEnumerable<IRental>> GetActiveRentalsAsync()
         {
             var activeRentals = _unitOfWork.Rentals.GetActiveRentals();
             return Task.FromResult(activeRentals);
         }
 
-        public Task<IEnumerable<Rental>> GetCompletedRentalsAsync()
+        public Task<IEnumerable<IRental>> GetCompletedRentalsAsync()
         {
             var completedRentals = _unitOfWork.Rentals.GetCompletedRentals();
             return Task.FromResult(completedRentals);
         }
 
-        public Task<IEnumerable<Rental>> GetOverdueRentalsAsync()
+        public Task<IEnumerable<IRental>> GetOverdueRentalsAsync()
         {
             var overdueRentals = _unitOfWork.Rentals.GetOverdueRentals();
             return Task.FromResult(overdueRentals);
         }
 
-        public Task<IEnumerable<Rental>> GetRentalHistoryByEquipmentAsync(int equipmentId)
+        public Task<IEnumerable<IRental>> GetRentalHistoryByEquipmentAsync(int equipmentId)
         {
             var rentalHistory = _unitOfWork.Rentals.GetEquipmentRentalHistory(equipmentId);
             return Task.FromResult(rentalHistory);
         }
 
-        public Task ExtendRentalAsync(int rentalId, ExtensionRequest request)
+        public Task ExtendRentalAsync(int rentalId, IExtensionRequest request)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId);
             if (rental == null)
