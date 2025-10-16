@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models.DTOs;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
@@ -9,12 +10,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IUserServices _userServices;
-
-        public AuthController(IAuthService authService, IUserServices userServices)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
-            _userServices = userServices;
         }
 
         [HttpPost("login")]
@@ -22,8 +20,8 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var user = _userServices.(request);
-                var token = GenerateJwtToken(user);
+                var user = _authService.ValidateLogin((ILoginRequest)request) ?? throw new KeyNotFoundException("User not found");
+                var token = _authService.GenerateJwtToken(user);
                 return Ok(new { Token = token });
             }
             catch (KeyNotFoundException)

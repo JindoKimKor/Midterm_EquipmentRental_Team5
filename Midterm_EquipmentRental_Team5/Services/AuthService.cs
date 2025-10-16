@@ -2,18 +2,34 @@
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
+using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Services
 {
     public class AuthService : IAuthService
     {
-        public Customer? ValidateLogin(string username, string password)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public AuthService(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
         }
 
-        private object GenerateJwtToken(User user)
+        public IUser? ValidateLogin(string username, string password)
+        {
+            var user = _unitOfWork.Users.GetUserByPasswordAndUserName(username, password);
+
+            if (user != null)
+            {
+                return user;
+            }
+
+            return null;
+        }
+
+        public object GenerateJwtToken(IUser user)
         {
             var claims = new[]{
                 new Claim(ClaimTypes.Name, user.UserName),
