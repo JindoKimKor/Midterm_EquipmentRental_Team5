@@ -2,7 +2,6 @@
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 
 namespace Midterm_EquipmentRental_Team5.Repositories
 {
@@ -14,13 +13,13 @@ namespace Midterm_EquipmentRental_Team5.Repositories
         {
             _context = context;
         }
-        
+
         public Rental CreateRental(Rental rental)
         {
             _context.Rentals.Add(rental);
             return rental;
         }
-        
+
         public void UpdateRental(Rental rental)
         {
             _context.Rentals.Update(rental);
@@ -29,16 +28,16 @@ namespace Midterm_EquipmentRental_Team5.Repositories
         public IEnumerable<Rental> GetAllRentals()
         {
             return _context.Rentals
-                .Include(r => r.Customer)
-                .Include(r => r.Equipment)
+                .Include(r => r.Customer)   // ✅ Navigation property
+                .Include(r => r.Equipment)  // ✅ Navigation property
                 .ToList();
         }
 
         public Rental? GetRentalDetails(int id)
         {
             return _context.Rentals
-                .Include(r => r.Customer)
-                .Include(r => r.Equipment)
+                .Include(r => r.Customer)   // ✅ Navigation property
+                .Include(r => r.Equipment)  // ✅ Navigation property
                 .FirstOrDefault(r => r.Id == id);
         }
 
@@ -82,8 +81,8 @@ namespace Midterm_EquipmentRental_Team5.Repositories
         {
             return _context.Rentals
                 .Where(r => r.IsActive)
-                .Include(r => r.Customer)
-                .Include(r => r.Equipment)
+                .Include(r => r.Customer)   // ✅ Navigation property
+                .Include(r => r.Equipment)  // ✅ Navigation property
                 .ToList();
         }
 
@@ -92,8 +91,8 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             // Completed: EndDate not null and not cancelled
             return _context.Rentals
                 .Where(r => !r.IsActive && r.ReturnedAt != null)
-                .Include(r => r.Customer)
-                .Include(r => r.Equipment)
+                .Include(r => r.Customer)   // ✅ Navigation property
+                .Include(r => r.Equipment)  // ✅ Navigation property
                 .ToList();
         }
 
@@ -101,7 +100,8 @@ namespace Midterm_EquipmentRental_Team5.Repositories
         {
             return _context.Rentals
                 .Where(r => r.EquipmentId == equipmentId)
-                .Include(r => r.Customer)
+                .Include(r => r.Customer)   // ✅ Navigation property
+                .Include(r => r.Equipment)  // ✅ Navigation property (optional but useful)
                 .ToList();
         }
 
@@ -110,9 +110,9 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             // Active rentals where DueDate < Now and not yet returned
             return _context.Rentals
                 .Where(r => r.IsActive && r.DueDate < DateTime.UtcNow && r.ReturnedAt == null)
-                .Include(r => r.Customer)
-                .Include(r => r.Equipment)
-                .OrderBy(r => r.DueDate) // Show oldest overdue first
+                .Include(r => r.Customer)   // ✅ Navigation property
+                .Include(r => r.Equipment)  // ✅ Navigation property
+                .OrderBy(r => r.DueDate)    // Show oldest overdue first
                 .ToList();
         }
     }

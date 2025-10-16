@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Services;
+using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
 {
@@ -11,9 +12,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [Authorize] // All endpoints require authentication
     public class CustomerController : ControllerBase
     {
-        private readonly CustomerServices _customerService;
+        private readonly ICustomerServices _customerService; 
 
-        public CustomerController(CustomerServices customerServices)
+        public CustomerController(ICustomerServices customerServices) 
         {
             _customerService = customerServices;
         }

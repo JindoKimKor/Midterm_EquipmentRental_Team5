@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Models.DTOs;
 using Midterm_EquipmentRental_Team5.Services;
+using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
 {
@@ -12,9 +13,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [Authorize] // All endpoints require authentication
     public class RentalController : ControllerBase
     {
-        private readonly RentalServices _rentalService;
+        private readonly IRentalServices _rentalService; // ✅ Use interface
 
-        public RentalController(RentalServices rentalService)
+        public RentalController(IRentalServices rentalService) // ✅ Inject interface
         {
             _rentalService = rentalService;
         }
