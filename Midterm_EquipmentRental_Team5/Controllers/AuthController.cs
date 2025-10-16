@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.Models.DTOs;
 using Midterm_EquipmentRental_Team5.Models.Interfaces;
-using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
 {
@@ -10,9 +11,12 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private readonly JwtSettings _jwtSettings; // Inject JwtSettings
+
+        public AuthController(IAuthService authService, JwtSettings jwtSettings)
         {
             _authService = authService;
+            _jwtSettings = jwtSettings; // Store injected settings
         }
 
         [HttpPost("login")]

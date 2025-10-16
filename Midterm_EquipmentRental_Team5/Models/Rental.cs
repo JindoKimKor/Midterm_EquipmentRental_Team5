@@ -21,5 +21,8 @@ namespace Midterm_EquipmentRental_Team5.Models
         public DateTime DueDate { get; set; }
         public DateTime? ReturnedAt { get; set; }
         public bool IsActive { get; internal set; }
+        
+        public decimal? OverdueFee { get; set; }
+        public string? ExtensionReason { get; set; }
     }
 }

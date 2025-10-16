@@ -13,7 +13,8 @@ namespace Midterm_EquipmentRental_Team5.Repositories
         {
             _context = context;
         }
-
+        
+        
         public Customer CreateCustomer(Customer customer)
         {
             _context.Customers.Add(customer);

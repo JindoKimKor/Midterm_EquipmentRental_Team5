@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
-using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
@@ -17,9 +16,9 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork = unitOfWork;
         }
 
-        public IUser? ValidateLogin(string username, string password)
+        public IUser? ValidateLogin(ILoginRequest loginRequest)
         {
-            var user = _unitOfWork.Users.GetUserByPasswordAndUserName(username, password);
+            var user = _unitOfWork.Users.GetUserByPasswordAndUserName(loginRequest.Username, loginRequest.Password);
 
             if (user != null)
             {

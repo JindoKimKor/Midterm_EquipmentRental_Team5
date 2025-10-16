@@ -7,7 +7,7 @@ namespace Midterm_EquipmentRental_Team5.Repositories
     public class EquipmentRepository : IEquipmentRepository
     {
         private readonly AppDbContext _context;
-
+        
         public EquipmentRepository(AppDbContext context)
         {
             _context = context;
