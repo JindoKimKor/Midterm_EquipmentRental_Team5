@@ -7,6 +7,7 @@ namespace Midterm_EquipmentRental_Team5.Services
     public class EquipmentService : IEquipmentServices
     {
         private readonly IUnitOfWork _unitOfWork;
+        private const int PageSize = 10; // 10 items per page
 
         public EquipmentService(IUnitOfWork unitOfWork)
         {
@@ -15,48 +16,101 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public Task<IEnumerable<Equipment>> GetAllEquipmentAsync(int page = 1)
         {
-            // TODO: Return paginated list of all equipment
-            throw new NotImplementedException();
+            // Get all equipment from repository
+            var allEquipment = _unitOfWork.Equipment.GetAllEquipment();
+
+            // Calculate skip and take for pagination
+            int skip = (page - 1) * PageSize;
+            var paginatedEquipment = allEquipment.Skip(skip).Take(PageSize);
+
+            return Task.FromResult(paginatedEquipment);
         }
 
         public Task<Equipment> GetEquipmentByIdAsync(int id)
         {
-            // TODO: Return equipment details by id
-            throw new NotImplementedException();
+            // Get equipment by id from repository
+            var equipment = _unitOfWork.Equipment.GetSpecificEquipment(id);
+
+            return Task.FromResult(equipment);
         }
 
         public Task AddEquipmentAsync(Equipment newEquipment)
         {
-            // TODO: Add new equipment
-            throw new NotImplementedException();
+            // Set creation timestamp
+            newEquipment.CreatedAt = DateTime.Now;
+            newEquipment.IsAvailable = true; // New equipment is available by default
+
+            // Add equipment to repository
+            _unitOfWork.Equipment.AddNewEquipment(newEquipment);
+            
+            // Save changes to database
+            _unitOfWork.SaveChanges();
+
+            return Task.CompletedTask;
         }
 
         public Task UpdateEquipmentAsync(int id, Equipment updatedEquipment)
         {
-            // TODO: Update equipment by id
-            throw new NotImplementedException();
+            // Get existing equipment from repository
+            var existingEquipment = _unitOfWork.Equipment.GetSpecificEquipment(id);
+
+            if (existingEquipment == null)
+            {
+                throw new KeyNotFoundException($"Equipment with ID {id} not found.");
+            }
+
+            // Update fields
+            existingEquipment.Name = updatedEquipment.Name;
+            existingEquipment.Description = updatedEquipment.Description;
+            existingEquipment.Category = updatedEquipment.Category;
+            existingEquipment.Condition = updatedEquipment.Condition;
+            existingEquipment.RentalPrice = updatedEquipment.RentalPrice;
+            existingEquipment.IsAvailable = updatedEquipment.IsAvailable;
+
+            // Update in repository
+            _unitOfWork.Equipment.UpdateEquipment(existingEquipment);
+            
+            // Save changes to database
+            _unitOfWork.SaveChanges();
+
+            return Task.CompletedTask;
         }
 
         public Task DeleteEquipmentAsync(int id)
         {
-            // TODO: Delete equipment by id
-            throw new NotImplementedException();
+            // Get equipment to delete
+            var equipment = _unitOfWork.Equipment.GetSpecificEquipment(id);
+
+            if (equipment == null)
+            {
+                throw new KeyNotFoundException($"Equipment with ID {id} not found.");
+            }
+
+            // Delete from repository
+            _unitOfWork.Equipment.DeleteEquipment(id);
+            
+            // Save changes to database
+            _unitOfWork.SaveChanges();
+
+            return Task.CompletedTask;
         }
 
         public Task<IEnumerable<Equipment>> GetAvailableEquipmentAsync()
         {
-            // TODO: Return list of available equipment
-            throw new NotImplementedException();
+            // Get all equipment and filter by availability
+            var allEquipment = _unitOfWork.Equipment.GetAllEquipment();
+            var availableEquipment = allEquipment.Where(e => e.IsAvailable);
+
+            return Task.FromResult(availableEquipment);
         }
 
         public Task<IEnumerable<Equipment>> GetRentedEquipmentAsync()
         {
-            // TODO: Return list of rented equipment
-            throw new NotImplementedException();
-        }
-    }
+            // Get all equipment and filter by rented status
+            var allEquipment = _unitOfWork.Equipment.GetAllEquipment();
+            var rentedEquipment = allEquipment.Where(e => !e.IsAvailable);
 
-    public interface IEquipmentService
-    {
+            return Task.FromResult(rentedEquipment);
+        }
     }
 }

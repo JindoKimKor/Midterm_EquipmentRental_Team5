@@ -14,6 +14,17 @@ namespace Midterm_EquipmentRental_Team5.Repositories
         {
             _context = context;
         }
+        
+        public Rental CreateRental(Rental rental)
+        {
+            _context.Rentals.Add(rental);
+            return rental;
+        }
+        
+        public void UpdateRental(Rental rental)
+        {
+            _context.Rentals.Update(rental);
+        }
 
         public IEnumerable<Rental> GetAllRentals()
         {
@@ -96,10 +107,12 @@ namespace Midterm_EquipmentRental_Team5.Repositories
 
         public IEnumerable<Rental> GetOverdueRentals()
         {
+            // Active rentals where DueDate < Now and not yet returned
             return _context.Rentals
-                .Where(r => !r.IsActive && r.DueDate < DateTime.UtcNow)
+                .Where(r => r.IsActive && r.DueDate < DateTime.UtcNow && r.ReturnedAt == null)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
+                .OrderBy(r => r.DueDate) // Show oldest overdue first
                 .ToList();
         }
     }
