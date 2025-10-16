@@ -3,13 +3,23 @@
     <v-card-title>
       Equipment List
       <v-spacer />
-      <add-equipment-dialog v-model="isAddEquipmentDialogOpen" />
+      <div class="d-flex">
+        <div>
+          <AddEquipmentDialog v-model="isAddEquipmentDialogOpen" />
+        </div>
+        <div class="pr-4 pl-4">
+          <ViewRentedEquipmentRentals v-model="isViewRentedEquipment" />
+        </div>
+        <!-- <div>
+          <add-equipment-dialog v-model="isViewAvailableEquipment" />
+        </div> -->
+      </div>
     </v-card-title>
 
     <v-data-table :headers="headers" :items="equipment" :items-per-page="10" class="elevation-1">
       <template #item.name="{ item }">
         <router-link :to="`/equipments/${item.id}`" class="text-decoration-none">
-          {{ item.name }}
+          {{ item.name }}x
         </router-link>
       </template>
 
@@ -28,13 +38,15 @@
 
 <script setup>
 import { ref } from 'vue'
-import AddEquipmentDialog from '../dialog/AddEquipmentDialog.vue'
+import AddEquipmentDialog from '@/components/dialog/equipment/AddEquipmentDialog.vue'
+import ViewRentedEquipmentRentals from '@/components/dialog/equipment/ViewRentedEquipments.vue'
 
 const isAdmin = true
 const isUser = !isAdmin
 let isAddEquipmentDialogOpen = ref(false)
+let isViewRentedEquipment = ref(false)
+let isViewAvailableEquipment = ref(false)
 
-// Headers for table
 const headers = [
   { title: 'Name', value: 'name' },
   { title: 'Category', value: 'category' },
@@ -43,7 +55,6 @@ const headers = [
   isAdmin ? { title: 'Actions', value: 'actions', sortable: false } : {},
 ]
 
-// Example equipment data (replace with API call)
 const equipment = ref([
   {
     id: 1,

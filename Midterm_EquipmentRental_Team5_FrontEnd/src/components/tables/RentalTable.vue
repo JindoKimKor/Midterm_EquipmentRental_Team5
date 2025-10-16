@@ -1,7 +1,6 @@
 <template>
   <v-card>
     <v-card-title> Rental Records </v-card-title>
-
     <v-data-table
       :headers="headers"
       :items="filteredRentals"
@@ -11,7 +10,6 @@
       <template #item.issueDate="{ item }">
         {{ formatDate(item.issueDate) }}
       </template>
-
       <template #item.status="{ item }">
         <v-chip :color="getStatusColor(item.status)" text-color="white" small>
           {{ item.status }}
@@ -24,11 +22,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// Simulated role check and user
-const isAdmin = true // Replace with actual check
-const userId = 2 // Logged-in user's ID
+const isAdmin = true
+const userId = 2
 
-// Table headers
 const headers = [
   { title: 'Equipment', value: 'equipment' },
   { title: 'Customer', value: 'customer' },

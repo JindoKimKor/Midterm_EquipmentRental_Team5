@@ -1,15 +1,15 @@
 <template>
-  <v-dialog max-width="500" v-model="isOpen">
+  <v-dialog v-model="isOpen">
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn color="primary" v-bind="activatorProps">
         <v-icon start>mdi-plus</v-icon>
-        Add Equipment
+        Rented Equipment
       </v-btn>
     </template>
 
     <template v-slot:default="{ isActive }">
       <v-card title="Dialog">
-        <EquipmentForm />
+        <RentedEquipmentTable />
       </v-card>
     </template>
   </v-dialog>
@@ -18,7 +18,7 @@
 <script setup>
 import { computed } from 'vue'
 import { defineProps, defineEmits } from 'vue'
-import EquipmentForm from '../forms/EquipmentForm.vue'
+import RentedEquipmentTable from '@/components/tables/equipment/RentedEquipmentTable.vue'
 
 const props = defineProps({
   modelValue: Boolean,
