@@ -2,11 +2,14 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useCounterStore = defineStore('counter', () => {
-  const count = ref(0)
-  const doubleCount = computed(() => count.value * 2)
-  function increment() {
-    count.value++
-  }
+  const role = ref(null)
+  const AuthToken = ref(0)
+
+  function getAuthToken() {}
+
+  function logout() {}
+
+  function login() {}
 
   return { count, doubleCount, increment }
 })
