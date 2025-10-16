@@ -15,6 +15,21 @@
         prepend-icon="mdi-account"
       />
 
+      <v-divider class="my-2" />
+
+      <v-subheader>Equipment Management</v-subheader>
+      <v-list-item
+        :to="`/dashboard/customers/${userId}/active-rental`"
+        title="Active Rental"
+        prepend-icon="mdi-checkbox-marked-outline"
+      />
+
+      <v-list-item
+        :to="`/dashboard/customers/${userId}/active-rental`"
+        title="Active Rental"
+        prepend-icon="mdi-checkbox-marked-outline"
+      />
+
       <v-list-item
         :to="`/dashboard/customers/${userId}/rentals`"
         title="My Rentals"
@@ -27,9 +42,11 @@
         prepend-icon="mdi-checkbox-marked-outline"
       />
 
-      <v-divider class="my-2" />
-
-      <v-subheader>Customer Management</v-subheader>
+      <v-list-item
+        :to="`/dashboard/customers/${userId}/active-rental`"
+        title="Active Rental"
+        prepend-icon="mdi-checkbox-marked-outline"
+      />
 
       <v-divider class="my-2" />
       <v-subheader>Rental Management</v-subheader>
@@ -83,7 +100,54 @@
 </template>
 
 <script setup>
-const isAdmin = true // TODO: Replace with actual role check (e.g., from auth store or token)
+const isAdmin = true
 const isUser = !isAdmin
-const userId = 123 // TODO: Replace with actual logged-in user's ID
+const userId = 123
+
+const UserNavigationItems = [
+  {
+    categoryTitle: 'User Profile',
+    items: [{ url: 'dsa', title: 'View Profile', prependIdon: 'dsa' }],
+  },
+  {
+    category: 'Rental Management',
+    items: [
+      { url: 'dsa', title: 'My Rentals', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Rental Return Form', prependIdon: 'dsa' },
+    ],
+  },
+]
+
+const AdminNavigationItems = [
+  {
+    categoryTitle: 'Customer Management',
+    items: [
+      { url: 'dsa', title: 'Customers,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Equipment,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Rentals,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Equipment,', prependIdon: 'dsa' },
+    ],
+  },
+  {
+    category: 'Equipment Management',
+    items: [
+      { url: 'dsa', title: 'Customer,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Equipment,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Rentals,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Equipment,', prependIdon: 'dsa' },
+    ],
+  },
+  {
+    category: 'Rental Management',
+    items: [
+      { url: 'dsa', title: 'All Rentals,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Issue Equipment,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Return Equipment,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Overdue Rentals,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Completed Rentals,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Extend Rental,', prependIdon: 'dsa' },
+      { url: 'dsa', title: 'Cancel Rental,', prependIdon: 'dsa' },
+    ],
+  },
+]
 </script>
