@@ -32,22 +32,13 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public Task IssueEquipmentAsync(IssueRequest request)
         {
-            var equipment = _unitOfWork.Equipment.GetSpecificEquipment(request.EquipmentId);
-            if (equipment == null)
-            {
-                throw new KeyNotFoundException($"Equipment with ID {request.EquipmentId} not found.");
-            }
+            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(request.EquipmentId) ?? throw new KeyNotFoundException($"Equipment with ID {request.EquipmentId} not found.");
             if (!equipment.IsAvailable)
             {
                 throw new InvalidOperationException($"Equipment '{equipment.Name}' is not available.");
             }
 
-            var customer = _unitOfWork.Customers.GetCustomerDetails(request.CustomerId);
-            if (customer == null)
-            {
-                throw new KeyNotFoundException($"Customer with ID {request.CustomerId} not found.");
-            }
-
+            var customer = _unitOfWork.Customers.GetCustomerDetails(request.CustomerId) ?? throw new KeyNotFoundException($"Customer with ID {request.CustomerId} not found.");
             var activeRental = _unitOfWork.Customers.GetCustomerActiveRental(request.CustomerId);
             if (activeRental != null)
             {
@@ -66,18 +57,14 @@ namespace Midterm_EquipmentRental_Team5.Services
 
             _unitOfWork.Rentals.IssueEquipment(newRental, newRental.DueDate);
             equipment.IsAvailable = false;
-            _unitOfWork.Equipment.UpdateEquipment(equipment);
+            _unitOfWork.Equipments.UpdateEquipment(equipment);
             _unitOfWork.SaveChanges();
             return Task.CompletedTask;
         }
 
         public Task ReturnEquipmentAsync(ReturnRequest request)
         {
-            var rental = _unitOfWork.Rentals.GetRentalDetails(request.RentalId);
-            if (rental == null)
-            {
-                throw new KeyNotFoundException($"Rental with ID {request.RentalId} not found.");
-            }
+            var rental = _unitOfWork.Rentals.GetRentalDetails(request.RentalId) ?? throw new KeyNotFoundException($"Rental with ID {request.RentalId} not found.");
             if (rental.ReturnedAt.HasValue)
             {
                 throw new InvalidOperationException("This rental has already been returned.");
@@ -94,12 +81,12 @@ namespace Midterm_EquipmentRental_Team5.Services
 
             _unitOfWork.Rentals.UpdateRental(rental);
 
-            var equipment = _unitOfWork.Equipment.GetSpecificEquipment(rental.EquipmentId);
+            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(rental.EquipmentId);
             if (equipment != null)
             {
                 equipment.IsAvailable = true;
                 equipment.Condition = request.Condition;
-                _unitOfWork.Equipment.UpdateEquipment(equipment);
+                _unitOfWork.Equipments.UpdateEquipment(equipment);
             }
 
             _unitOfWork.SaveChanges();
@@ -151,12 +138,7 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public Task CancelRentalAsync(int rentalId)
         {
-            var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId);
-            if (rental == null)
-            {
-                throw new KeyNotFoundException($"Rental with ID {rentalId} not found.");
-            }
-
+            var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId) ?? throw new KeyNotFoundException($"Rental with ID {rentalId} not found.");
             rental.ReturnedAt = DateTime.Now;
             rental.IsActive = false;
 
@@ -168,11 +150,11 @@ namespace Midterm_EquipmentRental_Team5.Services
 
             _unitOfWork.Rentals.UpdateRental(rental);
 
-            var equipment = _unitOfWork.Equipment.GetSpecificEquipment(rental.EquipmentId);
+            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(rental.EquipmentId);
             if (equipment != null)
             {
                 equipment.IsAvailable = true;
-                _unitOfWork.Equipment.UpdateEquipment(equipment);
+                _unitOfWork.Equipments.UpdateEquipment(equipment);
             }
 
             _unitOfWork.SaveChanges();

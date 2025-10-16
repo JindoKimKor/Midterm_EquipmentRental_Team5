@@ -1,21 +1,19 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Models.DTOs;
-using Midterm_EquipmentRental_Team5.Services;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // All endpoints require authentication
+    [Authorize]
     public class RentalController : ControllerBase
     {
-        private readonly IRentalServices _rentalService; // ✅ Use interface
+        private readonly IRentalServices _rentalService;
 
-        public RentalController(IRentalServices rentalService) // ✅ Inject interface
+        public RentalController(IRentalServices rentalService)
         {
             _rentalService = rentalService;
         }

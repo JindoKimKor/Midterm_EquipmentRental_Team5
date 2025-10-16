@@ -11,9 +11,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [Authorize] // All endpoints require authentication
     public class EquipmentController : ControllerBase
     {
-        private readonly IEquipmentServices _equipmentService; // ✅ Use interface
+        private readonly IEquipmentServices _equipmentService;
 
-        public EquipmentController(IEquipmentServices equipmentService) // ✅ Inject interface
+        public EquipmentController(IEquipmentServices equipmentService)
         {
             _equipmentService = equipmentService;
         }
@@ -40,7 +40,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             try
             {
                 var equipment = await _equipmentService.GetEquipmentByIdAsync(id);
-                
+
                 if (equipment == null)
                 {
                     return NotFound($"Equipment with ID {id} not found.");
@@ -133,7 +133,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             try
             {
                 var rentedEquipment = await _equipmentService.GetRentedEquipmentAsync();
-                
+
                 // Create summary response
                 var summary = new
                 {

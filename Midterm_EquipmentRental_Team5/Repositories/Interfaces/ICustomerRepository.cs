@@ -1,4 +1,5 @@
 ﻿using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Repositories.Interfaces
 {
@@ -11,5 +12,7 @@ namespace Midterm_EquipmentRental_Team5.Repositories.Interfaces
         void DeleteCustomer(int id);
         IEnumerable<Rental> GetCustomerRentalHistory(int id);
         Rental? GetCustomerActiveRental(int id);
+
+        Customer GetCustomerByPasswordAndUsername(ILoginRequest loginRequest);
     }
 }

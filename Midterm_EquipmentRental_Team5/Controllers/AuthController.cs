@@ -11,12 +11,10 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly JwtSettings _jwtSettings; // Inject JwtSettings
 
         public AuthController(IAuthService authService, JwtSettings jwtSettings)
         {
             _authService = authService;
-            _jwtSettings = jwtSettings; // Store injected settings
         }
 
         [HttpPost("login")]

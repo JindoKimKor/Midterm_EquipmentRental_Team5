@@ -5,7 +5,7 @@ namespace Midterm_EquipmentRental_Team5.Services.Interfaces
 {
     public interface IAuthService
     {
-        IUser? ValidateLogin(ILoginRequest loginRequest);
-        object GenerateJwtToken(IUser user);
+        ICustomer? ValidateLogin(ILoginRequest loginRequest);
+        object GenerateJwtToken(ICustomer user);
     }
 }

@@ -2,6 +2,7 @@
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Repositories
 {
@@ -67,6 +68,10 @@ namespace Midterm_EquipmentRental_Team5.Repositories
                 // Uses existing customer to grab entry from db and sets current value to new
                 _context.Entry(existingCustomer).CurrentValues.SetValues(customer);
             }
+        }
+        public Customer GetCustomerByPasswordAndUsername(ILoginRequest loginRequest)
+        {
+            return _context.Customers.FirstOrDefault(c => loginRequest.Password == c.Password && loginRequest.Username == c.UserName);
         }
     }
 }

@@ -5,7 +5,6 @@ using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _context;
-    public IUserRespository Users { get; set; }
     public IEquipmentRepository Equipments { get; }
     public ICustomerRepository Customers { get; }
     public IRentalRepository Rentals { get; }
@@ -13,14 +12,12 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(AppDbContext context,
                       IEquipmentRepository equipmentRepository,
                       ICustomerRepository customerRepository,
-                      IRentalRepository rentalRepository,
-                      IUserRespository user)
+                      IRentalRepository rentalRepository)
     {
         _context = context;
         Equipments = equipmentRepository;
         Customers = customerRepository;
         Rentals = rentalRepository;
-        Users = user;
     }
 
     public int SaveChanges()

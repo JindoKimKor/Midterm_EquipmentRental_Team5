@@ -9,7 +9,6 @@ namespace Midterm_EquipmentRental_Team5.Data
         public DbSet<Equipment> Equipment { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Rental> Rentals { get; set; }
-        public DbSet<IUser> Users { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -147,23 +146,6 @@ namespace Midterm_EquipmentRental_Team5.Data
                     IsActive = true, // Active but overdue
                     OverdueFee = null, // Will be calculated when returned
                     ExtensionReason = null
-                }
-            );
-
-            modelBuilder.Entity<User>().HasData(
-                new User
-                {
-                    Id = 1,
-                    UserName = "admin",
-                    HashedPassword = "1",
-                    Role = "Admin"
-                },
-                new User
-                {
-                    Id = 2,
-                    UserName = "user",
-                    HashedPassword = "2",
-                    Role = "User"
                 }
             );
         }

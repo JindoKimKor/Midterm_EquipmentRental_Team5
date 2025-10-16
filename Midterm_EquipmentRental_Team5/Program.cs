@@ -20,13 +20,11 @@ builder.Services.AddSingleton(jwtSettings);
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
 builder.Services.AddScoped<IRentalRepository, RentalRepository>();
-builder.Services.AddScoped<IUserRespository, UserReposityory>();
 
 
 builder.Services.AddScoped<ICustomerServices, CustomerServices>();
 builder.Services.AddScoped<IEquipmentServices, EquipmentService>();
 builder.Services.AddScoped<IRentalServices, RentalServices>();
-builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

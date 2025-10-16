@@ -7,7 +7,6 @@ namespace Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces
         IEquipmentRepository Equipments { get; }
         ICustomerRepository Customers { get; }
         IRentalRepository Rentals { get; }
-        IUserRespository Users { get; }
         int SaveChanges();
     }
 }

@@ -16,7 +16,7 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public Task<IEnumerable<Equipment>> GetAllEquipmentAsync(int page = 1)
         {
-            var allEquipment = _unitOfWork.Equipment.GetAllEquipment();
+            var allEquipment = _unitOfWork.Equipments.GetAllEquipment();
             int skip = (page - 1) * PageSize;
             var paginatedEquipment = allEquipment.Skip(skip).Take(PageSize);
             return Task.FromResult(paginatedEquipment);
@@ -24,7 +24,7 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public Task<Equipment> GetEquipmentByIdAsync(int id)
         {
-            var equipment = _unitOfWork.Equipment.GetSpecificEquipment(id);
+            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(id);
             return Task.FromResult(equipment);
         }
 
@@ -32,19 +32,14 @@ namespace Midterm_EquipmentRental_Team5.Services
         {
             newEquipment.CreatedAt = DateTime.Now;
             newEquipment.IsAvailable = true;
-            _unitOfWork.Equipment.AddNewEquipment(newEquipment);
+            _unitOfWork.Equipments.AddNewEquipment(newEquipment);
             _unitOfWork.SaveChanges();
             return Task.CompletedTask;
         }
 
         public Task UpdateEquipmentAsync(int id, Equipment updatedEquipment)
         {
-            var existingEquipment = _unitOfWork.Equipment.GetSpecificEquipment(id);
-            if (existingEquipment == null)
-            {
-                throw new KeyNotFoundException($"Equipment with ID {id} not found.");
-            }
-
+            var existingEquipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException($"Equipment with ID {id} not found.");
             existingEquipment.Name = updatedEquipment.Name;
             existingEquipment.Description = updatedEquipment.Description;
             existingEquipment.Category = updatedEquipment.Category;
@@ -52,33 +47,28 @@ namespace Midterm_EquipmentRental_Team5.Services
             existingEquipment.RentalPrice = updatedEquipment.RentalPrice;
             existingEquipment.IsAvailable = updatedEquipment.IsAvailable;
 
-            _unitOfWork.Equipment.UpdateEquipment(existingEquipment);
+            _unitOfWork.Equipments.UpdateEquipment(existingEquipment);
             _unitOfWork.SaveChanges();
             return Task.CompletedTask;
         }
 
         public Task DeleteEquipmentAsync(int id)
         {
-            var equipment = _unitOfWork.Equipment.GetSpecificEquipment(id);
-            if (equipment == null)
-            {
-                throw new KeyNotFoundException($"Equipment with ID {id} not found.");
-            }
-
-            _unitOfWork.Equipment.DeleteEquipment(id);
+            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException($"Equipment with ID {id} not found.");
+            _unitOfWork.Equipments.DeleteEquipment(id);
             _unitOfWork.SaveChanges();
             return Task.CompletedTask;
         }
 
         public Task<IEnumerable<Equipment>> GetAvailableEquipmentAsync()
         {
-            var availableEquipment = _unitOfWork.Equipment.ListAvailableEquipment();
+            var availableEquipment = _unitOfWork.Equipments.ListAvailableEquipment();
             return Task.FromResult(availableEquipment);
         }
 
         public Task<IEnumerable<Equipment>> GetRentedEquipmentAsync()
         {
-            var rentedEquipment = _unitOfWork.Equipment.GetRentedEquipment();
+            var rentedEquipment = _unitOfWork.Equipments.GetRentedEquipment();
             return Task.FromResult(rentedEquipment);
         }
     }

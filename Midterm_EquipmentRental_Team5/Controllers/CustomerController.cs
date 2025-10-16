@@ -9,7 +9,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // All endpoints require authentication
+    [Authorize]
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerServices _customerService; 
@@ -19,7 +19,6 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             _customerService = customerServices;
         }
 
-        // GET /api/customers - Get all customers (Admin only)
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<object>>> GetAllCustomers(int page = 1)
@@ -45,7 +44,6 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
                 var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-                // Users can only view their own data, admins can view all
                 if (userRole != "Admin" && currentUserId != id)
                 {
                     return Forbid(); // Return 403 if user tries to access another user's data
