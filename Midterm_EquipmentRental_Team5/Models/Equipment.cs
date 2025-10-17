@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Models
 {
-    public class Equipment
+    public class Equipment : IEquipment
     {
         [Key]
         public int Id { get; set; }

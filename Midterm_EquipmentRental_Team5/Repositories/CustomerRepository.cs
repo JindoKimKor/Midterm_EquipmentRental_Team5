@@ -2,6 +2,7 @@
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Repositories
 {
@@ -14,57 +15,60 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             _context = context;
         }
 
-        public Customer CreateCustomer(Customer customer)
+        public ICustomer CreateCustomer(ICustomer customer)
         {
-            _context.Customers.Add(customer);
+            _context.Customers.Add((Customer)customer);
             return customer;
         }
 
-        public void DeleteCustomer(int id)
+        public ICustomer? DeleteCustomer(int id)
         {
             var customer = _context.Customers.Find(id);
             if (customer != null)
             {
                 _context.Customers.Remove(customer);
             }
+            return customer;
         }
 
-        public Rental? GetCustomerActiveRental(int id)
-        {
-            // Pulls records from rentals table and compares the customerId to the agrument id and chesk if active
-            return _context.Rentals
-                .Include(r => r.EquipmentId)
-                .FirstOrDefault(r => r.CustomerId == id && r.IsActive);
-        }
-
-        public Customer? GetCustomerDetails(int id)
-        {
-            return _context.Customers
-                .Include(c => c.Id)
-                .FirstOrDefault(c => c.Id == id);
-        }
-
-        public IEnumerable<Rental> GetCustomerRentalHistory(int id)
+        public IEnumerable<IRental>? GetCustomerActiveRentals(int id)
         {
             return _context.Rentals
                 .Include(r => r.Equipment)
-                .Where(r => r.CustomerId == id)
-                .ToList();
+                .Include(r => r.Customer)
+                .Where(r => r.CustomerId == id && r.IsActive);
         }
 
-        public IEnumerable<Customer> ListAllCustomers()
+        public ICustomer? GetCustomerDetails(int id)
         {
-            return _context.Customers.ToList();
+            return _context.Customers
+                .FirstOrDefault(c => c.Id == id);
         }
 
-        public void UpdateCustomer(Customer customer)
+        public IEnumerable<IRental>? GetCustomerRentalHistory(int id)
+        {
+            return _context.Rentals
+                .Include(r => r.Equipment)
+                .Where(r => r.CustomerId == id);
+        }
+
+        public IEnumerable<ICustomer>? ListAllCustomers()
+        {
+            return _context.Customers.ToList() ?? null;
+        }
+
+        public ICustomer? UpdateCustomer(ICustomer customer)
         {
             var existingCustomer = _context.Customers.Find(customer.Id);
             if (existingCustomer != null)
             {
-                //Uses existing customer to grab entry from db and sets current value to new
                 _context.Entry(existingCustomer).CurrentValues.SetValues(customer);
             }
+            return existingCustomer;
+        }
+        public ICustomer? GetCustomerByPasswordAndUsername(ILoginRequest loginRequest)
+        {
+            return _context.Customers.FirstOrDefault(c => loginRequest.Password == c.Password && loginRequest.Username == c.UserName);
         }
     }
 }

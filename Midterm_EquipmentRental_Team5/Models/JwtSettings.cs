@@ -1,12 +1,11 @@
-﻿namespace Midterm_EquipmentRental_Team5.Models
-{
-    public class JwtSettings
-    {
-        public string SecretKey { get; set; }
+﻿using Midterm_EquipmentRental_Team5.Models.Interfaces;
 
-        // No Used in this project
-        //public string Issuer { get; set; }
-        //public string Audience { get; set; }
-        //public int ExpiryMinutes { get; set; }
+namespace Midterm_EquipmentRental_Team5.Models
+{
+    public class JwtSettings : IJwtSettings
+    {
+        // JWT Token configs
+        public string SecretKey { get; set; } = string.Empty;
+        public int ExpirationMinutes { get; set; } = 30;
     }
 }
