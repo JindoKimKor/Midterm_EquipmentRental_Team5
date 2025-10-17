@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
@@ -11,9 +12,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [Authorize]
     public class CustomerController : ControllerBase
     {
-        private readonly ICustomerServices _customerService; 
+        private readonly ICustomerServices _customerService;
 
-        public CustomerController(ICustomerServices customerServices) 
+        public CustomerController(ICustomerServices customerServices)
         {
             _customerService = customerServices;
         }
@@ -43,19 +44,16 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
                 var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-                if (userRole != "Admin" && currentUserId != id)
-                {
-                    return Forbid(); // Return 403 if user tries to access another user's data
-                }
+                // Return 403 if user tries to access another user's data
+                if (userRole != "Admin" && currentUserId != id) return Forbid();
 
-                var customer = await _customerService.GetCustomerByIdAsync(id);
-
-                if (customer == null)
-                {
-                    return NotFound($"Customer with ID {id} not found.");
-                }
+                var customer = await _customerService.GetCustomerByIdAsync(id) ?? throw new KeyNotFoundException();
 
                 return Ok(customer);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -90,19 +88,17 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
                 // Users can only update their own data (except role), admins can update all
-                if (userRole != "Admin" && currentUserId != id)
-                {
-                    return Forbid();
-                }
+                if (userRole != "Admin" && currentUserId != id) return Forbid();
 
                 // If user is not admin, prevent role change
                 if (userRole != "Admin")
                 {
-                    var existingCustomer = await _customerService.GetCustomerByIdAsync(id);
-                    updatedCustomer.Role = existingCustomer.Role; // Keep original role
+                    var customer = await _customerService.GetCustomerByIdAsync(id) ?? throw new KeyNotFoundException();
+                    updatedCustomer.Role = customer.Role; // Keep original role
                 }
 
-                await _customerService.UpdateCustomerAsync(id, updatedCustomer);
+                var existingCustomer = await _customerService.UpdateCustomerAsync(id, updatedCustomer) ?? throw new KeyNotFoundException();
+
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -118,12 +114,12 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // DELETE /api/customers/{id} - Delete customer and rental history (Admin only)
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> DeleteCustomer(int id)
+        public async Task<ActionResult<IRental>> DeleteCustomer(int id)
         {
             try
             {
-                await _customerService.DeleteCustomerAsync(id);
-                return NoContent();
+                var result = await _customerService.DeleteCustomerAsync(id) ?? throw new KeyNotFoundException();
+                return Ok(result);
             }
             catch (KeyNotFoundException ex)
             {
@@ -137,22 +133,22 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/customers/{id}/rentals - Get customer rental history
         [HttpGet("{id}/rentals")]
-        public async Task<ActionResult<IEnumerable<object>>> GetCustomerRentalHistory(int id)
+        public async Task<ActionResult<IEnumerable<IRental>>> GetCustomerRentalHistory(int id)
         {
             try
             {
-                // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
                 var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
                 // Users can only view their own rental history
-                if (userRole != "Admin" && currentUserId != id)
-                {
-                    return Forbid();
-                }
+                if (userRole != "Admin" && currentUserId != id) return Forbid();
 
-                var rentalHistory = await _customerService.GetCustomerRentalHistoryAsync(id);
+                var rentalHistory = await _customerService.GetCustomerRentalHistoryAsync(id) ?? throw new KeyNotFoundException();
                 return Ok(rentalHistory);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -162,28 +158,23 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/customers/{id}/active-rental - Get customer's active rental
         [HttpGet("{id}/active-rental")]
-        public async Task<ActionResult<object>> GetCustomerActiveRental(int id)
+        public async Task<ActionResult<IEnumerable<IRental>>> GetCustomerActiveRental(int id)
         {
             try
             {
-                // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
                 var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
                 // Users can only view their own active rental
-                if (userRole != "Admin" && currentUserId != id)
-                {
-                    return Forbid();
-                }
+                if (userRole != "Admin" && currentUserId != id) return Forbid();
 
-                var activeRental = await _customerService.GetCustomerActiveRentalAsync(id);
-
-                if (activeRental == null)
-                {
-                    return Ok(new { Message = "No active rental found." });
-                }
+                var activeRental = await _customerService.GetCustomerActiveRentalAsync(id) ?? throw new KeyNotFoundException();
 
                 return Ok(activeRental);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

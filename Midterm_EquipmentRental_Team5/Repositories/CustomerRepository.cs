@@ -21,21 +21,22 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             return customer;
         }
 
-        public void DeleteCustomer(int id)
+        public ICustomer? DeleteCustomer(int id)
         {
             var customer = _context.Customers.Find(id);
             if (customer != null)
             {
                 _context.Customers.Remove(customer);
             }
+            return customer;
         }
 
-        public IRental? GetCustomerActiveRental(int id)
+        public IEnumerable<IRental>? GetCustomerActiveRentals(int id)
         {
             return _context.Rentals
                 .Include(r => r.Equipment)
                 .Include(r => r.Customer)
-                .FirstOrDefault(r => r.CustomerId == id && r.IsActive);
+                .Where(r => r.CustomerId == id && r.IsActive);
         }
 
         public ICustomer? GetCustomerDetails(int id)
@@ -44,28 +45,28 @@ namespace Midterm_EquipmentRental_Team5.Repositories
                 .FirstOrDefault(c => c.Id == id);
         }
 
-        public IEnumerable<IRental> GetCustomerRentalHistory(int id)
+        public IEnumerable<IRental>? GetCustomerRentalHistory(int id)
         {
             return _context.Rentals
                 .Include(r => r.Equipment)
-                .Where(r => r.CustomerId == id)
-                .ToList();
+                .Where(r => r.CustomerId == id);
         }
 
-        public IEnumerable<ICustomer> ListAllCustomers()
+        public IEnumerable<ICustomer>? ListAllCustomers()
         {
-            return _context.Customers.ToList();
+            return _context.Customers.ToList() ?? null;
         }
 
-        public void UpdateCustomer(ICustomer customer)
+        public ICustomer? UpdateCustomer(ICustomer customer)
         {
             var existingCustomer = _context.Customers.Find(customer.Id);
             if (existingCustomer != null)
             {
                 _context.Entry(existingCustomer).CurrentValues.SetValues(customer);
             }
+            return existingCustomer;
         }
-        public ICustomer GetCustomerByPasswordAndUsername(ILoginRequest loginRequest)
+        public ICustomer? GetCustomerByPasswordAndUsername(ILoginRequest loginRequest)
         {
             return _context.Customers.FirstOrDefault(c => loginRequest.Password == c.Password && loginRequest.Username == c.UserName);
         }
