@@ -5,21 +5,6 @@
       <v-card-text>
         <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
           <v-text-field
-            v-model="customer.name"
-            label="Name"
-            :rules="[rules.required]"
-            required
-          ></v-text-field>
-
-          <v-text-field
-            v-model="customer.email"
-            label="Email"
-            type="email"
-            :rules="[rules.required, rules.email]"
-            required
-          ></v-text-field>
-
-          <v-text-field
             v-model="customer.userName"
             label="Username"
             :rules="[rules.required]"
@@ -31,6 +16,21 @@
             label="Password"
             type="password"
             :rules="[rules.required]"
+            required
+          ></v-text-field>
+
+          <v-text-field
+            v-model="customer.name"
+            label="Name"
+            :rules="[rules.required]"
+            required
+          ></v-text-field>
+
+          <v-text-field
+            v-model="customer.email"
+            label="Email"
+            type="email"
+            :rules="[rules.required, rules.email]"
             required
           ></v-text-field>
 
@@ -72,7 +72,6 @@ const rules = {
 
 const submitForm = () => {
   if (valid.value) {
-    // Replace this with your API call or emit to parent
     console.log('Submitting customer:', customer.value)
     alert('Form submitted!')
   }

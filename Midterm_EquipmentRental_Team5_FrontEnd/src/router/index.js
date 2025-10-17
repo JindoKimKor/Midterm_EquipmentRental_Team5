@@ -19,22 +19,25 @@ const router = createRouter({
           path: '',
           name: 'DashboardHomeView',
           component: () => import('../views/dashboard/main/HomeView.vue'),
+          meta: { requiresAuth: true },
         },
         {
           path: 'equipment',
           name: 'EquipmentDashboard',
           component: () => import('../views/dashboard/main/EquipmentView.vue'),
+          meta: { requiresAuth: true },
           children: [
             {
               path: ':id',
               name: 'EquipmentDetailView',
               component: () => import('../views/dashboard/EquipmentDetailsView.vue'),
+              meta: { requiresAuth: true },
               props: true,
             },
           ],
         },
         {
-          path: 'customer',
+          path: 'customers',
           name: 'CustomerDashboard',
           component: () => import('../views/dashboard/main/CustomerView.vue'),
           children: [
@@ -42,6 +45,7 @@ const router = createRouter({
               path: ':id',
               name: 'CustomerDetailView',
               component: () => import('../views/dashboard/CustomerDetailsView.vue'),
+              meta: { requiresAuth: true },
               props: true,
             },
           ],
@@ -50,11 +54,13 @@ const router = createRouter({
           path: 'rental',
           name: 'RenalDashboard',
           component: () => import('../views/dashboard/main/RentalView.vue'),
+          meta: { requiresAuth: true },
           children: [
             {
               path: ':id',
               name: 'RentalDetailView',
               component: () => import('../views/dashboard/RentalDetailsView.vue'),
+              meta: { requiresAuth: true },
               props: true,
             },
           ],
@@ -72,7 +78,6 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
 
   if (requiresAuth && !authStore.checkAuthToken()) {
-    console.log('dsa')
     next({ name: 'LoginView' })
   } else {
     next()

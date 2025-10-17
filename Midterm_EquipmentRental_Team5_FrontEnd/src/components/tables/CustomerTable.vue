@@ -6,22 +6,17 @@
       <add-customer-dialog v-model="isAddCustomerDialogOpen" />
     </v-card-title>
 
-    <v-data-table :headers="headers" :items="customers" :items-per-page="10" class="elevation-1">
-      <template #item.activeRental="{ item }">
-        <span v-if="item.activeRental"> ✅ </span>
-        <span v-else> ❌ </span>
+    <v-data-table :headers="headers" :items="customersArr" :items-per-page="10" class="elevation-1">
+      <template #item.name="{ item }">
+        <router-link :to="`/equipments/${item.id}`" class="text-decoration-none">
+          {{ item.name }}
+        </router-link>
       </template>
-
       <template #item.actions="{ item }">
-        <v-btn icon size="small" @click="viewCustomer(item.id)">
-          <v-icon>mdi-eye</v-icon>
-        </v-btn>
-
-        <v-btn v-if="isAdmin" icon size="small" color="blue" @click="editCustomer(item.id)">
+        <v-btn icon size="small" color="blue" @click="editCustomer(item.id)">
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
-
-        <v-btn v-if="isAdmin" icon size="small" color="red" @click="deleteCustomer(item.id)">
+        <v-btn icon size="small" color="red" @click="deleteCustomer(item.id)">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </template>
@@ -30,47 +25,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import AddCustomerDialog from '../dialog/AddCustomerDialog.vue'
+import { getAllCustomers } from '@/api/CustomerController'
 
-const isAdmin = true // Replace with real logic
-const userId = 5 // Replace with logged-in user ID
 let isAddCustomerDialogOpen = ref(false)
+const customersArr = ref([])
 
 const headers = [
+  { title: 'Username', value: 'userName' },
+  { title: 'Password', value: 'password' },
   { title: 'Name', value: 'name' },
-  { title: 'Username', value: 'username' },
+  { title: 'Email', value: 'email' },
   { title: 'Role', value: 'role' },
-  { title: 'Active Rental', value: 'activeRental' },
-  { title: 'Actions', value: 'actions', sortable: false },
+  { title: 'Actions', value: 'actions' },
 ]
 
-const customers = ref([
-  {
-    id: 1,
-    name: 'Alice Johnson',
-    username: 'alicej',
-    role: 'Admin',
-    activeRental: true,
-  },
-  {
-    id: 2,
-    name: 'Bob Smith',
-    username: 'bobsmith',
-    role: 'User',
-    activeRental: false,
-  },
-])
+onMounted(async () => {
+  const customers = await getAllCustomers()
+  customersArr.value = customers
+})
 
-const goToCreateCustomer = () => {
-  console.log('Navigate to create customer form')
-}
-
-const viewCustomer = (id) => {
-  console.log('Viewing customer', id)
-}
-
-const editCustomer = (id) => {
+const editCustomer = () => {
   isAddCustomerDialogOpen.value = true
 }
 

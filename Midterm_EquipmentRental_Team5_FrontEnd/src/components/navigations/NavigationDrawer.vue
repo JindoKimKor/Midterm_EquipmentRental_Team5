@@ -74,14 +74,9 @@ const AdminNavigationItems = [
     categoryTitle: 'Customer Management',
     items: [
       {
-        url: '/dashboard/customer',
-        title: 'Customer List',
+        url: '/dashboard/customers',
+        title: 'Customers',
         prependIcon: 'mdi-account-group',
-      },
-      {
-        url: '/dashboard/customers/:userId',
-        title: 'My Profile',
-        prependIcon: 'mdi-account',
       },
     ],
   },
