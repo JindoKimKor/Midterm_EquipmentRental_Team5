@@ -1,5 +1,6 @@
 ﻿using Midterm_EquipmentRental_Team5.Data;
 using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Repositories
@@ -13,9 +14,9 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             _context = context;
         }
 
-        public Equipment AddNewEquipment(Equipment equipment)
+        public IEquipment AddNewEquipment(IEquipment equipment)
         {
-            _context.Equipment.Add(equipment);
+            _context.Equipment.Add((Equipment)equipment);
             return equipment;
         }
 
@@ -28,27 +29,27 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             }
         }
 
-        public IEnumerable<Equipment> GetAllEquipment()
+        public IEnumerable<IEquipment> GetAllEquipment()
         {
             return _context.Equipment.ToList();
         }
 
-        public IEnumerable<Equipment> GetRentedEquipment()
+        public IEnumerable<IEquipment> GetRentedEquipment()
         {
             return _context.Equipment.Where(e => !e.IsAvailable).ToList();
         }
 
-        public Equipment? GetSpecificEquipment(int id)
+        public IEquipment? GetSpecificEquipment(int id)
         {
             return _context.Equipment.Find(id);
         }
 
-        public IEnumerable<Equipment> ListAvailableEquipment()
+        public IEnumerable<IEquipment> ListAvailableEquipment()
         {
             return _context.Equipment.Where(e => e.IsAvailable).ToList();
         }
 
-        public void UpdateEquipment(Equipment equipment)
+        public void UpdateEquipment(IEquipment equipment)
         {
             var existingEquipment = _context.Equipment.Find(equipment.Id);
             if (existingEquipment != null)

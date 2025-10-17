@@ -1,4 +1,5 @@
 using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 
@@ -7,45 +8,72 @@ namespace Midterm_EquipmentRental_Team5.Services
     public class CustomerServices : ICustomerServices
     {
         private readonly IUnitOfWork _unitOfWork;
+        private const int PageSize = 10;
 
         public CustomerServices(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IEnumerable<Customer>> GetAllCustomersAsync(int page = 1)
+        public Task<IEnumerable<ICustomer>?> GetAllCustomersAsync(int page = 1)
         {
-            throw new NotImplementedException();
+            var customers = _unitOfWork.Customers.ListAllCustomers();
+            if (customers != null)
+            {
+                int skip = (page - 1) * PageSize;
+                customers = customers.Skip(skip).Take(PageSize);
+            }
+            return Task.FromResult(customers);
         }
 
-        public Task<Customer> GetCustomerByIdAsync(int id)
+        public Task<ICustomer?> GetCustomerByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var customer = _unitOfWork.Customers.GetCustomerDetails(id);
+            return Task.FromResult(customer);
         }
 
-        // public Task CreateCustomerAsync(CreateCustomerRequest request)
-        // {
-        //     throw new NotImplementedException();
-        // }
-
-        // public Task UpdateCustomerAsync(int id, UpdateCustomerRequest request)
-        // {
-        //     throw new NotImplementedException();
-        // }
-
-        public Task DeleteCustomerAsync(int id)
+        public Task AddCustomerAsync(ICustomer newCustomer)
         {
-            throw new NotImplementedException();
+            _unitOfWork.Customers.CreateCustomer(newCustomer);
+            _unitOfWork.SaveChanges();
+            return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<object>> GetCustomerRentalHistoryAsync(int customerId)
+        public Task<ICustomer?> UpdateCustomerAsync(int id, ICustomer updatedCustomer)
         {
-            throw new NotImplementedException();
+            var existingCustomer = _unitOfWork.Customers.GetCustomerDetails(id);
+            if (existingCustomer != null)
+            {
+                existingCustomer.Name = updatedCustomer.Name;
+                existingCustomer.Email = updatedCustomer.Email;
+                existingCustomer.UserName = updatedCustomer.UserName;
+                existingCustomer.Password = updatedCustomer.Password;
+                existingCustomer.Role = updatedCustomer.Role;
+
+                _unitOfWork.Customers.UpdateCustomer(existingCustomer);
+                _unitOfWork.SaveChanges();
+            }
+            return Task.FromResult(existingCustomer);
         }
 
-        public Task<object> GetCustomerActiveRentalAsync(int customerId)
+        public Task<ICustomer?> DeleteCustomerAsync(int id)
         {
-            throw new NotImplementedException();
+            var customer = _unitOfWork.Customers.GetCustomerDetails(id);
+            _unitOfWork.Customers.DeleteCustomer(id);
+            _unitOfWork.SaveChanges();
+            return Task.FromResult(customer);
+        }
+
+        public Task<IEnumerable<IRental>?> GetCustomerRentalHistoryAsync(int customerId)
+        {
+            var rentals = _unitOfWork.Customers.GetCustomerRentalHistory(customerId) ?? null;
+            return Task.FromResult(rentals);
+        }
+
+        public Task<IEnumerable<IRental>?> GetCustomerActiveRentalAsync(int customerId)
+        {
+            var activeRental = _unitOfWork.Customers.GetCustomerActiveRentals(customerId) ?? null;
+            return Task.FromResult(activeRental);
         }
     }
 }

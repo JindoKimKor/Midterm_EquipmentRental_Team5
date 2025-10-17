@@ -21,12 +21,25 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
 builder.Services.AddScoped<IRentalRepository, RentalRepository>();
 
+
 builder.Services.AddScoped<ICustomerServices, CustomerServices>();
 builder.Services.AddScoped<IEquipmentServices, EquipmentService>();
 builder.Services.AddScoped<IRentalServices, RentalServices>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend",
+        policy =>
+        {
+            policy.WithOrigins(["http://localhost:5115", "https://localhost:5115"])
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 // DI injection - Database - InMemory Database - infrastructure layer
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("EquipmentRentalDb"));
@@ -89,6 +102,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+// Enable CORS
+app.UseCors("Frontend");
 
 // database intialized
 using (var scope = app.Services.CreateScope())

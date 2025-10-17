@@ -1,4 +1,5 @@
 using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
 
@@ -7,56 +8,71 @@ namespace Midterm_EquipmentRental_Team5.Services
     public class EquipmentService : IEquipmentServices
     {
         private readonly IUnitOfWork _unitOfWork;
+        private const int PageSize = 10;
 
         public EquipmentService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IEnumerable<Equipment>> GetAllEquipmentAsync(int page = 1)
+        public Task<IEnumerable<IEquipment>> GetAllEquipmentAsync(int page = 1)
         {
-            // TODO: Return paginated list of all equipment
-            throw new NotImplementedException();
+            var allEquipment = _unitOfWork.Equipments.GetAllEquipment();
+            int skip = (page - 1) * PageSize;
+            var paginatedEquipment = allEquipment.Skip(skip).Take(PageSize);
+            return Task.FromResult(paginatedEquipment);
         }
 
-        public Task<Equipment> GetEquipmentByIdAsync(int id)
+        public Task<IEquipment> GetEquipmentByIdAsync(int id)
         {
-            // TODO: Return equipment details by id
-            throw new NotImplementedException();
+            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(id);
+            return Task.FromResult(equipment);
         }
 
-        public Task AddEquipmentAsync(Equipment newEquipment)
+        public Task AddEquipmentAsync(IEquipment newEquipment)
         {
-            // TODO: Add new equipment
-            throw new NotImplementedException();
+            newEquipment.CreatedAt = DateTime.Now;
+            newEquipment.IsAvailable = true;
+            _unitOfWork.Equipments.AddNewEquipment(newEquipment);
+            _unitOfWork.SaveChanges();
+            return Task.CompletedTask;
         }
 
-        public Task UpdateEquipmentAsync(int id, Equipment updatedEquipment)
+        public Task UpdateEquipmentAsync(int id, IEquipment updatedEquipment)
         {
-            // TODO: Update equipment by id
-            throw new NotImplementedException();
+            var existingEquipment = _unitOfWork.Equipments.GetSpecificEquipment(id);
+            if (existingEquipment != null)
+            {
+                existingEquipment.Name = updatedEquipment.Name;
+                existingEquipment.Description = updatedEquipment.Description;
+                existingEquipment.Category = updatedEquipment.Category;
+                existingEquipment.Condition = updatedEquipment.Condition;
+                existingEquipment.RentalPrice = updatedEquipment.RentalPrice;
+                existingEquipment.IsAvailable = updatedEquipment.IsAvailable;
+                _unitOfWork.Equipments.UpdateEquipment(existingEquipment);
+                _unitOfWork.SaveChanges();
+            }
+            return Task.CompletedTask;
         }
 
         public Task DeleteEquipmentAsync(int id)
         {
-            // TODO: Delete equipment by id
-            throw new NotImplementedException();
+            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException($"Equipment with ID {id} not found.");
+            _unitOfWork.Equipments.DeleteEquipment(id);
+            _unitOfWork.SaveChanges();
+            return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<Equipment>> GetAvailableEquipmentAsync()
+        public Task<IEnumerable<IEquipment>> GetAvailableEquipmentAsync()
         {
-            // TODO: Return list of available equipment
-            throw new NotImplementedException();
+            var availableEquipment = _unitOfWork.Equipments.ListAvailableEquipment();
+            return Task.FromResult(availableEquipment);
         }
 
-        public Task<IEnumerable<Equipment>> GetRentedEquipmentAsync()
+        public Task<IEnumerable<IEquipment>> GetRentedEquipmentAsync()
         {
-            // TODO: Return list of rented equipment
-            throw new NotImplementedException();
+            var rentedEquipment = _unitOfWork.Equipments.GetRentedEquipment();
+            return Task.FromResult(rentedEquipment);
         }
-    }
-
-    public interface IEquipmentService
-    {
     }
 }
