@@ -5,10 +5,10 @@
       <v-card-text>
         <v-form v-model="valid" @submit.prevent="login">
           <v-text-field
-            v-model="email"
-            label="Email"
-            type="email"
-            :rules="[rules.required, rules.email]"
+            v-model="userName"
+            label="Username"
+            type="Username"
+            :rules="[rules.required]"
             prepend-icon="mdi-email"
             required
           />
@@ -28,18 +28,22 @@
 </template>
 
 <script setup>
+import RequestHandler from '@/services/RequestHandler'
 import { ref } from 'vue'
 
-const email = ref('')
+const userName = ref('')
 const password = ref('')
 const valid = ref(false)
 
 const rules = {
   required: (value) => !!value || 'Required.',
-  email: (value) => /.+@.+\..+/.test(value) || 'E-mail must be valid.',
 }
 
-function login() {
-  alert(`Email: ${email.value}\nPassword: ${password.value}`)
+async function login() {
+  const test = await RequestHandler.post('/auth/login', {
+    Username: userName.value,
+    Password: password.value,
+  })
+  console.log(test)
 }
 </script>
