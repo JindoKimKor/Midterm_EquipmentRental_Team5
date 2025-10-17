@@ -1,152 +1,143 @@
 <template>
   <v-navigation-drawer app permanent>
     <v-list dense nav>
-      <v-subheader>Customer Management</v-subheader>
+      <div v-for="(section, index) in navigation" :key="index">
+        <v-subheader>{{ section.categoryTitle }}</v-subheader>
 
-      <v-list-item
-        to="/dashboard/customer"
-        title="Customer List"
-        prepend-icon="mdi-account-group"
-      />
-
-      <v-list-item
-        :to="`/dashboard/customers/${userId}`"
-        title="My Profile"
-        prepend-icon="mdi-account"
-      />
-
-      <v-divider class="my-2" />
-
-      <v-subheader>Equipment Management</v-subheader>
-      <v-list-item
-        :to="`/dashboard/customers/${userId}/active-rental`"
-        title="Active Rental"
-        prepend-icon="mdi-checkbox-marked-outline"
-      />
-
-      <v-list-item
-        :to="`/dashboard/customers/${userId}/active-rental`"
-        title="Active Rental"
-        prepend-icon="mdi-checkbox-marked-outline"
-      />
-
-      <v-list-item
-        :to="`/dashboard/customers/${userId}/rentals`"
-        title="My Rentals"
-        prepend-icon="mdi-history"
-      />
-
-      <v-list-item
-        :to="`/dashboard/customers/${userId}/active-rental`"
-        title="Active Rental"
-        prepend-icon="mdi-checkbox-marked-outline"
-      />
-
-      <v-list-item
-        :to="`/dashboard/customers/${userId}/active-rental`"
-        title="Active Rental"
-        prepend-icon="mdi-checkbox-marked-outline"
-      />
-
-      <v-divider class="my-2" />
-      <v-subheader>Rental Management</v-subheader>
-
-      <v-list-item to="/dashboard/rental" title="All Rentals" prepend-icon="mdi-clipboard-list" />
-
-      <v-list-item
-        v-if="isUser"
-        to="/dashboard/rental/my"
-        title="My Rentals"
-        prepend-icon="mdi-clipboard-account"
-      />
-
-      <v-list-item
-        to="/dashboard/rental/issue"
-        title="Issue Equipment"
-        prepend-icon="mdi-arrow-up-bold-box"
-      />
-
-      <v-list-item
-        to="/dashboard/rental/return"
-        title="Return Equipment"
-        prepend-icon="mdi-arrow-down-bold-box"
-      />
-
-      <v-list-item
-        to="/dashboard/rental/active"
-        title="Active Rentals"
-        prepend-icon="mdi-playlist-check"
-      />
-
-      <v-list-item
-        to="/dashboard/rental/completed"
-        title="Completed Rentals"
-        prepend-icon="mdi-calendar-check"
-      />
-
-      <v-list-item
-        to="/dashboard/rental/overdue"
-        title="Overdue Rentals"
-        prepend-icon="mdi-alert"
-      />
-
-      <v-list-item
-        to="/dashboard/rental/equipment-history"
-        title="Equipment History"
-        prepend-icon="mdi-history"
-      />
+        <v-list-item
+          v-for="(item, idx) in section.items"
+          :key="idx"
+          :to="resolveUrl(item.url)"
+          :title="item.title"
+          :prepend-icon="item.prependIcon"
+        />
+      </div>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script setup>
+import { onBeforeMount, ref } from 'vue'
+
 const isAdmin = true
 const isUser = !isAdmin
 const userId = 123
+const role = ref('Admin')
 
+const navigation = ref([])
+
+onBeforeMount(() => {
+  if (role.value === 'Admin') {
+    navigation.value = AdminNavigationItems
+  } else {
+    navigation.value = UserNavigationItems
+  }
+})
+
+// Util to replace placeholder tokens in URL
+const resolveUrl = (url) => {
+  return url.replace(':userId', userId)
+}
+
+// Navigation for normal users
 const UserNavigationItems = [
   {
     categoryTitle: 'User Profile',
-    items: [{ url: 'dsa', title: 'View Profile', prependIdon: 'dsa' }],
+    items: [
+      {
+        url: '/dashboard/customers/:userId',
+        title: 'My Profile',
+        prependIcon: 'mdi-account',
+      },
+    ],
   },
   {
-    category: 'Rental Management',
+    categoryTitle: 'Rental Management',
     items: [
-      { url: 'dsa', title: 'My Rentals', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Rental Return Form', prependIdon: 'dsa' },
+      {
+        url: '/dashboard/customers/:userId/rentals',
+        title: 'My Rentals',
+        prependIcon: 'mdi-history',
+      },
+      {
+        url: '/dashboard/customers/:userId/active-rental',
+        title: 'Active Rental',
+        prependIcon: 'mdi-checkbox-marked-outline',
+      },
     ],
   },
 ]
 
+// Navigation for admins
 const AdminNavigationItems = [
   {
     categoryTitle: 'Customer Management',
     items: [
-      { url: 'dsa', title: 'Customers,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Equipment,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Rentals,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Equipment,', prependIdon: 'dsa' },
+      {
+        url: '/dashboard/customer',
+        title: 'Customer List',
+        prependIcon: 'mdi-account-group',
+      },
+      {
+        url: '/dashboard/customers/:userId',
+        title: 'My Profile',
+        prependIcon: 'mdi-account',
+      },
     ],
   },
   {
-    category: 'Equipment Management',
+    categoryTitle: 'Equipment Management',
     items: [
-      { url: 'dsa', title: 'Customer,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Equipment,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Rentals,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Equipment,', prependIdon: 'dsa' },
+      {
+        url: '/dashboard/customers/:userId/active-rental',
+        title: 'Active Rental',
+        prependIcon: 'mdi-checkbox-marked-outline',
+      },
+      {
+        url: '/dashboard/customers/:userId/rentals',
+        title: 'My Rentals',
+        prependIcon: 'mdi-history',
+      },
     ],
   },
   {
-    category: 'Rental Management',
+    categoryTitle: 'Rental Management',
     items: [
-      { url: 'dsa', title: 'All Rentals,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Issue Equipment,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Return Equipment,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Overdue Rentals,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Completed Rentals,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Extend Rental,', prependIdon: 'dsa' },
-      { url: 'dsa', title: 'Cancel Rental,', prependIdon: 'dsa' },
+      {
+        url: '/dashboard/rental',
+        title: 'All Rentals',
+        prependIcon: 'mdi-clipboard-list',
+      },
+      {
+        url: '/dashboard/rental/issue',
+        title: 'Issue Equipment',
+        prependIcon: 'mdi-arrow-up-bold-box',
+      },
+      {
+        url: '/dashboard/rental/return',
+        title: 'Return Equipment',
+        prependIcon: 'mdi-arrow-down-bold-box',
+      },
+      {
+        url: '/dashboard/rental/active',
+        title: 'Active Rentals',
+        prependIcon: 'mdi-playlist-check',
+      },
+      {
+        url: '/dashboard/rental/completed',
+        title: 'Completed Rentals',
+        prependIcon: 'mdi-calendar-check',
+      },
+      {
+        url: '/dashboard/rental/overdue',
+        title: 'Overdue Rentals',
+        prependIcon: 'mdi-alert',
+      },
+      {
+        url: '/dashboard/rental/equipment-history',
+        title: 'Equipment History',
+        prependIcon: 'mdi-history',
+      },
     ],
   },
 ]
