@@ -28,8 +28,12 @@
 </template>
 
 <script setup>
-import RequestHandler from '@/services/RequestHandler'
 import { ref } from 'vue'
+import RequestHandler from '@/services/RequestHandler'
+import useAuthenicationStore from '@/stores/Authentication'
+import router from '@/router'
+
+const authStore = useAuthenicationStore()
 
 const userName = ref('')
 const password = ref('')
@@ -40,10 +44,13 @@ const rules = {
 }
 
 async function login() {
-  const test = await RequestHandler.post('/auth/login', {
+  const { token } = await RequestHandler.post('/auth/login', {
     Username: userName.value,
     Password: password.value,
   })
-  console.log(test)
+  if (token) {
+    authStore.setToken(token)
+    router.push('/dashboard')
+  }
 }
 </script>

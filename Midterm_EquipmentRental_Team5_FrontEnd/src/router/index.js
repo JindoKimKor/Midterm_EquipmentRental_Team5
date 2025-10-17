@@ -1,3 +1,4 @@
+import useAuthenticationStore from '@/stores/Authentication'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -12,6 +13,7 @@ const router = createRouter({
       path: '/dashboard',
       name: 'DashboardView',
       component: () => import('../views/DashboardView.vue'),
+      meta: { requiresAuth: true },
       children: [
         {
           path: '',
@@ -60,6 +62,21 @@ const router = createRouter({
       ],
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthenticationStore()
+
+  console.log(authStore.checkAuthToken())
+
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+
+  if (requiresAuth && !authStore.checkAuthToken()) {
+    console.log('dsa')
+    next({ name: 'LoginView' })
+  } else {
+    next()
+  }
 })
 
 export default router
