@@ -69,7 +69,7 @@ const adminCards = [
     title: 'Manage Equipment',
     description: 'Add, update, or remove rental equipment.',
     icon: 'mdi-hammer-wrench',
-    route: '/dashboard/equipment',
+    route: '/dashboard/equipments',
   },
   {
     title: 'Manage Customers',
