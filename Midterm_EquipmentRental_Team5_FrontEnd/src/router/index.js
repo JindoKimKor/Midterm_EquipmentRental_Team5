@@ -82,7 +82,10 @@ router.beforeEach((to, from, next) => {
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
 
-  if (requiresAuth && !authStore.checkAuthToken()) {
+  const doesRoleExist = authStore.checkAuthRole()
+  const doesTokenExist = authStore.checkAuthToken()
+
+  if (requiresAuth && !doesRoleExist && !doesTokenExist) {
     next({ name: 'LoginView' })
   } else {
     next()

@@ -3,7 +3,7 @@
     <v-card class="pa-6" max-width="800" width="100%">
       <v-card-title class="text-h5">Login</v-card-title>
       <v-card-text>
-        <v-form v-model="valid" @submit.prevent="login">
+        <v-form v-model="valid" @submit.prevent="loginHandler">
           <v-text-field
             v-model="userName"
             label="Username"
@@ -29,8 +29,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import RequestHandler from '@/services/RequestHandler'
 import useAuthenicationStore from '@/stores/Authentication'
+import { login } from '@/api/AuthController'
 import router from '@/router'
 
 const authStore = useAuthenicationStore()
@@ -43,13 +43,15 @@ const rules = {
   required: (value) => !!value || 'Required.',
 }
 
-async function login() {
-  const { token } = await RequestHandler.post('/auth/login', {
+async function loginHandler() {
+  const { token, user } = await login({
     Username: userName.value,
     Password: password.value,
   })
+  console.log(user)
   if (token) {
     authStore.setToken(token)
+    authStore.setRole(user.role)
     router.push('/dashboard')
   }
 }
