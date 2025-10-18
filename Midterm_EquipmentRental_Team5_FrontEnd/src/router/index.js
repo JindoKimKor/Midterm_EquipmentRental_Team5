@@ -12,19 +12,19 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'DashboardView',
-      component: () => import('../views/DashboardView.vue'),
+      component: () => import('../views/dashboard/DashboardView.vue'),
       meta: { requiresAuth: true },
       children: [
         {
           path: '',
           name: 'DashboardHomeView',
-          component: () => import('../views/dashboard/main/HomeView.vue'),
+          component: () => import('../views/dashboard/HomeView.vue'),
           meta: { requiresAuth: true },
         },
         {
           path: 'equipments',
           name: 'EquipmentDashboard',
-          component: () => import('../views/dashboard/main/EquipmentView.vue'),
+          component: () => import('../views/dashboard/equipment/EquipmentView.vue'),
           meta: { requiresAuth: true },
           children: [],
         },
@@ -37,7 +37,7 @@ const router = createRouter({
         {
           path: 'customers',
           name: 'CustomerDashboard',
-          component: () => import('../views/dashboard/main/CustomerView.vue'),
+          component: () => import('../views/dashboard/customer/CustomerView.vue'),
         },
         {
           path: 'customers/:id',
@@ -49,7 +49,7 @@ const router = createRouter({
         {
           path: 'rental',
           name: 'RenalDashboard',
-          component: () => import('../views/dashboard/main/RentalView.vue'),
+          component: () => import('../views/dashboard/rental/RentalView.vue'),
           meta: { requiresAuth: true },
           children: [
             {

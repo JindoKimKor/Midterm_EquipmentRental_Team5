@@ -1,22 +1,21 @@
 <template>
   <v-container fluid>
-    <RentedEquipmentTable />
-    <!-- Snackbar -->
-    <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
-      {{ snackbar.message }}
-    </v-snackbar>
+    <RentalTable />
+
+    <ActiveRentalHistoryTable />
+
+    <GetCompletedRentalTable class="mt-6" />
+    <GetOverDueRentalTable />
+
+    <OverdueRentalsAlertTable class="mt-6" />
   </v-container>
 </template>
 
 <script setup>
-import RentedEquipmentTable from '@/components/tables/equipment/RentedEquipmentTable.vue'
-import { ref } from 'vue'
-
-const snackbar = ref({
-  show: false,
-  message: '',
-  color: '',
-})
+import ActiveRentalHistoryTable from '@/components/tables/rentals/ActiveRentalHistoryTable.vue'
+import GetCompletedRentalTable from '@/components/tables/rentals/GetCompletedRentalTable.vue'
+import RentalTable from '@/components/tables/rentals/RentalTable.vue'
+import GetOverDueRentalTable from '@/components/tables/rentals/OverdueRentalTable.vue'
 </script>
 
 <style scoped>

@@ -95,7 +95,7 @@ const AdminNavigationItems = [
     items: [
       {
         url: '/dashboard/rental',
-        title: 'All Rentals',
+        title: 'Rentals',
         prependIcon: 'mdi-clipboard-list',
       },
       {
@@ -107,26 +107,6 @@ const AdminNavigationItems = [
         url: '/dashboard/rental/return',
         title: 'Return Equipment',
         prependIcon: 'mdi-arrow-down-bold-box',
-      },
-      {
-        url: '/dashboard/rental/active',
-        title: 'Active Rentals',
-        prependIcon: 'mdi-playlist-check',
-      },
-      {
-        url: '/dashboard/rental/completed',
-        title: 'Completed Rentals',
-        prependIcon: 'mdi-calendar-check',
-      },
-      {
-        url: '/dashboard/rental/overdue',
-        title: 'Overdue Rentals',
-        prependIcon: 'mdi-alert',
-      },
-      {
-        url: '/dashboard/rental/equipment-history',
-        title: 'Equipment History',
-        prependIcon: 'mdi-history',
       },
     ],
   },
