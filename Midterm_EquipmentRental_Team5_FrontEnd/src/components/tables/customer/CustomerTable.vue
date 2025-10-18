@@ -27,7 +27,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import AddCustomerDialog from '../../dialog/AddCustomerDialog.vue'
-import { getAllCustomers, deleteCustomer, updateCustomer } from '@/api/CustomerController'
+import { getAllCustomers, deleteCustomer } from '@/api/CustomerController'
 
 let isAddCustomerDialogOpen = ref(false)
 let selectedCustomer = ref(null)

@@ -22,18 +22,17 @@ const router = createRouter({
           meta: { requiresAuth: true },
         },
         {
-          path: 'equipment',
+          path: 'equipments',
           name: 'EquipmentDashboard',
           component: () => import('../views/dashboard/main/EquipmentView.vue'),
           meta: { requiresAuth: true },
-          children: [
-            {
-              path: ':id',
-              name: 'EquipmentDetailView',
-              component: () => import('../views/dashboard/EquipmentDetailsView.vue'),
-              props: true,
-            },
-          ],
+          children: [],
+        },
+        {
+          path: 'equipment/:id',
+          name: 'EquipmentDetailView',
+          component: () => import('../views/dashboard/EquipmentDetailsView.vue'),
+          props: true,
         },
         {
           path: 'customers',

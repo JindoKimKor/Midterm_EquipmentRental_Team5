@@ -3,10 +3,7 @@
     <v-card-title>
       Equipment List
       <v-spacer />
-      <v-btn v-if="isAdmin" color="primary" @click="goToCreateEquipment">
-        <v-icon start>mdi-plus</v-icon>
-        Add Equipment
-      </v-btn>
+      AddEquipmentDialog
     </v-card-title>
 
     <v-data-table :headers="headers" :items="equipment" :items-per-page="10" class="elevation-1">
@@ -17,7 +14,7 @@
       </template>
 
       <template #item.actions="{ item }">
-        <v-btn icon size="small" color="blue" @click="editEquipment(item.id)">
+        <v-btn icon size="small" color="blue" @click="editEquipment(item)">
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
         <v-btn icon size="small" color="red" @click="deleteEquipment(item.id)">
@@ -29,12 +26,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { getAllEquipment } from '@/api/EquipmentController'
+import { onBeforeMount, ref } from 'vue'
 
 const isAdmin = true
-const isUser = !isAdmin
 
-// Headers for table
 const headers = [
   { title: 'Name', value: 'name' },
   { title: 'Category', value: 'category' },
@@ -43,31 +39,14 @@ const headers = [
   isAdmin ? { title: 'Actions', value: 'actions', sortable: false } : {},
 ]
 
-// Example equipment data (replace with API call)
-const equipment = ref([
-  {
-    id: 1,
-    name: 'Canon DSLR',
-    category: 'Camera',
-    condition: 'Good',
-    status: 'Available',
-  },
-  {
-    id: 2,
-    name: 'Laptop - Dell XPS',
-    category: 'Computer',
-    condition: 'Fair',
-    status: 'In Use',
-  },
-])
+const equipment = ref([])
 
-// Action handlers (stubbed for now)
+onBeforeMount(async () => {
+  equipment.value = await getAllEquipment()
+})
+
 const goToCreateEquipment = () => {
   console.log('Navigate to create equipment form')
-}
-
-const viewDetails = (id) => {
-  console.log('Viewing details for', id)
 }
 
 const editEquipment = (id) => {
@@ -76,7 +55,7 @@ const editEquipment = (id) => {
 
 const deleteEquipment = (id) => {
   if (confirm('Delete this equipment?')) {
-    console.log('Deleting equipment', id)
+    deleteEquipment(id)
   }
 }
 </script>
