@@ -3,7 +3,7 @@
     <RentalTable />
     <ActiveRentalHistoryTable class="mt-6" />
     <CompletedRentalTable class="mt-6" />
-    <!-- <OverdueRentalTable class="mt-6" /> -->
+    <OverdueRentalTable class="mt-6" />
   </v-container>
 </template>
 

@@ -1,45 +1,49 @@
 <template>
   <v-navigation-drawer app permanent>
-    <v-list dense nav>
-      <div v-for="(section, index) in navigation" :key="index">
+    <v-list dense nav aria-label="Primary Navigation">
+      <template v-for="(section, index) in navigation" :key="`section-${index}`">
         <v-subheader>{{ section.categoryTitle }}</v-subheader>
 
         <v-list-item
           v-for="(item, idx) in section.items"
-          :key="idx"
+          :key="`item-${index}-${idx}`"
           :to="resolveUrl(item.url)"
-          :title="item.title"
-          :prepend-icon="item.prependIcon"
-        />
-      </div>
+          router
+          link
+          exact-active-class="v-item--active"
+          :aria-label="item.title"
+        >
+          <template v-slot:prepend>
+            <v-icon>{{ item.prependIcon }}</v-icon>
+          </template>
+
+          <v-list-item-content>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider v-if="index !== navigation.length - 1" class="my-2" />
+      </template>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from 'vue'
+import { ref, computed } from 'vue'
 
-const isAdmin = true
-const isUser = !isAdmin
-const userId = 123
-const role = ref('Admin')
+// Simulate reactive user info — replace with your store logic
+const userId = ref(123)
+const role = ref('Admin') // or 'User', etc.
 
-const navigation = ref([])
-
-onBeforeMount(() => {
-  if (role.value === 'Admin') {
-    navigation.value = AdminNavigationItems
-  } else {
-    navigation.value = UserNavigationItems
-  }
+// Compute navigation based on role reactively
+const navigation = computed(() => {
+  return role.value === 'Admin' ? AdminNavigationItems : UserNavigationItems
 })
 
-// Util to replace placeholder tokens in URL
-const resolveUrl = (url) => {
-  return url.replace(':userId', userId)
-}
+// Replace :userId placeholder with actual ID in URLs
+const resolveUrl = (url) => url.replace(':userId', userId.value)
 
-// Navigation for normal users
+// Navigation configuration for users
 const UserNavigationItems = [
   {
     categoryTitle: 'User Profile',
@@ -68,7 +72,7 @@ const UserNavigationItems = [
   },
 ]
 
-// Navigation for admins
+// Navigation configuration for admins
 const AdminNavigationItems = [
   {
     categoryTitle: 'Customer Management',
@@ -94,17 +98,17 @@ const AdminNavigationItems = [
     categoryTitle: 'Rental Management',
     items: [
       {
-        url: '/dashboard/rental',
+        url: '/dashboard/rentals',
         title: 'Rentals',
         prependIcon: 'mdi-clipboard-list',
       },
       {
-        url: '/dashboard/rental/issue',
+        url: '/dashboard/rentals/issue',
         title: 'Issue Equipment',
         prependIcon: 'mdi-arrow-up-bold-box',
       },
       {
-        url: '/dashboard/rental/return',
+        url: '/dashboard/rentals/return',
         title: 'Return Equipment',
         prependIcon: 'mdi-arrow-down-bold-box',
       },
