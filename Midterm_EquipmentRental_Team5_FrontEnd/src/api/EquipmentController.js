@@ -56,7 +56,7 @@ export async function getAvailableEquipment() {
 
 export async function getRentedEquipmentSummary() {
   try {
-    const res = await RequestHandler.get('equipment/rented-summary')
+    const res = await RequestHandler.get('equipment/rented')
     return res
   } catch (error) {
     console.error('Error fetching rented equipment summary:', error)

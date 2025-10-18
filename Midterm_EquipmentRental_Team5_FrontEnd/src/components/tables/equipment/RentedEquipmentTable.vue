@@ -1,65 +1,96 @@
 <template>
-  <v-container>
-    <v-card>
-      <v-card-title>Rental History</v-card-title>
+  <v-card class="pa-4">
+    <v-card-title class="d-flex justify-space-between align-center">
+      <span class="text-h6">Rented equipment</span>
+    </v-card-title>
 
-      <v-data-table :headers="headers" :items="rentals" class="elevation-1">
-        <!-- Custom rendering for equipment name -->
-        <template #item.equipment="{ item }">
-          {{ item.equipment?.name || 'Unknown' }}
-        </template>
+    <v-data-table
+      :headers="headers"
+      :items="equipment"
+      :items-per-page="10"
+      class="elevation-1"
+      density="comfortable"
+      hover
+    >
+      <!-- Name column with router-link -->
+      <template #item.name="{ item }">
+        <router-link :to="`/equipments/${item.id}`" class="text-decoration-none font-weight-medium">
+          {{ item.name }}
+        </router-link>
+      </template>
 
-        <template #item.issuedAt="{ item }">
-          {{ formatDate(item.issuedAt) }}
-        </template>
+      <!-- Category Chip -->
+      <template #item.category="{ item }">
+        <v-chip color="blue-lighten-4" text-color="blue-darken-3" label>
+          {{ item.category }}
+        </v-chip>
+      </template>
 
-        <template #item.dueDate="{ item }">
-          {{ formatDate(item.dueDate) }}
-        </template>
+      <!-- Condition Chip -->
+      <template #item.condition="{ item }">
+        <v-chip color="grey-lighten-3" text-color="black" label>
+          {{ item.condition }}
+        </v-chip>
+      </template>
 
-        <template #item.returnedAt="{ item }">
-          {{ item.returnedAt ? formatDate(item.returnedAt) : 'Not Returned' }}
-        </template>
+      <!-- Rental Price -->
+      <template #item.rentalPrice="{ item }">
+        {{ formatCurrency(item.rentalPrice) }}
+      </template>
 
-        <template #item.isActive="{ item }">
-          <v-chip :color="item.isActive ? 'green' : 'grey'" dark>
-            {{ item.isActive ? 'Active' : 'Completed' }}
-          </v-chip>
-        </template>
+      <!-- Availability -->
+      <template #item.isAvailable="{ item }">
+        <v-chip :color="item.isAvailable ? 'green' : 'red'" variant="flat" label small>
+          {{ item.isAvailable ? 'Available' : 'Unavailable' }}
+        </v-chip>
+      </template>
 
-        <template #item.overdueFee="{ item }">
-          {{ item.overdueFee ? `$${item.overdueFee.toFixed(2)}` : 'None' }}
-        </template>
-      </v-data-table>
-    </v-card>
-  </v-container>
+      <!-- Created Date -->
+      <template #item.createdAt="{ item }">
+        {{ formatDate(item.createdAt) }}
+      </template>
+    </v-data-table>
+  </v-card>
 </template>
 
 <script setup>
-import { getEquipmentRentalHistory } from '@/api/RentalController'
-import { ref, onMounted } from 'vue'
+import { getRentedEquipmentSummary } from '@/api/EquipmentController'
+import { onBeforeMount, ref } from 'vue'
 
-const props = defineProps({
-  customerId: Boolean,
-})
-
+// ✅ Data headers
 const headers = [
-  { title: 'Equipment', value: 'equipment' },
-  { title: 'Issued At', value: 'issuedAt' },
-  { title: 'Due Date', value: 'dueDate' },
-  { title: 'Returned At', value: 'returnedAt' },
-  { title: 'Status', value: 'isActive' },
-  { title: 'Overdue Fee', value: 'overdueFee' },
+  { title: 'Equipment Name', value: 'name' },
+  { title: 'Category', value: 'category' },
+  { title: 'Condition', value: 'condition' },
+  { title: 'Rental Price ($)', value: 'rentalPrice' },
+  { title: 'Availability', value: 'isAvailable' },
+  { title: 'Created Date', value: 'createdAt' },
+  { title: 'Actions', value: 'actions', sortable: false },
 ]
 
-const rentals = ref([])
+const equipment = ref([])
 
-onMounted(async () => {
-  rentals.value = await getEquipmentRentalHistory(props.customerId)
+onBeforeMount(async () => {
+  const response = await getRentedEquipmentSummary()
+  equipment.value = response.equipment || []
 })
 
-function formatDate(dateStr) {
-  const date = new Date(dateStr)
-  return date.toLocaleDateString()
+function formatCurrency(value) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(value)
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString()
+}
+
+function viewEquipment(item) {
+  console.log('Viewing equipment:', item)
+}
+
+function editEquipment(item) {
+  console.log('Editing equipment:', item)
 }
 </script>
