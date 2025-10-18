@@ -29,19 +29,17 @@
 </template>
 
 <script setup>
+import { getCompletedRentals } from '@/api/RentalController'
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
 import { useRoute } from 'vue-router'
 
 const rentals = ref([])
 const route = useRoute()
 
-const equipmentId = route.params.equipmentId
-
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/rentals/equipment/${equipmentId}`)
-    rentals.value = response.data
+    const response = await getCompletedRentals()
+    rentals.value = response
   } catch (err) {
     console.error('Error fetching rental history:', err)
   }

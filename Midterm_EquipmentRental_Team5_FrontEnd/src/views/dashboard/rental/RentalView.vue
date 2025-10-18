@@ -1,21 +1,17 @@
 <template>
   <v-container fluid>
     <RentalTable />
-
-    <ActiveRentalHistoryTable />
-
-    <GetCompletedRentalTable class="mt-6" />
-    <GetOverDueRentalTable />
-
-    <OverdueRentalsAlertTable class="mt-6" />
+    <ActiveRentalHistoryTable class="mt-6" />
+    <CompletedRentalTable class="mt-6" />
+    <!-- <OverdueRentalTable class="mt-6" /> -->
   </v-container>
 </template>
 
 <script setup>
 import ActiveRentalHistoryTable from '@/components/tables/rentals/ActiveRentalHistoryTable.vue'
-import GetCompletedRentalTable from '@/components/tables/rentals/GetCompletedRentalTable.vue'
+import CompletedRentalTable from '@/components/tables/rentals/CompletedRentalTable.vue'
 import RentalTable from '@/components/tables/rentals/RentalTable.vue'
-import GetOverDueRentalTable from '@/components/tables/rentals/OverdueRentalTable.vue'
+import OverdueRentalTable from '@/components/tables/rentals/OverdueRentalTable.vue'
 </script>
 
 <style scoped>
