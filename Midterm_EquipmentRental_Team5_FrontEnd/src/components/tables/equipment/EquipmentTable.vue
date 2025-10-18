@@ -1,8 +1,18 @@
 <template>
-  <v-card>
-    <v-card-title>
-      Equipment List
+  <v-card elevation="3" rounded>
+    <v-card-title class="d-flex align-center">
+      <span class="text-h5 font-weight-semibold">Equipment List</span>
       <v-spacer />
+      <v-btn
+        color="primary"
+        @click="isAddEquipmentDialogOpen = true"
+        class="mr-2"
+        elevation="2"
+        rounded
+      >
+        <v-icon left>mdi-plus</v-icon>
+        Add Equipment
+      </v-btn>
       <AddEquipmentDialog v-model="isAddEquipmentDialogOpen" />
     </v-card-title>
 
@@ -13,6 +23,8 @@
       class="elevation-1"
       density="comfortable"
       hover
+      fixed-header
+      height="600"
     >
       <!-- Name as link -->
       <template #item.name="{ item }">
@@ -21,18 +33,41 @@
         </router-link>
       </template>
 
+      <!-- Category -->
+      <template #item.category="{ item }">
+        <v-chip class="ma-0" color="indigo lighten-4" text-color="indigo darken-2" small label>
+          {{ item.category }}
+        </v-chip>
+      </template>
+
+      <!-- Condition -->
+      <template #item.condition="{ item }">
+        <v-chip class="ma-0" color="grey lighten-3" text-color="grey darken-4" small label>
+          {{ item.condition }}
+        </v-chip>
+      </template>
+
       <!-- Rental Price formatted as currency -->
       <template #item.rentalPrice="{ item }">
-        {{
-          new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-            item.rentalPrice,
-          )
-        }}
+        <span class="font-mono font-weight-medium">
+          {{
+            new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+              item.rentalPrice,
+            )
+          }}
+        </span>
       </template>
 
       <!-- Availability as colored chip -->
       <template #item.isAvailable="{ item }">
-        <v-chip :color="item.isAvailable ? 'green' : 'red'" variant="flat" label small>
+        <v-chip
+          :color="item.isAvailable ? 'green lighten-4' : 'red lighten-4'"
+          :text-color="item.isAvailable ? 'green darken-2' : 'red darken-2'"
+          variant="flat"
+          label
+          small
+          class="ma-0"
+        >
           {{ item.isAvailable ? 'Available' : 'Unavailable' }}
         </v-chip>
       </template>
@@ -46,7 +81,14 @@
       <template #item.actions="{ item }">
         <v-tooltip text="Edit" location="top">
           <template #activator="{ props }">
-            <v-btn icon size="small" color="blue" @click="editEquipment(item)" v-bind="props">
+            <v-btn
+              icon
+              size="small"
+              color="blue darken-2"
+              @click="editEquipment(item)"
+              v-bind="props"
+              aria-label="Edit equipment"
+            >
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </template>
@@ -57,9 +99,10 @@
             <v-btn
               icon
               size="small"
-              color="red"
+              color="red darken-2"
               @click="deleteEquipmentHandler(item.id)"
               v-bind="props"
+              aria-label="Delete equipment"
             >
               <v-icon>mdi-delete</v-icon>
             </v-btn>
@@ -71,12 +114,12 @@
 </template>
 
 <script setup>
-import { deleteEquipment, getAllEquipment } from '@/api/EquipmentController'
+import { ref, onBeforeMount } from 'vue'
+import { getAllEquipment, deleteEquipment } from '@/api/EquipmentController'
 import AddEquipmentDialog from '@/components/dialog/equipment/AddEquipmentDialog.vue'
-import { onBeforeMount, ref } from 'vue'
 
 const isAdmin = true
-let isAddEquipmentDialogOpen = ref(false)
+const isAddEquipmentDialogOpen = ref(false)
 
 const headers = [
   { title: 'Name', value: 'name' },
@@ -90,22 +133,39 @@ const headers = [
 
 const equipment = ref([])
 
-onBeforeMount(async () => {
-  equipment.value = await getAllEquipment()
-})
-
-const goToCreateEquipment = () => {
-  console.log('Navigate to create equipment form')
+const loadEquipment = async () => {
+  try {
+    equipment.value = await getAllEquipment()
+  } catch (error) {
+    console.error('Failed to fetch equipment:', error)
+  }
 }
 
-const editEquipment = (id) => {
+onBeforeMount(loadEquipment)
+
+const editEquipment = (item) => {
   isAddEquipmentDialogOpen.value = true
-  console.log('Editing equipment', id)
+  console.log('Editing equipment:', item)
 }
 
-const deleteEquipmentHandler = (id) => {
-  if (confirm('Delete this equipment?')) {
-    deleteEquipment(id)
+const deleteEquipmentHandler = async (id) => {
+  if (confirm('Are you sure you want to delete this equipment?')) {
+    try {
+      await deleteEquipment(id)
+      await loadEquipment()
+    } catch (error) {
+      console.error('Failed to delete equipment:', error)
+    }
   }
 }
 </script>
+
+<style scoped>
+.text-decoration-none {
+  text-decoration: none;
+}
+
+.font-weight-medium {
+  font-weight: 500;
+}
+</style>

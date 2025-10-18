@@ -1,8 +1,13 @@
 <template>
-  <v-container>
-    <v-card class="pa-4">
-      <v-card-title class="text-h6">Issue Equipment</v-card-title>
-      <IssueRentalForm />
+  <v-container fluid class="pa-4" style="max-width: 800px">
+    <v-card elevation="3" rounded>
+      <v-toolbar color="primary" dark flat>
+        <v-toolbar-title>Issue Equipment</v-toolbar-title>
+      </v-toolbar>
+
+      <v-card-text>
+        <IssueRentalForm />
+      </v-card-text>
     </v-card>
   </v-container>
 </template>
