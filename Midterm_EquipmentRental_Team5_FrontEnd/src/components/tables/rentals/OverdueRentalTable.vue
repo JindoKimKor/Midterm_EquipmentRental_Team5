@@ -1,36 +1,60 @@
 <template>
-  <v-card class="pa-4 red-alert" border flat>
-    <v-card-title class="text-h6 text-red-darken-2"> ⚠️ Overdue Rentals </v-card-title>
+  <v-card class="pa-6 red-alert" elevation="3" rounded>
+    <v-card-title class="d-flex align-center text-h5 font-weight-bold text-red-darken-3 mb-4">
+      <v-icon left color="red darken-3" class="mr-2" size="32">mdi-alert-circle</v-icon>
+      Overdue Rentals
+    </v-card-title>
 
     <v-data-table
       :headers="headers"
       :items="overdueRentals"
-      class="elevation-1"
+      class="elevation-2"
       density="comfortable"
+      fixed-header
+      height="480"
+      hover
+      item-key="id"
+      :loading="loading"
+      loading-text="Loading overdue rentals..."
+      no-data-text="No overdue rentals found"
     >
       <template #item.dueDate="{ item }">
-        {{ formatDate(item.dueDate) }}
+        <span>{{ formatDate(item.dueDate) }}</span>
       </template>
 
       <template #item.daysOverdue="{ item }">
-        <v-chip color="red-darken-2" text-color="white" small label>
-          {{ calculateDaysOverdue(item.dueDate) }} days
+        <v-chip
+          color="red darken-3"
+          text-color="white"
+          small
+          label
+          class="font-weight-semibold"
+          aria-label="Days overdue"
+        >
+          {{ calculateDaysOverdue(item.dueDate) }} day<span
+            v-if="calculateDaysOverdue(item.dueDate) !== 1"
+            >s</span
+          >
         </v-chip>
       </template>
 
       <template #item.actions="{ item }">
-        <v-tooltip text="Mark as returned">
+        <v-tooltip top>
           <template #activator="{ props }">
             <v-btn
-              size="small"
-              color="red-darken-2"
-              icon
               v-bind="props"
+              icon
+              color="red darken-3"
+              size="small"
+              aria-label="Mark as returned"
               @click="handleReturnNow(item)"
+              :disabled="returningId === item.id"
             >
-              <v-icon>mdi-logout</v-icon>
+              <v-icon v-if="returningId !== item.id">mdi-logout</v-icon>
+              <v-progress-circular v-else indeterminate color="white" size="18" width="2" />
             </v-btn>
           </template>
+          Mark as returned
         </v-tooltip>
       </template>
     </v-data-table>
@@ -39,7 +63,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getOverdueRentals } from '@/api/RentalController'
+import { getOverdueRentals, returnEquipment } from '@/api/RentalController'
 
 const headers = [
   { title: 'Equipment', value: 'equipment.name' },
@@ -50,18 +74,28 @@ const headers = [
 ]
 
 const overdueRentals = ref([])
+const loading = ref(false)
+const returningId = ref(null)
 
-onMounted(async () => {
+onMounted(fetchOverdueRentals)
+
+async function fetchOverdueRentals() {
+  loading.value = true
   try {
-    const response = await getOverdueRentals()
-    overdueRentals.value = response
+    overdueRentals.value = await getOverdueRentals()
   } catch (error) {
     console.error('Failed to fetch overdue rentals:', error)
+  } finally {
+    loading.value = false
   }
-})
+}
 
 function formatDate(date) {
-  return new Date(date).toLocaleDateString()
+  return new Date(date).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 
 function calculateDaysOverdue(dueDate) {
@@ -71,14 +105,32 @@ function calculateDaysOverdue(dueDate) {
   return Math.max(Math.floor(diff / (1000 * 60 * 60 * 24)), 0)
 }
 
-function handleReturnNow(item) {
-  console.log('Returning overdue rental:', item)
-  // You can trigger a modal or API call here
+async function handleReturnNow(item) {
+  if (returningId.value) return // prevent multiple clicks
+
+  if (confirm(`Mark rental of "${item.equipment.name}" as returned?`)) {
+    returningId.value = item.id
+    try {
+      await returnEquipment(item.id)
+      overdueRentals.value = overdueRentals.value.filter((rental) => rental.id !== item.id)
+      alert('Rental marked as returned.')
+    } catch (error) {
+      alert('Failed to mark as returned. Please try again.')
+      console.error(error)
+    } finally {
+      returningId.value = null
+    }
+  }
 }
 </script>
 
 <style scoped>
 .red-alert {
   background-color: #ffebee !important;
+  border: 1px solid #f44336;
+}
+
+.font-weight-semibold {
+  font-weight: 600;
 }
 </style>

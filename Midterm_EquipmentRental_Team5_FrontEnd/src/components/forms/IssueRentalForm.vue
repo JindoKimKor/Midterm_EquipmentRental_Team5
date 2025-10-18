@@ -22,6 +22,7 @@
           <v-select
             v-model="form.customerId"
             :items="customerOptions"
+            xp
             item-title="fullName"
             item-value="id"
             label="Select Customer"

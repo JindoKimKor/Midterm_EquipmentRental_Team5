@@ -1,78 +1,135 @@
 <template>
-  <v-card>
-    <v-card-title> Rental Records </v-card-title>
+  <v-card class="pa-6" elevation="3" rounded>
+    <v-card-title class="d-flex justify-space-between align-center">
+      <span class="text-h5 font-weight-semibold">Rented Equipment</span>
+      <v-btn icon @click="refreshData" aria-label="Refresh">
+        <v-icon>mdi-refresh</v-icon>
+      </v-btn>
+    </v-card-title>
+
     <v-data-table
       :headers="headers"
-      :items="filteredRentals"
+      :items="equipment"
       :items-per-page="10"
       class="elevation-1"
+      density="comfortable"
+      hover
+      item-value="id"
+      fixed-header
+      height="600"
     >
-      <template #item.issueDate="{ item }">
-        {{ formatDate(item.issueDate) }}
+      <!-- Name column with router-link -->
+      <template #item.name="{ item }">
+        <router-link :to="`/equipments/${item.id}`" class="text-decoration-none font-weight-medium">
+          {{ item.name }}
+        </router-link>
       </template>
-      <template #item.status="{ item }">
-        <v-chip :color="getStatusColor(item.status)" text-color="white" small>
-          {{ item.status }}
+
+      <!-- Category Chip -->
+      <template #item.category="{ item }">
+        <v-chip color="blue lighten-4" text-color="blue darken-3" label small class="ma-0">
+          {{ item.category }}
         </v-chip>
+      </template>
+
+      <!-- Condition Chip -->
+      <template #item.condition="{ item }">
+        <v-chip color="grey lighten-3" text-color="black" label small class="ma-0">
+          {{ item.condition }}
+        </v-chip>
+      </template>
+
+      <!-- Rental Price -->
+      <template #item.rentalPrice="{ item }">
+        <span class="font-mono font-weight-medium">
+          {{ formatCurrency(item.rentalPrice) }}
+        </span>
+      </template>
+
+      <template #item.isAvailable="{ item }">
+        <v-chip
+          :color="item.isAvailable ? 'green lighten-4' : 'red lighten-4'"
+          :text-color="item.isAvailable ? 'green darken-2' : 'red darken-2'"
+          label
+          small
+          class="ma-0"
+        >
+          {{ item.isAvailable ? 'Available' : 'Unavailable' }}
+        </v-chip>
+      </template>
+
+      <template #item.createdAt="{ item }">
+        {{ formatDate(item.createdAt) }}
+      </template>
+
+      <template #item.actions="{ item }">
+        <v-btn icon size="small" color="primary" @click="viewEquipment(item)" title="View">
+          <v-icon>mdi-eye</v-icon>
+        </v-btn>
+        <v-btn icon size="small" color="orange" @click="editEquipment(item)" title="Edit">
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
       </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-
-const isAdmin = true
-const userId = 2
+import { ref, onBeforeMount } from 'vue'
+import { getRentedEquipmentSummary } from '@/api/EquipmentController'
 
 const headers = [
-  { title: 'Equipment', value: 'equipment' },
-  { title: 'Customer', value: 'customer' },
-  { title: 'Issue Date', value: 'issueDate' },
-  { title: 'Status', value: 'status' },
+  { title: 'Equipment Name', value: 'name' },
+  { title: 'Category', value: 'category' },
+  { title: 'Condition', value: 'condition' },
+  { title: 'Rental Price ($)', value: 'rentalPrice' },
+  { title: 'Availability', value: 'isAvailable' },
+  { title: 'Created Date', value: 'createdAt' },
+  { title: 'Actions', value: 'actions', sortable: false },
 ]
 
-// Simulated rental data (replace with API fetch)
-const rentals = ref([
-  {
-    id: 1,
-    equipment: 'Canon DSLR',
-    customer: 'Alice Johnson',
-    customerId: 1,
-    issueDate: '2025-10-01',
-    status: 'Active',
-  },
-  {
-    id: 2,
-    equipment: 'Dell XPS 15',
-    customer: 'Bob Smith',
-    customerId: 2,
-    issueDate: '2025-09-20',
-    status: 'Completed',
-  },
-])
+const equipment = ref([])
 
-// Role-based filter
-const filteredRentals = computed(() => {
-  return isAdmin ? rentals.value : rentals.value.filter((r) => r.customerId === userId)
-})
-
-// Format date
-const formatDate = (dateStr) => {
-  return new Date(dateStr).toLocaleDateString()
-}
-
-// Status color chip
-const getStatusColor = (status) => {
-  switch (status.toLowerCase()) {
-    case 'active':
-      return 'blue'
-    case 'completed':
-      return 'green'
-    case 'overdue':
-      return 'red'
-    default:
-      return 'grey'
+const loadEquipment = async () => {
+  try {
+    const response = await getRentedEquipmentSummary()
+    equipment.value = response.equipment || []
+  } catch (error) {
+    console.error('Failed to load equipment:', error)
   }
 }
+
+onBeforeMount(loadEquipment)
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(value)
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString()
+}
+
+function viewEquipment(item) {
+  console.log('View equipment:', item)
+}
+
+function editEquipment(item) {
+  console.log('Edit equipment:', item)
+}
+
+function refreshData() {
+  loadEquipment()
+}
 </script>
+
+<style scoped>
+.text-decoration-none {
+  text-decoration: none;
+}
+.font-weight-medium {
+  font-weight: 500;
+}
+</style>
