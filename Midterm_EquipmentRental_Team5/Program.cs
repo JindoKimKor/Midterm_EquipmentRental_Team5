@@ -35,7 +35,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Frontend",
         policy =>
         {
-            policy.WithOrigins(["http://localhost:5115", "https://localhost:5115"])
+            policy.WithOrigins(["http://localhost:5115", "https://localhost:5115", "http://localhost:5173"])
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -55,7 +55,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.FromMinutes(30),
         };
     }
 );

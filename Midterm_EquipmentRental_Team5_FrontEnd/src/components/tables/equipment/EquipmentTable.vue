@@ -3,90 +3,109 @@
     <v-card-title>
       Equipment List
       <v-spacer />
-      <div class="d-flex">
-        <div>
-          <AddEquipmentDialog v-model="isAddEquipmentDialogOpen" />
-        </div>
-        <div class="pr-4 pl-4">
-          <ViewRentedEquipmentRentals v-model="isViewRentedEquipment" />
-        </div>
-        <!-- <div>
-          <add-equipment-dialog v-model="isViewAvailableEquipment" />
-        </div> -->
-      </div>
+      <AddEquipmentDialog v-model="isAddEquipmentDialogOpen" />
     </v-card-title>
 
-    <v-data-table :headers="headers" :items="equipment" :items-per-page="10" class="elevation-1">
+    <v-data-table
+      :headers="headers"
+      :items="equipment"
+      :items-per-page="10"
+      class="elevation-1"
+      density="comfortable"
+      hover
+    >
+      <!-- Name as link -->
       <template #item.name="{ item }">
-        <router-link :to="`/equipments/${item.id}`" class="text-decoration-none">
-          {{ item.name }}x
+        <router-link :to="`/equipments/${item.id}`" class="text-decoration-none font-weight-medium">
+          {{ item.name }}
         </router-link>
       </template>
 
-      <template #item.actions="{ item }">
-        <v-btn v-if="isAdmin" icon size="small" color="blue" @click="editEquipment(item.id)">
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
+      <!-- Rental Price formatted as currency -->
+      <template #item.rentalPrice="{ item }">
+        {{
+          new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+            item.rentalPrice,
+          )
+        }}
+      </template>
 
-        <v-btn v-if="isAdmin" icon size="small" color="red" @click="deleteEquipment(item.id)">
-          <v-icon>mdi-delete</v-icon>
-        </v-btn>
+      <!-- Availability as colored chip -->
+      <template #item.isAvailable="{ item }">
+        <v-chip :color="item.isAvailable ? 'green' : 'red'" variant="flat" label small>
+          {{ item.isAvailable ? 'Available' : 'Unavailable' }}
+        </v-chip>
+      </template>
+
+      <!-- Created At formatted -->
+      <template #item.createdAt="{ item }">
+        {{ new Date(item.createdAt).toLocaleDateString() }}
+      </template>
+
+      <!-- Actions with tooltips -->
+      <template #item.actions="{ item }">
+        <v-tooltip text="Edit" location="top">
+          <template #activator="{ props }">
+            <v-btn icon size="small" color="blue" @click="editEquipment(item)" v-bind="props">
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
+
+        <v-tooltip text="Delete" location="top">
+          <template #activator="{ props }">
+            <v-btn
+              icon
+              size="small"
+              color="red"
+              @click="deleteEquipmentHandler(item.id)"
+              v-bind="props"
+            >
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
       </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { deleteEquipment, getAllEquipment } from '@/api/EquipmentController'
 import AddEquipmentDialog from '@/components/dialog/equipment/AddEquipmentDialog.vue'
-import ViewRentedEquipmentRentals from '@/components/dialog/equipment/ViewRentedEquipments.vue'
+import { onBeforeMount, ref } from 'vue'
 
 const isAdmin = true
-const isUser = !isAdmin
 let isAddEquipmentDialogOpen = ref(false)
-let isViewRentedEquipment = ref(false)
-let isViewAvailableEquipment = ref(false)
 
 const headers = [
   { title: 'Name', value: 'name' },
   { title: 'Category', value: 'category' },
   { title: 'Condition', value: 'condition' },
-  { title: 'Status', value: 'status' },
-  isAdmin ? { title: 'Actions', value: 'actions', sortable: false } : {},
+  { title: 'Rental Price', value: 'rentalPrice' },
+  { title: 'Available', value: 'isAvailable' },
+  { title: 'Created At', value: 'createdAt' },
+  ...(isAdmin ? [{ title: 'Actions', value: 'actions', sortable: false }] : []),
 ]
 
-const equipment = ref([
-  {
-    id: 1,
-    name: 'Canon DSLR',
-    category: 'Camera',
-    condition: 'Good',
-    status: 'Available',
-  },
-  {
-    id: 2,
-    name: 'Laptop - Dell XPS',
-    category: 'Computer',
-    condition: 'Fair',
-    status: 'In Use',
-  },
-])
+const equipment = ref([])
+
+onBeforeMount(async () => {
+  equipment.value = await getAllEquipment()
+})
 
 const goToCreateEquipment = () => {
   console.log('Navigate to create equipment form')
 }
 
-const viewDetails = (id) => {
-  console.log('Viewing details for', id)
-}
-
 const editEquipment = (id) => {
   isAddEquipmentDialogOpen.value = true
+  console.log('Editing equipment', id)
 }
 
-const deleteEquipment = (id) => {
+const deleteEquipmentHandler = (id) => {
   if (confirm('Delete this equipment?')) {
-    console.log('Deleting equipment', id)
+    deleteEquipment(id)
   }
 }
 </script>

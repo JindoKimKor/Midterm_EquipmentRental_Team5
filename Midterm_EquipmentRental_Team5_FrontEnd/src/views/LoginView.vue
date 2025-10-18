@@ -5,10 +5,10 @@
       <v-card-text>
         <v-form v-model="valid" @submit.prevent="login">
           <v-text-field
-            v-model="email"
-            label="Email"
-            type="email"
-            :rules="[rules.required, rules.email]"
+            v-model="userName"
+            label="Username"
+            type="Username"
+            :rules="[rules.required]"
             prepend-icon="mdi-email"
             required
           />
@@ -29,17 +29,28 @@
 
 <script setup>
 import { ref } from 'vue'
+import RequestHandler from '@/services/RequestHandler'
+import useAuthenicationStore from '@/stores/Authentication'
+import router from '@/router'
 
-const email = ref('')
+const authStore = useAuthenicationStore()
+
+const userName = ref('')
 const password = ref('')
 const valid = ref(false)
 
 const rules = {
   required: (value) => !!value || 'Required.',
-  email: (value) => /.+@.+\..+/.test(value) || 'E-mail must be valid.',
 }
 
-function login() {
-  alert(`Email: ${email.value}\nPassword: ${password.value}`)
+async function login() {
+  const { token } = await RequestHandler.post('/auth/login', {
+    Username: userName.value,
+    Password: password.value,
+  })
+  if (token) {
+    authStore.setToken(token)
+    router.push('/dashboard')
+  }
 }
 </script>

@@ -1,15 +1,39 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useCounterStore = defineStore('counter', () => {
-  const role = ref(null)
-  const AuthToken = ref(0)
+const useAuthenticationStore = defineStore('Authentication', () => {
+  const role = ref('Admin')
+  const authToken = ref(null)
 
-  function getAuthToken() {}
+  function getCookie(name) {
+    const match = document.cookie.match(name)
+    if (match) {
+      const [key, value] = match.input.split('=')
+      return { key, value }
+    }
+    return null
+  }
 
-  function logout() {}
+  function checkCookie() {
+    const token = getCookie('auth_token')
+    if (!token) return false
+    return true
+  }
 
-  function login() {}
+  function checkAuthToken() {
+    if (!authToken.value) {
+      if (!checkCookie()) return false
+      setToken(getCookie('auth_token').value)
+    }
+    return true
+  }
 
-  return { count, doubleCount, increment }
+  function setToken(token) {
+    authToken.value = token
+    document.cookie = `auth_token=${token}; path=/; max-age=3600; Secure; SameSite=Strict;`
+  }
+
+  return { checkAuthToken, setToken, role, authToken }
 })
+
+export default useAuthenticationStore

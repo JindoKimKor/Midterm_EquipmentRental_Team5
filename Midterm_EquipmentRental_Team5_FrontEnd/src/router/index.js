@@ -1,3 +1,4 @@
+import useAuthenticationStore from '@/stores/Authentication'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -12,47 +13,50 @@ const router = createRouter({
       path: '/dashboard',
       name: 'DashboardView',
       component: () => import('../views/DashboardView.vue'),
+      meta: { requiresAuth: true },
       children: [
         {
           path: '',
           name: 'DashboardHomeView',
           component: () => import('../views/dashboard/main/HomeView.vue'),
+          meta: { requiresAuth: true },
         },
         {
-          path: 'equipment',
+          path: 'equipments',
           name: 'EquipmentDashboard',
           component: () => import('../views/dashboard/main/EquipmentView.vue'),
-          children: [
-            {
-              path: ':id',
-              name: 'EquipmentDetailView',
-              component: () => import('../views/dashboard/EquipmentDetailsView.vue'),
-              props: true,
-            },
-          ],
+          meta: { requiresAuth: true },
+          children: [],
         },
         {
-          path: 'customer',
+          path: 'equipment/:id',
+          name: 'EquipmentDetailView',
+          component: () => import('../views/dashboard/EquipmentDetailsView.vue'),
+          props: true,
+        },
+        {
+          path: 'customers',
           name: 'CustomerDashboard',
           component: () => import('../views/dashboard/main/CustomerView.vue'),
-          children: [
-            {
-              path: ':id',
-              name: 'CustomerDetailView',
-              component: () => import('../views/dashboard/CustomerDetailsView.vue'),
-              props: true,
-            },
-          ],
+        },
+        {
+          path: 'customers/:id',
+          name: 'CustomerDetailView',
+          component: () => import('../views/dashboard/CustomerDetailsView.vue'),
+          meta: { requiresAuth: true },
+          props: true,
         },
         {
           path: 'rental',
           name: 'RenalDashboard',
           component: () => import('../views/dashboard/main/RentalView.vue'),
+          meta: { requiresAuth: true },
           children: [
             {
               path: ':id',
               name: 'RentalDetailView',
               component: () => import('../views/dashboard/RentalDetailsView.vue'),
+              meta: { requiresAuth: true },
               props: true,
             },
           ],
@@ -60,6 +64,20 @@ const router = createRouter({
       ],
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthenticationStore()
+
+  console.log(authStore.checkAuthToken())
+
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+
+  if (requiresAuth && !authStore.checkAuthToken()) {
+    next({ name: 'LoginView' })
+  } else {
+    next()
+  }
 })
 
 export default router

@@ -34,7 +34,16 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public Task AddCustomerAsync(ICustomer newCustomer)
         {
-            _unitOfWork.Customers.CreateCustomer(newCustomer);
+
+
+            _unitOfWork.Customers.CreateCustomer(new Customer
+            {
+                Name = newCustomer.Name,
+                Email = newCustomer.Email,
+                UserName = newCustomer.UserName,
+                Password = newCustomer.Password,
+                Role = newCustomer.Role,
+            });
             _unitOfWork.SaveChanges();
             return Task.CompletedTask;
         }

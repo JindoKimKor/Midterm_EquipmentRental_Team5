@@ -16,7 +16,7 @@
     </v-parallax>
 
     <!-- Quick Actions -->
-    <v-container class="mt-10">
+    <v-container>
       <v-row justify="center" class="mb-8">
         <v-col cols="12" md="8" class="text-center">
           <h2 class="text-h4 font-weight-bold">Quick Actions</h2>
@@ -25,7 +25,7 @@
       </v-row>
 
       <!-- Admin Actions -->
-      <v-row justify="center" class="text-center">
+      <v-row v-if="userRole === 'Admin'" justify="center" class="text-center">
         <v-col cols="12" sm="6" md="4" v-for="card in adminCards" :key="card.title">
           <v-card class="pa-4 hoverable" elevation="4">
             <v-icon size="48" color="primary">{{ card.icon }}</v-icon>
@@ -37,7 +37,7 @@
       </v-row>
 
       <!-- Customer Actions -->
-      <v-row justify="center" class="text-center">
+      <v-row v-if="userRole === 'Customer'" justify="center" class="text-center">
         <v-col cols="12" sm="6" md="5" v-for="card in customerCards" :key="card.title">
           <v-card class="pa-4 hoverable" elevation="4">
             <v-icon size="48" color="teal-darken-2">{{ card.icon }}</v-icon>
@@ -54,21 +54,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import useAuthenicationStore from '@/stores/Authentication'
 
 const router = useRouter()
+const authStore = useAuthenicationStore()
 
-// const userName = ref('Alex')
-// const userRole = ref('Admin')
+const userRole = ref(authStore.role)
 
-// onMounted(() => {
-//   const token = localStorage.getItem('token')
-//   if (!token) {
-//     router.push('/')
-//   } else {
-//     userName.value = localStorage.getItem('name') || 'User'
-//     userRole.value = localStorage.getItem('role') || 'Customer'
-//   }
-// })
+onMounted(() => {})
 
 // Action Cards
 const adminCards = [
