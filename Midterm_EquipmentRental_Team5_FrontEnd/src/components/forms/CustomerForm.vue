@@ -50,7 +50,9 @@
 
 <script setup>
 import { createCustomer, updateCustomer } from '@/api/CustomerController'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, defineEmits} from 'vue'
+
+const emit = defineEmits(['customer-saved'])
 
 const valid = ref(false)
 
@@ -96,12 +98,21 @@ const rules = {
   email: (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email must be valid',
 }
 
-const submitForm = () => {
+const submitForm = async () => {
   if (valid.value) {
-    if (customerModel.value.id) {
-      updateCustomer(customerModel.value.id, customerModel.value)
-    } else {
-      createCustomer(customerModel.value)
+    try {
+      if (customerModel.value.id) {
+        // 4. Wait for the API call to finish
+        await updateCustomer(customerModel.value.id, customerModel.value)
+      } else {
+        // 4. Wait for the API call to finish
+        await createCustomer(customerModel.value)
+      }
+      // 5. After success, emit the event to the parent
+      emit('customer-saved')
+    } catch (error) {
+      console.error('Failed to save the customer:', error)
+      // Optionally, show an error message to the user here
     }
   }
 }

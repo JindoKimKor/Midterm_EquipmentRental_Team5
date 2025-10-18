@@ -3,10 +3,6 @@
     <v-card-title class="d-flex align-center">
       <span class="text-h5 font-weight-semibold">Customer List</span>
       <v-spacer />
-      <v-btn color="primary" @click="openAddCustomerDialog()" class="mr-2" elevation="2" rounded>
-        <v-icon left>mdi-plus</v-icon>
-        Add Customer
-      </v-btn>
       <add-customer-dialog
         v-model="isAddCustomerDialogOpen"
         :customer="selectedCustomer"

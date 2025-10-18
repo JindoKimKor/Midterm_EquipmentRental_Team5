@@ -3,16 +3,16 @@
     <v-card-title class="d-flex align-center">
       <span class="text-h5 font-weight-semibold">Equipment List</span>
       <v-spacer />
-      <v-btn
-        color="primary"
-        @click="isAddEquipmentDialogOpen = true"
-        class="mr-2"
-        elevation="2"
-        rounded
-      >
-        <v-icon left>mdi-plus</v-icon>
-        Add Equipment
-      </v-btn>
+<!--      <v-btn not needed it's an extra btn-->
+<!--        color="primary"-->
+<!--        @click="isAddEquipmentDialogOpen = true"-->
+<!--        class="mr-2"-->
+<!--        elevation="2"-->
+<!--        rounded-->
+<!--      >-->
+<!--        <v-icon left>mdi-plus</v-icon>-->
+<!--        Add Equipment-->
+<!--      </v-btn>-->
       <AddEquipmentDialog v-model="isAddEquipmentDialogOpen" />
     </v-card-title>
 
