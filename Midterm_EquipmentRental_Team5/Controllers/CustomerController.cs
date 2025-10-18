@@ -21,7 +21,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<object>>> GetAllCustomers(int page = 1)
+        public async Task<ActionResult<IEnumerable<IRental>>> GetAllCustomers(int page = 1)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/customers/{id} - Get customer details
         [HttpGet("{id}")]
-        public async Task<ActionResult<object>> GetCustomer(int id)
+        public async Task<ActionResult<IRental>> GetCustomer(int id)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             try
             {
                 await _customerService.AddCustomerAsync(newCustomer);
-                return CreatedAtAction(nameof(GetCustomer), new { id = newCustomer.Id }, newCustomer);
+                return Ok();
             }
             catch (Exception ex)
             {

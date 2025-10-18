@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
@@ -9,23 +10,22 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize] // All endpoints require authentication
-    public class EquipmentController : ControllerBase
+    public class EquipmentController(IEquipmentServices equipmentService) : ControllerBase
     {
-        private readonly IEquipmentServices _equipmentService;
-
-        public EquipmentController(IEquipmentServices equipmentService)
-        {
-            _equipmentService = equipmentService;
-        }
+        private readonly IEquipmentServices _equipmentService = equipmentService;
 
         // GET /api/equipment - Get all equipment with pagination
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetAllEquipment(int page = 1)
+        public async Task<ActionResult<IEnumerable<IEquipment>>> GetAllEquipment(int page = 1)
         {
             try
             {
                 var equipment = await _equipmentService.GetAllEquipmentAsync(page);
                 return Ok(equipment);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -35,7 +35,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/equipment/{id} - Get specific equipment details
         [HttpGet("{id}")]
-        public async Task<ActionResult<object>> GetEquipment(int id)
+        public async Task<ActionResult<IEquipment>> GetEquipment(int id)
         {
             try
             {
@@ -47,6 +47,10 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 }
 
                 return Ok(equipment);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -62,7 +66,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             try
             {
                 await _equipmentService.AddEquipmentAsync(newEquipment);
-                return CreatedAtAction(nameof(GetEquipment), new { id = newEquipment.Id }, newEquipment);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -104,6 +108,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             {
                 return NotFound(ex.Message);
             }
+
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -112,12 +117,16 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/equipment/available - Get list of available equipment
         [HttpGet("available")]
-        public async Task<ActionResult<IEnumerable<object>>> GetAvailableEquipment()
+        public async Task<ActionResult<IEnumerable<IEquipment>>> GetAvailableEquipment()
         {
             try
             {
                 var availableEquipment = await _equipmentService.GetAvailableEquipmentAsync();
                 return Ok(availableEquipment);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -128,20 +137,16 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // GET /api/equipment/rented - Get rented equipment summary (Admin only)
         [HttpGet("rented")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<object>> GetRentedEquipmentSummary()
+        public async Task<ActionResult<IEquipment>> GetRentedEquipmentSummary()
         {
             try
             {
                 var rentedEquipment = await _equipmentService.GetRentedEquipmentAsync();
-
-                // Create summary response
-                var summary = new
-                {
-                    TotalRented = rentedEquipment.Count(),
-                    Equipment = rentedEquipment
-                };
-
-                return Ok(summary);
+                return Ok(rentedEquipment);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
