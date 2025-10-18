@@ -1,55 +1,64 @@
-async function getAllEquipment(page = 1) {
+import RequestHandler from '@/services/RequestHandler'
+
+export async function getAllEquipment(page = 1) {
   try {
-    // ...
+    const res = await RequestHandler.get(`equipment?page=${page}`)
+    return res
   } catch (error) {
-    // ...
+    console.error('Error fetching all equipment:', error)
   }
 }
 
-async function getEquipment(id) {
+export async function getEquipment(id) {
   try {
-    // ...
+    const res = await RequestHandler.get(`equipment/${id}`)
+    return res
   } catch (error) {
-    // ...
+    console.error(`Error fetching equipment with ID ${id}:`, error)
   }
 }
 
-async function addEquipment(newEquipment) {
+export async function addEquipment(newEquipment) {
   try {
-    // ...
+    const res = await RequestHandler.post('equipment', newEquipment)
+    return res
   } catch (error) {
-    // ...
+    console.error('Error adding new equipment:', error)
   }
 }
 
-async function updateEquipment(id, updatedEquipment) {
+export async function updateEquipment(id, updatedEquipment) {
   try {
-    // ...
+    const res = await RequestHandler.put(`equipment/${id}`, updatedEquipment)
+    return res
   } catch (error) {
-    // ...
+    console.error(`Error updating equipment with ID ${id}:`, error)
   }
 }
 
-async function deleteEquipment(id) {
+export async function deleteEquipment(id) {
   try {
-    // ...
+    const res = await RequestHandler.delete(`equipment/${id}`)
+    return res
   } catch (error) {
-    // ...
+    console.error(`Error deleting equipment with ID ${id}:`, error)
   }
 }
 
-async function getAvailableEquipment() {
+export async function getAvailableEquipment() {
   try {
-    // ...
+    const res = await RequestHandler.get('equipment/available')
+    return res
   } catch (error) {
-    // ...
+    console.error('Error fetching available equipment:', error)
   }
 }
 
-async function getRentedEquipmentSummary() {
+export async function getRentedEquipmentSummary() {
   try {
-    // ...
+    const res = await RequestHandler.get('equipment/rented-summary')
+    return res
   } catch (error) {
-    // ...
+    console.error('Error fetching rented equipment summary:', error)
   }
 }

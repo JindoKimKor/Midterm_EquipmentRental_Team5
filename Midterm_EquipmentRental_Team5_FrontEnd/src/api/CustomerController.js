@@ -2,7 +2,7 @@ import RequestHandler from '@/services/RequestHandler'
 
 export async function getAllCustomers(page = 1) {
   try {
-    const res = await RequestHandler.get('customer')
+    const res = await RequestHandler.get(`customer?page=${page}`)
     return res
   } catch (error) {
     console.error(error)
@@ -11,6 +11,8 @@ export async function getAllCustomers(page = 1) {
 
 export async function getCustomer(id) {
   try {
+    const res = await RequestHandler.get(`customer/${id}`)
+    return res
   } catch (error) {
     console.error(error)
   }
@@ -19,7 +21,8 @@ export async function getCustomer(id) {
 export async function createCustomer(newCustomer) {
   try {
     console.log(newCustomer)
-    await RequestHandler.post('customer', newCustomer)
+    const res = await RequestHandler.post('customer', newCustomer)
+    return res
   } catch (error) {
     console.error(error)
   }
@@ -27,6 +30,8 @@ export async function createCustomer(newCustomer) {
 
 export async function updateCustomer(id, updatedCustomer) {
   try {
+    const res = await RequestHandler.put(`customer/${id}`, updatedCustomer)
+    return res
   } catch (error) {
     console.error(error)
   }
@@ -34,7 +39,8 @@ export async function updateCustomer(id, updatedCustomer) {
 
 export async function deleteCustomer(id) {
   try {
-    await RequestHandler.delete(`customer/${id}`)
+    const res = await RequestHandler.delete(`customer/${id}`)
+    return res
   } catch (error) {
     console.error(error)
   }
@@ -42,11 +48,17 @@ export async function deleteCustomer(id) {
 
 export async function getCustomerRentalHistory(id) {
   try {
-  } catch (error) {}
+    const res = await RequestHandler.get(`customer/${id}/rental-history`)
+    return res
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 export async function getCustomerActiveRental(id) {
   try {
+    const res = await RequestHandler.get(`customer/${id}/active-rental`)
+    return res
   } catch (error) {
     console.error(error)
   }

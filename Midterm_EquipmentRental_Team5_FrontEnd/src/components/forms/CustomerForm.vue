@@ -5,14 +5,14 @@
       <v-card-text>
         <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
           <v-text-field
-            v-model="customer.userName"
+            v-model="customerModel.userName"
             label="Username"
             :rules="[rules.required]"
             required
           ></v-text-field>
 
           <v-text-field
-            v-model="customer.password"
+            v-model="customerModel.password"
             label="Password"
             type="password"
             :rules="[rules.required]"
@@ -20,14 +20,14 @@
           ></v-text-field>
 
           <v-text-field
-            v-model="customer.name"
+            v-model="customerModel.name"
             label="Name"
             :rules="[rules.required]"
             required
           ></v-text-field>
 
           <v-text-field
-            v-model="customer.email"
+            v-model="customerModel.email"
             label="Email"
             type="email"
             :rules="[rules.required, rules.email]"
@@ -35,15 +35,12 @@
           ></v-text-field>
 
           <v-text-field
-            v-model="customer.role"
+            v-model="customerModel.role"
             label="Role"
             :rules="[rules.required]"
             required
           ></v-text-field>
-
-          <!-- Hidden Id field (for editing existing records) -->
-          <input type="hidden" v-model="customer.id" />
-
+          <input type="hidden" v-model="customerModel.id" />
           <v-btn type="submit" color="primary" class="mt-4">Submit</v-btn>
         </v-form>
       </v-card-text>
@@ -52,18 +49,46 @@
 </template>
 
 <script setup>
-import { createCustomer } from '@/api/CustomerController'
-import { ref } from 'vue'
+import { createCustomer, updateCustomer } from '@/api/CustomerController'
+import { onBeforeMount, ref } from 'vue'
 
 const valid = ref(false)
 
-const customer = ref({
+const props = defineProps({
+  modelValue: Boolean,
+  customer: Object,
+})
+
+const customerModel = ref({
   id: 0,
   name: '',
   email: '',
   userName: '',
   password: '',
   role: '',
+})
+
+onBeforeMount(() => {
+  const { customer } = props
+  if (customer) {
+    customerModel.value = {
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      userName: customer.userName,
+      password: customer.password,
+      role: customer.role,
+    }
+  } else {
+    customerModel.value = {
+      id: 0,
+      name: '',
+      email: '',
+      userName: '',
+      password: '',
+      role: '',
+    }
+  }
 })
 
 const rules = {
@@ -73,7 +98,11 @@ const rules = {
 
 const submitForm = () => {
   if (valid.value) {
-    createCustomer(customer.value)
+    if (customerModel.value.id) {
+      updateCustomer(customerModel.value.id, customerModel.value)
+    } else {
+      createCustomer(customerModel.value)
+    }
   }
 }
 </script>

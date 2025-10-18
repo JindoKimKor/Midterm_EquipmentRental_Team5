@@ -3,7 +3,7 @@
     <v-card-title>
       Customer List
       <v-spacer />
-      <add-customer-dialog v-model="isAddCustomerDialogOpen" />
+      <add-customer-dialog v-model="isAddCustomerDialogOpen" :customer="selectedCustomer" />
     </v-card-title>
 
     <v-data-table :headers="headers" :items="customersArr" :items-per-page="10" class="elevation-1">
@@ -27,14 +27,10 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import AddCustomerDialog from '../dialog/AddCustomerDialog.vue'
-import {
-  getAllCustomers,
-  deleteCustomer,
-  createCustomer,
-  updateCustomer,
-} from '@/api/CustomerController'
+import { getAllCustomers, deleteCustomer, updateCustomer } from '@/api/CustomerController'
 
 let isAddCustomerDialogOpen = ref(false)
+let selectedCustomer = ref(null)
 const customersArr = ref([])
 
 const headers = [
@@ -52,6 +48,7 @@ onMounted(async () => {
 })
 
 const editCustomerHandler = (item) => {
+  selectedCustomer = item
   isAddCustomerDialogOpen.value = true
 }
 
