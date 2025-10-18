@@ -88,16 +88,6 @@ const AdminNavigationItems = [
         title: 'Equipment',
         prependIcon: 'mdi-checkbox-marked-outline',
       },
-      {
-        url: '/dashboard/customers/:userId/active-rental',
-        title: 'Active Rental',
-        prependIcon: 'mdi-checkbox-marked-outline',
-      },
-      {
-        url: '/dashboard/customers/:userId/rentals',
-        title: 'My Rentals',
-        prependIcon: 'mdi-history',
-      },
     ],
   },
   {
