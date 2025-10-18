@@ -30,9 +30,7 @@ const useAuthenticationStore = defineStore('Authentication', () => {
 
   function setToken(token) {
     authToken.value = token
-    if (!checkCookie('auth_token')) {
-      document.cookie = `auth_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}`
-    }
+    document.cookie = `auth_token=${token}; path=/; max-age=3600; Secure; SameSite=Strict;`
   }
 
   return { checkAuthToken, setToken, role, authToken }

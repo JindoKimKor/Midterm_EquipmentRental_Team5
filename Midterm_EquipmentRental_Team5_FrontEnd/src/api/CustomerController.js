@@ -11,7 +11,6 @@ export async function getAllCustomers(page = 1) {
 
 export async function getCustomer(id) {
   try {
-    // ...
   } catch (error) {
     console.error(error)
   }
@@ -19,7 +18,8 @@ export async function getCustomer(id) {
 
 export async function createCustomer(newCustomer) {
   try {
-    await RequestHandler.post('customer', { newCustomer })
+    console.log(newCustomer)
+    await RequestHandler.post('customer', newCustomer)
   } catch (error) {
     console.error(error)
   }
@@ -27,7 +27,6 @@ export async function createCustomer(newCustomer) {
 
 export async function updateCustomer(id, updatedCustomer) {
   try {
-    // ...
   } catch (error) {
     console.error(error)
   }
@@ -43,15 +42,11 @@ export async function deleteCustomer(id) {
 
 export async function getCustomerRentalHistory(id) {
   try {
-    // ...
-  } catch (error) {
-    // ...
-  }
+  } catch (error) {}
 }
 
 export async function getCustomerActiveRental(id) {
   try {
-    // ...
   } catch (error) {
     console.error(error)
   }

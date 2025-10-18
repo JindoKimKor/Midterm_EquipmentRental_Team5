@@ -1,3 +1,4 @@
+using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.UnitOfWork.Interfaces;
@@ -33,7 +34,16 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public Task AddCustomerAsync(ICustomer newCustomer)
         {
-            _unitOfWork.Customers.CreateCustomer(newCustomer);
+
+
+            _unitOfWork.Customers.CreateCustomer(new Customer
+            {
+                Name = newCustomer.Name,
+                Email = newCustomer.Email,
+                UserName = newCustomer.UserName,
+                Password = newCustomer.Password,
+                Role = newCustomer.Role,
+            });
             _unitOfWork.SaveChanges();
             return Task.CompletedTask;
         }

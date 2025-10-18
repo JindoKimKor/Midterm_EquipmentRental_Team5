@@ -52,6 +52,7 @@
 </template>
 
 <script setup>
+import { createCustomer } from '@/api/CustomerController'
 import { ref } from 'vue'
 
 const valid = ref(false)
@@ -72,8 +73,7 @@ const rules = {
 
 const submitForm = () => {
   if (valid.value) {
-    console.log('Submitting customer:', customer.value)
-    alert('Form submitted!')
+    createCustomer(customer.value)
   }
 }
 </script>

@@ -13,10 +13,10 @@
         </router-link>
       </template>
       <template #item.actions="{ item }">
-        <v-btn icon size="small" color="blue" @click="editCustomer(item.id)">
+        <v-btn icon size="small" color="blue" @click="editCustomerHandler(item)">
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
-        <v-btn icon size="small" color="red" @click="deleteCustomer(item.id)">
+        <v-btn icon size="small" color="red" @click="deleteCustomerHandler(item.id)">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </template>
@@ -27,7 +27,12 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import AddCustomerDialog from '../dialog/AddCustomerDialog.vue'
-import { getAllCustomers } from '@/api/CustomerController'
+import {
+  getAllCustomers,
+  deleteCustomer,
+  createCustomer,
+  updateCustomer,
+} from '@/api/CustomerController'
 
 let isAddCustomerDialogOpen = ref(false)
 const customersArr = ref([])
@@ -46,13 +51,13 @@ onMounted(async () => {
   customersArr.value = customers
 })
 
-const editCustomer = () => {
+const editCustomerHandler = (item) => {
   isAddCustomerDialogOpen.value = true
 }
 
-const deleteCustomer = (id) => {
+const deleteCustomerHandler = (id) => {
   if (confirm('Delete customer and rental history?')) {
-    console.log('Deleting customer', id)
+    deleteCustomer(id)
   }
 }
 </script>
