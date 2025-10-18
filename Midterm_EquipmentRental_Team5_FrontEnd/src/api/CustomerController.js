@@ -48,7 +48,7 @@ export async function deleteCustomer(id) {
 
 export async function getCustomerRentalHistory(id) {
   try {
-    const res = await RequestHandler.get(`customer/${id}/rental-history`)
+    const res = await RequestHandler.get(`customer/${id}/rentals`)
     return res
   } catch (error) {
     console.error(error)

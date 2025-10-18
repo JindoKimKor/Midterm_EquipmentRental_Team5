@@ -5,5 +5,5 @@
 </template>
 
 <script setup>
-import CustomerTable from '@/components/tables/CustomerTable.vue'
+import CustomerTable from '@/components/tables/customer/CustomerTable.vue'
 </script>

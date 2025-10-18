@@ -7,9 +7,9 @@
     </v-card-title>
 
     <v-data-table :headers="headers" :items="customersArr" :items-per-page="10" class="elevation-1">
-      <template #item.name="{ item }">
-        <router-link :to="`/equipments/${item.id}`" class="text-decoration-none">
-          {{ item.name }}
+      <template #item.userName="{ item }">
+        <router-link :to="`customers/${item.id}`" class="text-decoration-none">
+          {{ item.userName }}
         </router-link>
       </template>
       <template #item.actions="{ item }">
@@ -26,7 +26,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import AddCustomerDialog from '../dialog/AddCustomerDialog.vue'
+import AddCustomerDialog from '../../dialog/AddCustomerDialog.vue'
 import { getAllCustomers, deleteCustomer, updateCustomer } from '@/api/CustomerController'
 
 let isAddCustomerDialogOpen = ref(false)

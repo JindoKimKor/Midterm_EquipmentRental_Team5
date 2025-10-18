@@ -31,7 +31,6 @@ const router = createRouter({
               path: ':id',
               name: 'EquipmentDetailView',
               component: () => import('../views/dashboard/EquipmentDetailsView.vue'),
-              meta: { requiresAuth: true },
               props: true,
             },
           ],
@@ -40,15 +39,13 @@ const router = createRouter({
           path: 'customers',
           name: 'CustomerDashboard',
           component: () => import('../views/dashboard/main/CustomerView.vue'),
-          children: [
-            {
-              path: ':id',
-              name: 'CustomerDetailView',
-              component: () => import('../views/dashboard/CustomerDetailsView.vue'),
-              meta: { requiresAuth: true },
-              props: true,
-            },
-          ],
+        },
+        {
+          path: 'customers/:id',
+          name: 'CustomerDetailView',
+          component: () => import('../views/dashboard/CustomerDetailsView.vue'),
+          meta: { requiresAuth: true },
+          props: true,
         },
         {
           path: 'rental',
