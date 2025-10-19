@@ -34,14 +34,24 @@
             required
           ></v-text-field>
 
-          <v-text-field
+          <v-select
             v-model="customerModel.role"
             label="Role"
+            :items="roleOptions"
             :rules="[rules.required]"
             required
-          ></v-text-field>
+            placeholder="Select a role"
+          ></v-select>
           <input type="hidden" v-model="customerModel.id" />
-          <v-btn type="submit" color="primary" class="mt-4">Submit</v-btn>
+          <v-btn
+            type="submit"
+            color="primary"
+            class="mt-4"
+            :loading="loading"
+            :disabled="!valid"
+          >
+            Submit
+          </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -55,6 +65,9 @@ import { onBeforeMount, ref, defineEmits} from 'vue'
 const emit = defineEmits(['customer-saved'])
 
 const valid = ref(false)
+const loading = ref(false)
+
+const roleOptions = ['User', 'Admin']
 
 const props = defineProps({
   modelValue: Boolean,
