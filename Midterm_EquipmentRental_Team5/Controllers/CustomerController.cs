@@ -158,7 +158,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/customers/{id}/active-rental - Get customer's active rental
         [HttpGet("{id}/active-rental")]
-        public async Task<ActionResult<IEnumerable<IRental>>> GetCustomerActiveRental(int id)
+        public async Task<ActionResult<IEnumerable<IRental>>> GetCustomerActiveRentals(int id)
         {
             try
             {

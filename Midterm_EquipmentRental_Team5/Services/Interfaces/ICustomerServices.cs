@@ -10,6 +10,6 @@ namespace Midterm_EquipmentRental_Team5.Services.Interfaces
         Task<ICustomer?> UpdateCustomerAsync(int id, ICustomer updatedCustomer);
         Task<ICustomer?> DeleteCustomerAsync(int id);
         Task<IEnumerable<IRental>?> GetCustomerRentalHistoryAsync(int customerId);
-        Task<IEnumerable<IRental>?> GetCustomerActiveRentalAsync(int customerId);
+        Task<IRental?> GetCustomerActiveRentalAsync(int customerId);
     }
 }

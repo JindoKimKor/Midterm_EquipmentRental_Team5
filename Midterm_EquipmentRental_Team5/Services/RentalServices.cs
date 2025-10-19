@@ -40,7 +40,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             }
 
             var customer = _unitOfWork.Customers.GetCustomerDetails(request.CustomerId) ?? throw new KeyNotFoundException($"Customer with ID {request.CustomerId} not found.");
-            var activeRental = _unitOfWork.Customers.GetCustomerActiveRentals(request.CustomerId);
+            var activeRental = _unitOfWork.Customers.GetCustomerActiveRental(request.CustomerId);
             if (activeRental != null)
             {
                 throw new InvalidOperationException($"Customer '{customer.Name}' already has an active rental.");

@@ -48,6 +48,13 @@ const router = createRouter({
           meta: { requiresAuth: true },
         },
         {
+          path: 'customers/:id/rentals',
+          name: 'CustomerDetailView',
+          component: () => import('../views/dashboard/rental/RentalView.vue'),
+          props: true,
+          meta: { requiresAuth: true },
+        },
+        {
           path: 'rentals',
           name: 'RentalDashboard',
           component: () => import('../views/dashboard/rental/RentalView.vue'),

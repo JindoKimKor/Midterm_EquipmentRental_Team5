@@ -79,9 +79,9 @@ namespace Midterm_EquipmentRental_Team5.Services
             return Task.FromResult(rentals);
         }
 
-        public Task<IEnumerable<IRental>?> GetCustomerActiveRentalAsync(int customerId)
+        public Task<IRental?> GetCustomerActiveRentalAsync(int customerId)
         {
-            var activeRental = _unitOfWork.Customers.GetCustomerActiveRentals(customerId) ?? null;
+            var activeRental = _unitOfWork.Customers.GetCustomerActiveRental(customerId) ?? null;
             return Task.FromResult(activeRental);
         }
     }

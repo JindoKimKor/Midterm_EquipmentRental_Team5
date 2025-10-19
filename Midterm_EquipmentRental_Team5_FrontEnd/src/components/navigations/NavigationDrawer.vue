@@ -60,11 +60,6 @@ const UserNavigationItems = [
         title: 'My Rentals',
         prependIcon: 'mdi-history',
       },
-      {
-        url: `/dashboard/customers/${userStore.id}/active-rental`,
-        title: 'Active Rental',
-        prependIcon: 'mdi-checkbox-marked-outline',
-      },
     ],
   },
 ]
