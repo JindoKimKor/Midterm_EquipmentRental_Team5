@@ -1,7 +1,5 @@
 <template>
-  <v-card class="pa-4" max-width="600">
-    <v-card-title class="text-h6">Issue Equipment</v-card-title>
-
+  <v-container class="pa-4" max-width="600">
     <v-form @submit.prevent="submitForm" v-model="isFormValid">
       <v-row dense>
         <!-- Equipment Dropdown -->
@@ -44,7 +42,7 @@
         </v-col>
       </v-row>
     </v-form>
-  </v-card>
+  </v-container>
 </template>
 
 <script setup>

@@ -1,7 +1,5 @@
 <template>
-  <v-card class="pa-4" max-width="600">
-    <v-card-title class="text-h6">Return Equipment</v-card-title>
-
+  <v-container class="pa-4" max-width="600">
     <v-form @submit.prevent="submitForm" v-model="isFormValid">
       <v-row dense>
         <!-- Rental Info Dropdown -->
@@ -37,7 +35,7 @@
         </v-col>
       </v-row>
     </v-form>
-  </v-card>
+  </v-container>
 </template>
 
 <script setup>

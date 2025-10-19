@@ -1,125 +1,59 @@
 <template>
-  <v-card class="pa-4" max-width="600">
-    <v-card-title class="text-h6">Issue Equipment</v-card-title>
-
+  <v-container class="pa-4" max-width="600">
     <v-form @submit.prevent="submitForm" v-model="isFormValid">
-      <v-row dense>
-        <!-- Equipment Dropdown -->
-        <v-col cols="12">
-          <v-select
-            v-model="form.equipmentId"
-            :items="equipmentOptions"
-            item-title="name"
-            item-value="id"
-            label="Select Equipment"
-            :rules="[required]"
-            :loading="loadingEquipment"
-            :return-object="false"
-            variant="outlined"
-            density="comfortable"
-          />
-        </v-col>
+      <v-select
+        v-model="form.rentalId"
+        :items="rentalOptions"
+        item-title="title"
+        item-value="id"
+        label="Select Rental"
+        :rules="[required]"
+        class="mb-4"
+      />
 
-        <!-- Customer Dropdown -->
-        <v-col cols="12">
-          <v-select
-            v-model="form.customerId"
-            :items="customerOptions"
-            item-title="name"
-            item-value="id"
-            label="Select Customer"
-            :rules="[required]"
-            :loading="loadingCustomers"
-            :return-object="false"
-            variant="outlined"
-            density="comfortable"
-          />
-        </v-col>
-
-        <!-- Submit Button -->
-        <v-col cols="12" class="d-flex justify-end">
-          <v-btn type="submit" color="primary" :disabled="!isFormValid" :loading="submitting">
-            ISSUE
-          </v-btn>
-        </v-col>
-      </v-row>
+      <v-btn type="submit" color="error" :disabled="!isFormValid" :loading="submitting" block>
+        Cancel Rental
+      </v-btn>
     </v-form>
-  </v-card>
+  </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getAvailableEquipment } from '@/api/EquipmentController'
-import { getUnactiveCustomer } from '@/api/CustomerController'
-import { issueEquipment } from '@/api/RentalController'
+import { cancelRental, getActiveRentals } from '@/api/RentalController'
 
-const form = ref({
-  equipmentId: null,
-  customerId: null,
-})
+const form = ref({ rentalId: null })
 const isFormValid = ref(false)
-
-const equipmentOptions = ref([])
-const customerOptions = ref([])
-
-const loadingEquipment = ref(false)
-const loadingCustomers = ref(false)
 const submitting = ref(false)
+const rentalOptions = ref([])
 
 const required = (value) => !!value || 'Required'
 
-onMounted(async () => {
-  await loadOptions()
-})
+onMounted(loadOptions)
 
 async function loadOptions() {
-  loadingEquipment.value = true
-  loadingCustomers.value = true
-
   try {
-    const [equipRes, customerRes] = await Promise.all([
-      getAvailableEquipment(),
-      getUnactiveCustomer(),
-    ])
-
-    equipmentOptions.value = equipRes?.data || equipRes || []
-    customerOptions.value = customerRes?.data || customerRes || []
-
-    console.log('Equipment loaded:', equipmentOptions.value)
-    console.log('Customers loaded:', customerOptions.value)
-  } catch (error) {
-    console.error('Failed to load options', error)
-  } finally {
-    loadingEquipment.value = false
-    loadingCustomers.value = false
+    const rentals = await getActiveRentals()
+    rentalOptions.value = rentals.map((r) => ({
+      id: r.id,
+      title: `${r.customer.name} - ${r.equipment.name}`,
+    }))
+  } catch (err) {
+    console.error(err)
   }
 }
 
-// Submit handler
 async function submitForm() {
-  if (!isFormValid.value) return
-
+  if (!form.value.rentalId) return
   submitting.value = true
 
   try {
-    const payload = {
-      equipmentId: form.value.equipmentId,
-      customerId: form.value.customerId,
-    }
-
-    const response = await issueEquipment(payload)
-
-    console.log('Rental issued successfully:', response)
-    alert('Equipment issued successfully!')
-
-    // Reset form
-    form.value.equipmentId = null
-    form.value.customerId = null
-
+    await cancelRental(form.value.rentalId)
+    alert('Rental cancelled.')
+    form.value.rentalId = null
     await loadOptions()
-  } catch (error) {
-    console.error('Issue failed', error)
-    alert('Failed to issue equipment. Please try again.')
+  } catch (err) {
+    alert('Cancellation failed.')
   } finally {
     submitting.value = false
   }

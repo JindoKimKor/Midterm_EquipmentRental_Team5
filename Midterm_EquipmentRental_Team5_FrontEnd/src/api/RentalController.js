@@ -84,7 +84,7 @@ export async function extendRental(id, extensionRequest) {
 
 export async function cancelRental(id) {
   try {
-    const res = await RequestHandler.post(`rental/${id}/cancel`)
+    const res = await RequestHandler.delete(`rental/${id}`)
     return res
   } catch (error) {
     console.error(`Error cancelling rental with ID ${id}:`, error)
