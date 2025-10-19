@@ -93,7 +93,7 @@ const equipment = ref([])
 const loadEquipment = async () => {
   try {
     const response = await getRentedEquipmentSummary()
-    equipment.value = response.equipment || []
+    equipment.value = response || []
   } catch (error) {
     console.error('Failed to load equipment:', error)
   }
