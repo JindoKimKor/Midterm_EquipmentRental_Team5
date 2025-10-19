@@ -43,13 +43,7 @@
             placeholder="Select a role"
           ></v-select>
           <input type="hidden" v-model="customerModel.id" />
-          <v-btn
-            type="submit"
-            color="primary"
-            class="mt-4"
-            :loading="loading"
-            :disabled="!valid"
-          >
+          <v-btn type="submit" color="primary" class="mt-4" :loading="loading" :disabled="!valid">
             Submit
           </v-btn>
         </v-form>
@@ -60,7 +54,7 @@
 
 <script setup>
 import { createCustomer, updateCustomer } from '@/api/CustomerController'
-import { onBeforeMount, ref, defineEmits} from 'vue'
+import { onBeforeMount, ref, defineEmits } from 'vue'
 
 const emit = defineEmits(['customer-saved'])
 
@@ -70,7 +64,6 @@ const loading = ref(false)
 const roleOptions = ['User', 'Admin']
 
 const props = defineProps({
-  modelValue: Boolean,
   customer: Object,
 })
 

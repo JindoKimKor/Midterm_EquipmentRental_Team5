@@ -9,7 +9,7 @@
 
     <template v-slot:default="{ isActive }">
       <v-card title="Dialog">
-        <EquipmentForm />
+        <EquipmentForm :equipment="equipment" />
       </v-card>
     </template>
   </v-dialog>
@@ -22,6 +22,7 @@ import EquipmentForm from '@/components/forms/EquipmentForm.vue'
 
 const props = defineProps({
   modelValue: Boolean,
+  equipment: Object,
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -30,4 +31,6 @@ const isOpen = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val),
 })
+
+const equipment = computed(() => props.equipment)
 </script>

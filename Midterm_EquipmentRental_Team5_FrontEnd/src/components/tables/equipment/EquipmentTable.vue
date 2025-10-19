@@ -3,17 +3,7 @@
     <v-card-title class="d-flex align-center">
       <span class="text-h5 font-weight-semibold">Equipment List</span>
       <v-spacer />
-<!--      <v-btn not needed it's an extra btn-->
-<!--        color="primary"-->
-<!--        @click="isAddEquipmentDialogOpen = true"-->
-<!--        class="mr-2"-->
-<!--        elevation="2"-->
-<!--        rounded-->
-<!--      >-->
-<!--        <v-icon left>mdi-plus</v-icon>-->
-<!--        Add Equipment-->
-<!--      </v-btn>-->
-      <AddEquipmentDialog v-model="isAddEquipmentDialogOpen" />
+      <AddEquipmentDialog v-model="isAddEquipmentDialogOpen" :equipment="selectedEquipment" />
     </v-card-title>
 
     <v-data-table
@@ -120,6 +110,7 @@ import AddEquipmentDialog from '@/components/dialog/equipment/AddEquipmentDialog
 
 const isAdmin = true
 const isAddEquipmentDialogOpen = ref(false)
+const selectedEquipment = ref(null)
 
 const headers = [
   { title: 'Name', value: 'name' },
@@ -144,8 +135,8 @@ const loadEquipment = async () => {
 onBeforeMount(loadEquipment)
 
 const editEquipment = (item) => {
+  selectedEquipment.value = item
   isAddEquipmentDialogOpen.value = true
-  console.log('Editing equipment:', item)
 }
 
 const deleteEquipmentHandler = async (id) => {

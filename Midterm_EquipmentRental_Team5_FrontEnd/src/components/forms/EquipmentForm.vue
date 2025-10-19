@@ -54,20 +54,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { addEquipment } from '@/api/EquipmentController'
 
 const valid = ref(false)
 
-const equipment = ref({
-  id: 0,
-  name: '',
-  description: '',
-  category: '',
-  condition: '',
-  rentalPrice: 0,
-  isAvailable: true,
-  createdAt: new Date().toISOString().slice(0, 10), // Format YYYY-MM-DD
+const props = defineProps({
+  equipment: Object,
+})
+
+const equipment = ref({})
+
+onBeforeMount(() => {
+  console.log(props.equipment?.createdAt)
+  equipment.value = {
+    id: props.equipment?.id ?? null,
+    name: props.equipment?.name ?? '',
+    description: props.equipment?.description ?? '',
+    category: props.equipment?.category ?? '',
+    condition: props.equipment?.condition ?? '',
+    rentalPrice: props.equipment?.rentalPrice ?? 0,
+    isAvailable: props.equipment?.isAvailable ?? true,
+    createdAt: props.equipment?.createdAt.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
+  }
 })
 
 const rules = {

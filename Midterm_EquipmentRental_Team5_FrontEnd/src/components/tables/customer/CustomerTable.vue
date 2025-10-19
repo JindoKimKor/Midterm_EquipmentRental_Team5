@@ -108,11 +108,6 @@ const loadCustomers = async () => {
 
 onMounted(loadCustomers)
 
-const openAddCustomerDialog = () => {
-  selectedCustomer.value = null
-  isAddCustomerDialogOpen.value = true
-}
-
 const editCustomerHandler = (item) => {
   selectedCustomer.value = item
   isAddCustomerDialogOpen.value = true
