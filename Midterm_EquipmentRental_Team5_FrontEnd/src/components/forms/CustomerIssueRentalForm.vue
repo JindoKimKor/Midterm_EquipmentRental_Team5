@@ -2,7 +2,15 @@
   <v-card class="pa-4" max-width="600">
     <v-card-title class="text-h6">Issue Equipment</v-card-title>
 
-    <v-form @submit.prevent="submitForm" v-model="isFormValid">
+    <div v-if="loadingRental" class="text-center pa-4">
+      <v-progress-circular indeterminate color="primary" />
+    </div>
+
+    <div v-else-if="hasActiveRental" class="text-subtitle-1 pa-4 text-error">
+      You already have an active rental. You must return it before issuing new equipment.
+    </div>
+
+    <v-form v-else @submit.prevent="submitForm" v-model="isFormValid">
       <v-row dense>
         <!-- Equipment Dropdown -->
         <v-col cols="12">
@@ -20,25 +28,14 @@
           />
         </v-col>
 
-        <!-- Customer Dropdown -->
-        <v-col cols="12">
-          <v-select
-            v-model="form.customerId"
-            :items="customerOptions"
-            item-title="name"
-            item-value="id"
-            label="Select Customer"
-            :rules="[required]"
-            :loading="loadingCustomers"
-            :return-object="false"
-            variant="outlined"
-            density="comfortable"
-          />
-        </v-col>
-
         <!-- Submit Button -->
         <v-col cols="12" class="d-flex justify-end">
-          <v-btn type="submit" color="primary" :disabled="!isFormValid" :loading="submitting">
+          <v-btn
+            type="submit"
+            color="primary"
+            :disabled="!isFormValid || submitting"
+            :loading="submitting"
+          >
             ISSUE
           </v-btn>
         </v-col>
@@ -50,81 +47,83 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getAvailableEquipment } from '@/api/EquipmentController'
-import { getAllCustomers } from '@/api/CustomerController'
 import { issueEquipment } from '@/api/RentalController'
+import { getCustomerActiveRental } from '@/api/CustomerController'
+import { useUserInformationStore } from '@/stores/UserInformation'
 
-// Form state
+const userStoreInfo = useUserInformationStore()
+
 const form = ref({
   equipmentId: null,
-  customerId: null,
+  customerId: userStoreInfo.id,
 })
 const isFormValid = ref(false)
-
-// Dropdown options
 const equipmentOptions = ref([])
-const customerOptions = ref([])
-
-// Loading states
 const loadingEquipment = ref(false)
-const loadingCustomers = ref(false)
 const submitting = ref(false)
 
-// Validation rule
+const loadingRental = ref(true)
+const hasActiveRental = ref(false)
+
 const required = (value) => !!value || 'Required'
 
-// Load equipment and customers
+// Check for existing rental and load equipment
 onMounted(async () => {
-  await loadOptions()
+  await checkCustomerRental()
+  if (!hasActiveRental.value) {
+    await loadEquipmentOptions()
+  }
 })
 
-async function loadOptions() {
-  loadingEquipment.value = true
-  loadingCustomers.value = true
-
+// 🔍 Check if the customer already has an active rental
+async function checkCustomerRental() {
+  loadingRental.value = true
   try {
-    const [equipRes, customerRes] = await Promise.all([getAvailableEquipment(), getAllCustomers()])
-
-    equipmentOptions.value = equipRes?.data || equipRes || []
-    customerOptions.value = customerRes?.data || customerRes || []
-
-    console.log('Equipment loaded:', equipmentOptions.value)
-    console.log('Customers loaded:', customerOptions.value)
+    const rental = await getCustomerActiveRental(userStoreInfo.id)
+    hasActiveRental.value = !!rental
   } catch (error) {
-    console.error('Failed to load options', error)
+    hasActiveRental.value = false // Assume no rental if 404 or failure
   } finally {
-    loadingEquipment.value = false
-    loadingCustomers.value = false
+    loadingRental.value = false
   }
 }
 
-// Submit handler
+// 🎒 Load available equipment
+async function loadEquipmentOptions() {
+  loadingEquipment.value = true
+  try {
+    const response = await getAvailableEquipment()
+    equipmentOptions.value = response?.data || response || []
+  } catch (error) {
+    console.error('Failed to load equipment', error)
+  } finally {
+    loadingEquipment.value = false
+  }
+}
+
+// 📤 Submit form to issue equipment
 async function submitForm() {
   if (!isFormValid.value) return
-
   submitting.value = true
 
   try {
     const payload = {
-      equipmentId: form.value.equipmentId,
-      customerId: form.value.customerId,
+      EquipmentId: form.value.equipmentId,
+      CustomerId: form.value.customerId,
     }
 
-    const response = await issueEquipment(payload)
-
-    console.log('Rental issued successfully:', response)
+    await issueEquipment(payload)
     alert('Equipment issued successfully!')
-
-    // Reset form
-    form.value.equipmentId = null
-    form.value.customerId = null
-
-    // Reload equipment to update available items
-    await loadOptions()
+    resetForm()
   } catch (error) {
     console.error('Issue failed', error)
     alert('Failed to issue equipment. Please try again.')
   } finally {
     submitting.value = false
   }
+}
+
+function resetForm() {
+  form.value.equipmentId = null
 }
 </script>

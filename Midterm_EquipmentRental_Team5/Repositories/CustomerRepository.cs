@@ -36,7 +36,7 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             return _context.Rentals
                 .Include(r => r.Equipment)
                 .Include(r => r.Customer)
-                .First(r => r.CustomerId == id && r.IsActive);
+                .FirstOrDefault(r => r.CustomerId == id && r.IsActive);
         }
 
 

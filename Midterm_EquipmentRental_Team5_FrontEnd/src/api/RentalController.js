@@ -20,6 +20,7 @@ export async function getRentalDetails(id) {
 
 export async function issueEquipment(issueRequest) {
   try {
+    console.log(issueRequest)
     const res = await RequestHandler.post('rental/issue', issueRequest)
     return res
   } catch (error) {
