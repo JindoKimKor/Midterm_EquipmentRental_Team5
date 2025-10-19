@@ -1,27 +1,23 @@
 <template>
-  <v-card class="pa-4" max-width="600">
-    <v-card-title class="text-h6">Return Equipment</v-card-title>
-
+  <v-container class="pa-4" max-width="600">
     <v-form @submit.prevent="submitForm" v-model="isFormValid">
       <v-row dense>
-        <!-- Rental Info Dropdown -->
         <v-col cols="12">
           <v-select
             v-model="form.rentalId"
             :items="rentalOptions"
-            item-title="label"
+            item-title="title"
             item-value="id"
             label="Rental"
             :rules="[required]"
           />
         </v-col>
 
-        <!-- Condition Dropdown -->
         <v-col cols="12">
-          <v-select
-            v-model="form.condition"
-            :items="conditionOptions"
-            label="Condition Upon Return"
+          <v-text-field
+            v-model="form.newReturnDate"
+            label="New Return Date"
+            type="date"
             :rules="[required]"
           />
         </v-col>
@@ -31,66 +27,59 @@
           <v-textarea v-model="form.notes" label="Notes" rows="3" auto-grow clearable />
         </v-col>
 
-        <!-- Submit Button -->
         <v-col cols="12" class="d-flex justify-end">
-          <v-btn type="submit" color="primary" :disabled="!isFormValid"> Return </v-btn>
+          <v-btn type="submit" color="primary" :disabled="!isFormValid"> Extend Rental </v-btn>
         </v-col>
       </v-row>
     </v-form>
-  </v-card>
+  </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { extendRental, getActiveRentals } from '@/api/RentalController'
 
-// Form state
 const form = ref({
   rentalId: null,
-  condition: null,
+  newReturnDate: null,
   notes: '',
 })
+
 const isFormValid = ref(false)
 
-// Required rule
+const rentalOptions = ref([])
 const required = (value) => !!value || 'Required'
 
-// Options
-const rentalOptions = ref([])
-const conditionOptions = ['Good', 'Damaged', 'Broken', 'Needs Maintenance']
+onMounted(loadOptions)
 
-// Fetch current active rentals
-onMounted(async () => {
+async function loadOptions() {
   try {
-    const response = await axios.get('/api/rentals/active') // or your actual endpoint
-    rentalOptions.value = response.data.map((rental) => ({
-      id: rental.id,
-      label: `${rental.equipmentName} (Rented by ${rental.customerName})`,
+    const rentals = await getActiveRentals()
+    rentalOptions.value = rentals.map((r) => ({
+      id: r.id,
+      title: `${r.customer.name} - ${r.equipment.name}`,
     }))
-  } catch (error) {
-    console.error('Failed to load rentals', error)
+  } catch (err) {
+    console.error(err)
   }
-})
+}
 
-// Submit handler
 async function submitForm() {
   try {
-    const payload = {
-      rentalId: form.value.rentalId,
-      condition: form.value.condition,
-      notes: form.value.notes,
-    }
-
-    await axios.post('/api/rentals/return', payload)
-    alert('Return submitted successfully!')
-
-    // Reset form
-    form.value.rentalId = null
-    form.value.condition = null
-    form.value.notes = ''
+    await extendRental(form.value.rentalId, {
+      NewDueDate: form.value.newReturnDate,
+      Reason: form.value.notes,
+    })
+    alert('Rental extended successfully!')
+    resetForm()
   } catch (error) {
-    console.error('Failed to submit return', error)
-    alert('Failed to submit return')
+    console.error('Extension failed:', error)
+    alert('Failed to extend rental.')
   }
+}
+
+function resetForm() {
+  form.value.rentalId = null
+  form.value.newReturnDate = null
 }
 </script>

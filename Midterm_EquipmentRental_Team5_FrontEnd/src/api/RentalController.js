@@ -75,7 +75,7 @@ export async function getEquipmentRentalHistory(equipmentId) {
 
 export async function extendRental(id, extensionRequest) {
   try {
-    const res = await RequestHandler.post(`rental/${id}/extend`, extensionRequest)
+    const res = await RequestHandler.put(`rental/${id}`, extensionRequest)
     return res
   } catch (error) {
     console.error(`Error extending rental with ID ${id}:`, error)

@@ -40,7 +40,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getActiveRentals, getAllRentals, returnEquipment } from '@/api/RentalController'
+import { getActiveRentals, returnEquipment } from '@/api/RentalController'
 
 const form = ref({
   rentalId: null,
