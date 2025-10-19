@@ -88,6 +88,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 // If user is not admin, they can only issue to themselves
                 if (userRole != "Admin")
                 {
+                    if (issueRequest.CustomerId != currentUserId) { return Unauthorized(); }
                     issueRequest.CustomerId = currentUserId;
                 }
 
