@@ -38,6 +38,12 @@ namespace Midterm_EquipmentRental_Team5.Repositories
                 .Include(r => r.Customer)
                 .FirstOrDefault(r => r.CustomerId == id && r.IsActive);
         }
+        public IEnumerable<ICustomer>? GetCustomersUnactiveRental()
+        {
+            return _context.Customers
+                .Where(c => !_context.Rentals.Any(r => r.CustomerId == c.Id && r.IsActive))
+                .ToList();
+        }
 
 
         public ICustomer? GetCustomerDetails(int id)
