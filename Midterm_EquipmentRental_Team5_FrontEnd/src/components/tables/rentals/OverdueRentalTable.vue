@@ -1,75 +1,116 @@
 <template>
-  <v-card class="pa-4">
-    <v-card-title class="text-h6">Rental History</v-card-title>
+  <v-card class="pa-6 red-alert" elevation="3" rounded>
+    <v-card-title class="d-flex align-center text-h5 font-weight-bold text-red-darken-3 mb-4">
+      <v-icon left color="red darken-3" class="mr-2" size="32">mdi-alert-circle</v-icon>
+      Overdue Rentals
+    </v-card-title>
 
-    <v-timeline side="end" align="start" density="comfortable">
-      <v-timeline-item
-        v-for="rental in rentals"
-        :key="rental.id"
-        :color="getColor(rental)"
-        size="small"
-      >
-        <template #opposite>
-          <div class="text-caption text-grey-darken-1">
-            {{ formatDate(rental.issuedAt) }} →
-            {{ rental.returnedAt ? formatDate(rental.returnedAt) : 'Ongoing' }}
-          </div>
-        </template>
+    <v-data-table
+      :headers="headers"
+      :items="overdueRentals"
+      class="elevation-2"
+      density="comfortable"
+      fixed-header
+      height="480"
+      hover
+      item-key="id"
+      :loading="loading"
+      loading-text="Loading overdue rentals..."
+      no-data-text="No overdue rentals found"
+    >
+      <!-- Due Date -->
+      <template #item.dueDate="{ item }">
+        <span>{{ formatDate(item.dueDate) }}</span>
+      </template>
 
-        <template #default>
-          <div class="font-weight-medium">Rented by {{ rental.customer.fullName }}</div>
-          <div class="text-caption">Duration: {{ getDuration(rental) }} days</div>
-          <v-chip class="mt-2" :color="getColor(rental)" text-color="white" small label>
-            {{ getStatus(rental) }}
-          </v-chip>
-        </template>
-      </v-timeline-item>
-    </v-timeline>
+      <template #item.daysOverdue="{ item }">
+        <v-chip
+          color="red darken-3"
+          text-color="white"
+          small
+          label
+          class="font-weight-semibold"
+          aria-label="Days overdue"
+        >
+          {{ calculateDaysOverdue(item.dueDate) }} day<span
+            v-if="calculateDaysOverdue(item.dueDate) !== 1"
+            >s</span
+          >
+        </v-chip>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { useRoute } from 'vue-router'
+import { getOverdueRentals, returnEquipment } from '@/api/RentalController'
 
-const rentals = ref([])
-const route = useRoute()
+const headers = [
+  { title: 'Equipment', value: 'equipment.name' },
+  { title: 'Customer', value: 'customer.name' },
+  { title: 'Due Date', value: 'dueDate' },
+  { title: 'Days Overdue', value: 'daysOverdue' },
+]
 
-const equipmentId = route.params.equipmentId
+const overdueRentals = ref([])
+const loading = ref(false)
+const returningId = ref(null)
 
-onMounted(async () => {
+onMounted(fetchOverdueRentals)
+
+async function fetchOverdueRentals() {
+  loading.value = true
   try {
-    const response = await axios.get(`/api/rentals/equipment/${equipmentId}`)
-    rentals.value = response.data
-  } catch (err) {
-    console.error('Error fetching rental history:', err)
+    overdueRentals.value = await getOverdueRentals()
+  } catch (error) {
+    console.error('Failed to fetch overdue rentals:', error)
+  } finally {
+    loading.value = false
   }
-})
+}
 
-// Helpers
 function formatDate(date) {
-  return new Date(date).toLocaleDateString()
+  return new Date(date).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 
-function getDuration(rental) {
-  const start = new Date(rental.issuedAt)
-  const end = rental.returnedAt ? new Date(rental.returnedAt) : new Date()
-  const ms = end - start
-  return Math.max(Math.floor(ms / (1000 * 60 * 60 * 24)), 0)
+function calculateDaysOverdue(dueDate) {
+  const due = new Date(dueDate)
+  const now = new Date()
+  const diff = now - due
+  return Math.max(Math.floor(diff / (1000 * 60 * 60 * 24)), 0)
 }
 
-function getStatus(rental) {
-  if (rental.isActive) {
-    const now = new Date()
-    const due = new Date(rental.dueDate)
-    return now > due ? 'Overdue' : 'Active'
+async function handleReturnNow(item) {
+  if (returningId.value) return // prevent multiple clicks
+
+  if (confirm(`Mark rental of "${item.equipment.name}" as returned?`)) {
+    returningId.value = item.id
+    try {
+      await returnEquipment(item.id)
+      overdueRentals.value = overdueRentals.value.filter((rental) => rental.id !== item.id)
+      alert('Rental marked as returned.')
+    } catch (error) {
+      alert('Failed to mark as returned. Please try again.')
+      console.error(error)
+    } finally {
+      returningId.value = null
+    }
   }
-  return 'Completed'
-}
-
-function getColor(rental) {
-  const status = getStatus(rental)
-  return status === 'Completed' ? 'green' : status === 'Active' ? 'blue' : 'red'
 }
 </script>
+
+<style scoped>
+.red-alert {
+  background-color: #ffebee !important;
+  border: 1px solid #f44336;
+}
+
+.font-weight-semibold {
+  font-weight: 600;
+}
+</style>

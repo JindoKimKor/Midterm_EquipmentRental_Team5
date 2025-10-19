@@ -1,7 +1,5 @@
 <template>
-  <v-card class="pa-4" max-width="600">
-    <v-card-title class="text-h6">Return Equipment</v-card-title>
-
+  <v-container class="pa-4" max-width="600">
     <v-form @submit.prevent="submitForm" v-model="isFormValid">
       <v-row dense>
         <!-- Rental Info Dropdown -->
@@ -9,7 +7,7 @@
           <v-select
             v-model="form.rentalId"
             :items="rentalOptions"
-            item-title="label"
+            item-title="title"
             item-value="id"
             label="Rental"
             :rules="[required]"
@@ -37,14 +35,13 @@
         </v-col>
       </v-row>
     </v-form>
-  </v-card>
+  </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { getActiveRentals, returnEquipment } from '@/api/RentalController'
 
-// Form state
 const form = ref({
   rentalId: null,
   condition: null,
@@ -52,45 +49,44 @@ const form = ref({
 })
 const isFormValid = ref(false)
 
-// Required rule
 const required = (value) => !!value || 'Required'
 
-// Options
 const rentalOptions = ref([])
 const conditionOptions = ['Good', 'Damaged', 'Broken', 'Needs Maintenance']
 
-// Fetch current active rentals
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/rentals/active') // or your actual endpoint
-    rentalOptions.value = response.data.map((rental) => ({
-      id: rental.id,
-      label: `${rental.equipmentName} (Rented by ${rental.customerName})`,
-    }))
+    const response = await getActiveRentals()
+    rentalOptions.value = response.map((r) => {
+      return {
+        id: r.id,
+        title: r.customer.name + ' - ' + r.equipment.name,
+      }
+    })
   } catch (error) {
     console.error('Failed to load rentals', error)
   }
 })
 
-// Submit handler
 async function submitForm() {
   try {
     const payload = {
-      rentalId: form.value.rentalId,
-      condition: form.value.condition,
-      notes: form.value.notes,
+      RentalId: form.value.rentalId,
+      Condition: form.value.condition,
+      Notes: form.value.notes,
     }
-
-    await axios.post('/api/rentals/return', payload)
-    alert('Return submitted successfully!')
-
-    // Reset form
-    form.value.rentalId = null
-    form.value.condition = null
-    form.value.notes = ''
+    await returnEquipment(payload)
+    resetForm()
+    alert('Successfully  to submit return')
   } catch (error) {
     console.error('Failed to submit return', error)
     alert('Failed to submit return')
   }
+}
+
+function resetForm() {
+  form.value.rentalId = null
+  form.value.condition = null
+  form.value.notes = ''
 }
 </script>

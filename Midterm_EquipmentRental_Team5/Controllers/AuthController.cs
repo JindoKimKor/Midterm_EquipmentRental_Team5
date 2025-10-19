@@ -24,7 +24,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             {
                 var user = _authService.ValidateLogin(request) ?? throw new KeyNotFoundException("User not found");
                 var token = _authService.GenerateJwtToken(user);
-                return Ok(new { Token = token });
+                return Ok(new { token, user });
             }
             catch (KeyNotFoundException)
             {

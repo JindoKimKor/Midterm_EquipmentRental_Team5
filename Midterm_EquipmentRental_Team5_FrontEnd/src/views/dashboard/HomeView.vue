@@ -37,7 +37,7 @@
       </v-row>
 
       <!-- Customer Actions -->
-      <v-row v-if="userRole === 'Customer'" justify="center" class="text-center">
+      <v-row v-else justify="center" class="text-center">
         <v-col cols="12" sm="6" md="5" v-for="card in customerCards" :key="card.title">
           <v-card class="pa-4 hoverable" elevation="4">
             <v-icon size="48" color="teal-darken-2">{{ card.icon }}</v-icon>
@@ -59,7 +59,7 @@ import useAuthenicationStore from '@/stores/Authentication'
 const router = useRouter()
 const authStore = useAuthenicationStore()
 
-const userRole = ref(authStore.role)
+const userRole = ref(authStore.authRole)
 
 onMounted(() => {})
 
@@ -69,7 +69,7 @@ const adminCards = [
     title: 'Manage Equipment',
     description: 'Add, update, or remove rental equipment.',
     icon: 'mdi-hammer-wrench',
-    route: '/dashboard/equipment',
+    route: '/dashboard/equipments',
   },
   {
     title: 'Manage Customers',

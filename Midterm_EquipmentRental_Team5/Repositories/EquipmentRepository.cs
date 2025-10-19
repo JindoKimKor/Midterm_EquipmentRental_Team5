@@ -5,14 +5,9 @@ using Midterm_EquipmentRental_Team5.Repositories.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Repositories
 {
-    public class EquipmentRepository : IEquipmentRepository
+    public class EquipmentRepository(AppDbContext context) : IEquipmentRepository
     {
-        private readonly AppDbContext _context;
-
-        public EquipmentRepository(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         public IEquipment AddNewEquipment(IEquipment equipment)
         {
@@ -20,23 +15,21 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             return equipment;
         }
 
-        public void DeleteEquipment(int id)
+        public IEquipment? DeleteEquipment(int id)
         {
             var equipment = _context.Equipment.Find(id);
-            if (equipment != null)
-            {
-                _context.Equipment.Remove(equipment);
-            }
+            if (equipment != null) _context.Equipment.Remove(equipment);
+            return equipment;
         }
 
-        public IEnumerable<IEquipment> GetAllEquipment()
+        public IEnumerable<IEquipment>? GetAllEquipment()
         {
-            return _context.Equipment.ToList();
+            return _context.Equipment.ToList() ?? null;
         }
 
-        public IEnumerable<IEquipment> GetRentedEquipment()
+        public IEnumerable<IEquipment>? GetRentedEquipment()
         {
-            return _context.Equipment.Where(e => !e.IsAvailable).ToList();
+            return _context.Equipment.Where(e => !e.IsAvailable);
         }
 
         public IEquipment? GetSpecificEquipment(int id)
@@ -44,18 +37,16 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             return _context.Equipment.Find(id);
         }
 
-        public IEnumerable<IEquipment> ListAvailableEquipment()
+        public IEnumerable<IEquipment>? ListAvailableEquipment()
         {
-            return _context.Equipment.Where(e => e.IsAvailable).ToList();
+            return _context.Equipment.Where(e => e.IsAvailable).ToList() ?? null;
         }
 
-        public void UpdateEquipment(IEquipment equipment)
+        public IEquipment? UpdateEquipment(IEquipment equipment)
         {
             var existingEquipment = _context.Equipment.Find(equipment.Id);
-            if (existingEquipment != null)
-            {
-                _context.Entry(existingEquipment).CurrentValues.SetValues(equipment);
-            }
+            if (existingEquipment != null) _context.Entry(existingEquipment).CurrentValues.SetValues(equipment);
+            return existingEquipment;
         }
     }
 }

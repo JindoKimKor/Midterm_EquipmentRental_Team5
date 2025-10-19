@@ -20,6 +20,7 @@ export async function getRentalDetails(id) {
 
 export async function issueEquipment(issueRequest) {
   try {
+    console.log(issueRequest)
     const res = await RequestHandler.post('rental/issue', issueRequest)
     return res
   } catch (error) {
@@ -74,7 +75,7 @@ export async function getEquipmentRentalHistory(equipmentId) {
 
 export async function extendRental(id, extensionRequest) {
   try {
-    const res = await RequestHandler.post(`rental/${id}/extend`, extensionRequest)
+    const res = await RequestHandler.put(`rental/${id}`, extensionRequest)
     return res
   } catch (error) {
     console.error(`Error extending rental with ID ${id}:`, error)
@@ -83,7 +84,7 @@ export async function extendRental(id, extensionRequest) {
 
 export async function cancelRental(id) {
   try {
-    const res = await RequestHandler.post(`rental/${id}/cancel`)
+    const res = await RequestHandler.delete(`rental/${id}`)
     return res
   } catch (error) {
     console.error(`Error cancelling rental with ID ${id}:`, error)

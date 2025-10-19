@@ -63,3 +63,12 @@ export async function getCustomerActiveRental(id) {
     console.error(error)
   }
 }
+
+export async function getUnactiveCustomer() {
+  try {
+    const res = await RequestHandler.get(`customer/unactive-customer`)
+    return res
+  } catch (error) {
+    console.error(error)
+  }
+}

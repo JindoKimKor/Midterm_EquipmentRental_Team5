@@ -1,51 +1,52 @@
 <template>
   <v-navigation-drawer app permanent>
-    <v-list dense nav>
-      <div v-for="(section, index) in navigation" :key="index">
+    <v-list dense nav aria-label="Primary Navigation">
+      <template v-for="(section, index) in navigation" :key="`section-${index}`">
         <v-subheader>{{ section.categoryTitle }}</v-subheader>
 
         <v-list-item
           v-for="(item, idx) in section.items"
-          :key="idx"
-          :to="resolveUrl(item.url)"
-          :title="item.title"
-          :prepend-icon="item.prependIcon"
-        />
-      </div>
+          :key="`item-${index}-${idx}`"
+          :to="item.url"
+          router
+          link
+          exact-active-class="v-item--active"
+          :aria-label="item.title"
+        >
+          <template v-slot:prepend>
+            <v-icon>{{ item.prependIcon }}</v-icon>
+          </template>
+
+          <v-list-item-content>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider v-if="index !== navigation.length - 1" class="my-2" />
+      </template>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from 'vue'
+import { ref, computed } from 'vue'
+import useAuthenticationStore from '@/stores/Authentication'
+import { useUserInformationStore } from '@/stores/UserInformation'
 
-const isAdmin = true
-const isUser = !isAdmin
-const userId = 123
 const role = ref('Admin')
+const authStore = useAuthenticationStore()
+const userStore = useUserInformationStore()
 
-const navigation = ref([])
-
-onBeforeMount(() => {
-  if (role.value === 'Admin') {
-    navigation.value = AdminNavigationItems
-  } else {
-    navigation.value = UserNavigationItems
-  }
+const navigation = computed(() => {
+  return role.value === authStore.authRole ? AdminNavigationItems : UserNavigationItems
 })
 
-// Util to replace placeholder tokens in URL
-const resolveUrl = (url) => {
-  return url.replace(':userId', userId)
-}
-
-// Navigation for normal users
 const UserNavigationItems = [
   {
     categoryTitle: 'User Profile',
     items: [
       {
-        url: '/dashboard/customers/:userId',
+        url: `/dashboard/customers/${userStore.id}`,
         title: 'My Profile',
         prependIcon: 'mdi-account',
       },
@@ -55,20 +56,24 @@ const UserNavigationItems = [
     categoryTitle: 'Rental Management',
     items: [
       {
-        url: '/dashboard/customers/:userId/rentals',
+        url: `/dashboard/customers/${userStore.id}/rentals`,
         title: 'My Rentals',
         prependIcon: 'mdi-history',
       },
       {
-        url: '/dashboard/customers/:userId/active-rental',
-        title: 'Active Rental',
-        prependIcon: 'mdi-checkbox-marked-outline',
+        url: '/dashboard/rentals/issue',
+        title: 'Issue Equipment',
+        prependIcon: 'mdi-arrow-up-bold-box',
+      },
+      {
+        url: '/dashboard/rentals/return',
+        title: 'Return Equipment',
+        prependIcon: 'mdi-arrow-down-bold-box',
       },
     ],
   },
 ]
 
-// Navigation for admins
 const AdminNavigationItems = [
   {
     categoryTitle: 'Customer Management',
@@ -94,39 +99,29 @@ const AdminNavigationItems = [
     categoryTitle: 'Rental Management',
     items: [
       {
-        url: '/dashboard/rental',
-        title: 'All Rentals',
+        url: '/dashboard/rentals',
+        title: 'Rentals',
         prependIcon: 'mdi-clipboard-list',
       },
       {
-        url: '/dashboard/rental/issue',
-        title: 'Issue Equipment',
-        prependIcon: 'mdi-arrow-up-bold-box',
+        url: '/dashboard/rentals/issue',
+        title: 'Issue Rental',
+        prependIcon: 'mdi-truck-fast-outline', // Issuing = dispatching
       },
       {
-        url: '/dashboard/rental/return',
-        title: 'Return Equipment',
+        url: '/dashboard/rentals/return',
+        title: 'Return Rental',
         prependIcon: 'mdi-arrow-down-bold-box',
       },
       {
-        url: '/dashboard/rental/active',
-        title: 'Active Rentals',
-        prependIcon: 'mdi-playlist-check',
+        url: '/dashboard/rentals/extend',
+        title: 'Extend Rental',
+        prependIcon: 'mdi-calendar-plus',
       },
       {
-        url: '/dashboard/rental/completed',
-        title: 'Completed Rentals',
-        prependIcon: 'mdi-calendar-check',
-      },
-      {
-        url: '/dashboard/rental/overdue',
-        title: 'Overdue Rentals',
-        prependIcon: 'mdi-alert',
-      },
-      {
-        url: '/dashboard/rental/equipment-history',
-        title: 'Equipment History',
-        prependIcon: 'mdi-history',
+        url: '/dashboard/rentals/cancel',
+        title: 'Cancel Rental',
+        prependIcon: 'mdi-cancel',
       },
     ],
   },

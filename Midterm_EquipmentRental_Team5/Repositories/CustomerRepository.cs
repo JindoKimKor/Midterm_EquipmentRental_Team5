@@ -31,13 +31,20 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             return customer;
         }
 
-        public IEnumerable<IRental>? GetCustomerActiveRentals(int id)
+        public IRental? GetCustomerActiveRental(int id)
         {
             return _context.Rentals
                 .Include(r => r.Equipment)
                 .Include(r => r.Customer)
-                .Where(r => r.CustomerId == id && r.IsActive);
+                .FirstOrDefault(r => r.CustomerId == id && r.IsActive);
         }
+        public IEnumerable<ICustomer>? GetCustomersUnactiveRental()
+        {
+            return _context.Customers
+                .Where(c => !_context.Rentals.Any(r => r.CustomerId == c.Id && r.IsActive))
+                .ToList();
+        }
+
 
         public ICustomer? GetCustomerDetails(int id)
         {

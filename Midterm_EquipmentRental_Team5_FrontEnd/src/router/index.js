@@ -12,54 +12,84 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'DashboardView',
-      component: () => import('../views/DashboardView.vue'),
+      component: () => import('../views/dashboard/DashboardView.vue'),
       meta: { requiresAuth: true },
       children: [
         {
           path: '',
           name: 'DashboardHomeView',
-          component: () => import('../views/dashboard/main/HomeView.vue'),
+          component: () => import('../views/dashboard/HomeView.vue'),
           meta: { requiresAuth: true },
         },
         {
           path: 'equipments',
           name: 'EquipmentDashboard',
-          component: () => import('../views/dashboard/main/EquipmentView.vue'),
+          component: () => import('../views/dashboard/equipment/EquipmentView.vue'),
           meta: { requiresAuth: true },
-          children: [],
         },
         {
-          path: 'equipment/:id',
+          path: 'equipments/:id',
           name: 'EquipmentDetailView',
-          component: () => import('../views/dashboard/EquipmentDetailsView.vue'),
+          component: () => import('../views/dashboard/equipment/EquipmentDetailsView.vue'),
           props: true,
+          meta: { requiresAuth: true },
         },
         {
           path: 'customers',
           name: 'CustomerDashboard',
-          component: () => import('../views/dashboard/main/CustomerView.vue'),
+          component: () => import('../views/dashboard/customer/CustomerView.vue'),
+          meta: { requiresAuth: true }, // added auth meta
         },
         {
           path: 'customers/:id',
           name: 'CustomerDetailView',
-          component: () => import('../views/dashboard/CustomerDetailsView.vue'),
-          meta: { requiresAuth: true },
+          component: () => import('../views/dashboard/customer/CustomerDetailsView.vue'),
           props: true,
+          meta: { requiresAuth: true },
         },
         {
-          path: 'rental',
-          name: 'RenalDashboard',
-          component: () => import('../views/dashboard/main/RentalView.vue'),
+          path: 'customers/:id/rentals',
+          name: 'CustomerRentalView',
+          component: () => import('../views/dashboard/rental/RentalView.vue'),
+          props: true,
           meta: { requiresAuth: true },
-          children: [
-            {
-              path: ':id',
-              name: 'RentalDetailView',
-              component: () => import('../views/dashboard/RentalDetailsView.vue'),
-              meta: { requiresAuth: true },
-              props: true,
-            },
-          ],
+        },
+        {
+          path: 'rentals',
+          name: 'RentalDashboard',
+          component: () => import('../views/dashboard/rental/RentalView.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'rentals/:id',
+          name: 'RentalDetailView',
+          component: () => import('../views/dashboard/rental/RentalDetailsView.vue'),
+          props: true,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'rentals/issue',
+          name: 'IssueRentalView',
+          component: () => import('../views/dashboard/rental/IssueEquipmentView.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'rentals/return',
+          name: 'ReturnRentalView',
+          component: () => import('../views/dashboard/rental/ReturnEquipmentView.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'rentals/extend',
+          name: 'ExtendRentalView',
+          component: () => import('../views/dashboard/rental/ExtendRentalView.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'rentals/cancel',
+          name: 'CancelRentalView',
+          component: () => import('../views/dashboard/rental/CancelRentalView.vue'),
+          meta: { requiresAuth: true },
         },
       ],
     },
@@ -69,11 +99,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthenticationStore()
 
-  console.log(authStore.checkAuthToken())
-
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
 
-  if (requiresAuth && !authStore.checkAuthToken()) {
+  const doesRoleExist = authStore.checkAuthRole()
+  const doesTokenExist = authStore.checkAuthToken()
+
+  if (requiresAuth && !doesRoleExist && !doesTokenExist) {
     next({ name: 'LoginView' })
   } else {
     next()

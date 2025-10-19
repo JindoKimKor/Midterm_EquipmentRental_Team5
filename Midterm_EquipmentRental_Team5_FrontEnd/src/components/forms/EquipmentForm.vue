@@ -4,12 +4,7 @@
       <v-card-title>Equipment Form</v-card-title>
       <v-card-text>
         <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
-          <v-text-field
-            v-model="equipment.name"
-            label="Name"
-            :rules="[rules.required]"
-            required
-          ></v-text-field>
+          <v-text-field v-model="equipment.name" label="Name" :rules="[rules.required]" required />
 
           <v-textarea
             v-model="equipment.description"
@@ -17,21 +12,21 @@
             rows="3"
             :rules="[rules.required]"
             required
-          ></v-textarea>
+          />
 
           <v-text-field
             v-model="equipment.category"
             label="Category"
             :rules="[rules.required]"
             required
-          ></v-text-field>
+          />
 
           <v-text-field
             v-model="equipment.condition"
             label="Condition"
             :rules="[rules.required]"
             required
-          ></v-text-field>
+          />
 
           <v-text-field
             v-model.number="equipment.rentalPrice"
@@ -39,9 +34,9 @@
             type="number"
             :rules="[rules.required, rules.positive]"
             required
-          ></v-text-field>
+          />
 
-          <v-switch v-model="equipment.isAvailable" label="Is Available" inset></v-switch>
+          <v-switch v-model="equipment.isAvailable" label="Is Available" inset />
 
           <v-text-field
             v-model="equipment.createdAt"
@@ -49,12 +44,9 @@
             type="date"
             :rules="[rules.required]"
             required
-          ></v-text-field>
+          />
 
-          <!-- Hidden Id field (for edit scenarios) -->
-          <input type="hidden" v-model="equipment.id" />
-
-          <v-btn type="submit" color="primary" class="mt-4">Submit</v-btn>
+          <v-btn type="submit" color="primary" class="mt-4" :disabled="!valid"> Submit </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -62,19 +54,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
+import { addEquipment } from '@/api/EquipmentController'
 
 const valid = ref(false)
 
-const equipment = ref({
-  id: 0,
-  name: '',
-  description: '',
-  category: '',
-  condition: '',
-  rentalPrice: 0,
-  isAvailable: true,
-  createdAt: new Date().toISOString().slice(0, 10), // Format YYYY-MM-DD
+const props = defineProps({
+  equipment: Object,
+})
+
+const equipment = ref({})
+
+onBeforeMount(() => {
+  console.log(props.equipment?.createdAt)
+  equipment.value = {
+    id: props.equipment?.id ?? null,
+    name: props.equipment?.name ?? '',
+    description: props.equipment?.description ?? '',
+    category: props.equipment?.category ?? '',
+    condition: props.equipment?.condition ?? '',
+    rentalPrice: props.equipment?.rentalPrice ?? 0,
+    isAvailable: props.equipment?.isAvailable ?? true,
+    createdAt: props.equipment?.createdAt.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
+  }
 })
 
 const rules = {
@@ -82,10 +84,32 @@ const rules = {
   positive: (v) => v >= 0 || 'Must be a positive number',
 }
 
-const submitForm = () => {
-  if (valid.value) {
-    console.log('Equipment submitted:', equipment.value)
-    alert('Form submitted!')
+const submitForm = async () => {
+  if (!valid.value) return
+
+  try {
+    const payload = { ...equipment.value }
+
+    await addEquipment(payload)
+    alert('Equipment successfully submitted!')
+
+    resetForm()
+  } catch (error) {
+    console.error('Submission failed:', error)
+    alert('Submission failed. Please try again.')
+  }
+}
+
+function resetForm() {
+  equipment.value = {
+    id: 0,
+    name: '',
+    description: '',
+    category: '',
+    condition: '',
+    rentalPrice: 0,
+    isAvailable: true,
+    createdAt: new Date().toISOString().slice(0, 10),
   }
 }
 </script>

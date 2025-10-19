@@ -20,11 +20,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/rentals - Get all rentals (Admin sees all, User sees own)
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetAllRentals(int page = 1)
+        public ActionResult<IEnumerable<object>> GetAllRentals(int page = 1)
         {
             try
             {
-                var rentals = await _rentalService.GetAllRentalsAsync(page);
+                var rentals = _rentalService.GetAllRentalsAsync(page);
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -46,11 +46,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/rentals/{id} - Get rental details
         [HttpGet("{id}")]
-        public async Task<ActionResult<object>> GetRentalDetails(int id)
+        public ActionResult<object> GetRentalDetails(int id)
         {
             try
             {
-                var rental = await _rentalService.GetRentalByIdAsync(id);
+                var rental = _rentalService.GetRentalByIdAsync(id);
 
                 if (rental == null)
                 {
@@ -77,7 +77,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // POST /api/rentals/issue - Issue equipment (Admin can assign to any customer, User can only issue to themselves)
         [HttpPost("issue")]
-        public async Task<ActionResult> IssueEquipment([FromBody] IssueRequest issueRequest)
+        public ActionResult IssueEquipment([FromBody] IssueRequest issueRequest)
         {
             try
             {
@@ -88,10 +88,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 // If user is not admin, they can only issue to themselves
                 if (userRole != "Admin")
                 {
+                    if (issueRequest.CustomerId != currentUserId) { return Unauthorized(); }
                     issueRequest.CustomerId = currentUserId;
                 }
 
-                await _rentalService.IssueEquipmentAsync(issueRequest);
+                _rentalService.IssueEquipmentAsync(issueRequest);
                 return Ok(new { Message = "Equipment issued successfully." });
             }
             catch (KeyNotFoundException ex)
@@ -110,12 +111,12 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // POST /api/rentals/return - Return equipment
         [HttpPost("return")]
-        public async Task<ActionResult> ReturnEquipment([FromBody] ReturnRequest returnRequest)
+        public ActionResult ReturnEquipment([FromBody] ReturnRequest returnRequest)
         {
             try
             {
                 // Get rental to check ownership
-                var rental = await _rentalService.GetRentalByIdAsync(returnRequest.RentalId);
+                var rental = _rentalService.GetRentalByIdAsync(returnRequest.RentalId);
 
                 if (rental == null)
                 {
@@ -132,7 +133,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                     return Forbid();
                 }
 
-                await _rentalService.ReturnEquipmentAsync(returnRequest);
+                _rentalService.ReturnEquipmentAsync(returnRequest);
                 return Ok(new { Message = "Equipment returned successfully." });
             }
             catch (KeyNotFoundException ex)
@@ -151,11 +152,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/rentals/active - Get active rentals
         [HttpGet("active")]
-        public async Task<ActionResult<IEnumerable<object>>> GetActiveRentals()
+        public ActionResult<IEnumerable<object>> GetActiveRentals()
         {
             try
             {
-                var activeRentals = await _rentalService.GetActiveRentalsAsync();
+                var activeRentals = _rentalService.GetActiveRentalsAsync();
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -177,11 +178,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/rentals/completed - Get completed rentals
         [HttpGet("completed")]
-        public async Task<ActionResult<IEnumerable<object>>> GetCompletedRentals()
+        public ActionResult<IEnumerable<object>> GetCompletedRentals()
         {
             try
             {
-                var completedRentals = await _rentalService.GetCompletedRentalsAsync();
+                var completedRentals = _rentalService.GetCompletedRentalsAsync();
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -204,11 +205,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // GET /api/rentals/overdue - Get overdue rentals (Admin only)
         [HttpGet("overdue")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<object>>> GetOverdueRentals()
+        public ActionResult<IEnumerable<object>> GetOverdueRentals()
         {
             try
             {
-                var overdueRentals = await _rentalService.GetOverdueRentalsAsync();
+                var overdueRentals = _rentalService.GetOverdueRentalsAsync();
                 return Ok(overdueRentals);
             }
             catch (Exception ex)
@@ -219,11 +220,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/rentals/equipment/{equipmentId} - Get equipment rental history
         [HttpGet("equipment/{equipmentId}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetEquipmentRentalHistory(int equipmentId)
+        public ActionResult<IEnumerable<object>> GetEquipmentRentalHistory(int equipmentId)
         {
             try
             {
-                var rentalHistory = await _rentalService.GetRentalHistoryByEquipmentAsync(equipmentId);
+                var rentalHistory = _rentalService.GetRentalHistoryByEquipmentAsync(equipmentId);
                 return Ok(rentalHistory);
             }
             catch (Exception ex)
@@ -235,11 +236,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // PUT /api/rentals/{id} - Extend rental (Admin only)
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> ExtendRental(int id, [FromBody] ExtensionRequest extensionRequest)
+        public ActionResult ExtendRental(int id, [FromBody] ExtensionRequest extensionRequest)
         {
             try
             {
-                await _rentalService.ExtendRentalAsync(id, extensionRequest);
+                _rentalService.ExtendRentalAsync(id, extensionRequest);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -259,11 +260,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // DELETE /api/rentals/{id} - Cancel/Force return rental (Admin only)
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> CancelRental(int id)
+        public ActionResult CancelRental(int id)
         {
             try
             {
-                await _rentalService.CancelRentalAsync(id);
+                _rentalService.CancelRentalAsync(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)

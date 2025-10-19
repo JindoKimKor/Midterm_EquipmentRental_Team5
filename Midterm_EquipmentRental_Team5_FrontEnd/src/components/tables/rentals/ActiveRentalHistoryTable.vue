@@ -1,65 +1,101 @@
 <template>
-  <v-card class="pa-4">
-    <v-card-title class="text-h6">Active Rentals</v-card-title>
+  <v-card class="pa-6" elevation="3" rounded>
+    <v-card-title class="text-h5 font-weight-bold mb-4">Active Rentals</v-card-title>
 
-    <v-data-table :headers="headers" :items="rentals" class="elevation-1" density="comfortable">
-      <!-- Equipment Image -->
+    <v-data-table
+      :headers="tableHeaders"
+      :items="rentals"
+      class="elevation-2"
+      density="comfortable"
+      fixed-header
+      height="480"
+      hover
+      item-key="id"
+    >
       <template #item.equipmentImage="{ item }">
-        <v-avatar size="60">
-          <v-img :src="item.equipment.imageUrl" alt="Equipment Image" />
+        <v-avatar size="64" tile>
+          <v-img
+            :src="item.equipment.imageUrl || 'https://via.placeholder.com/64'"
+            alt="Equipment Image"
+          />
         </v-avatar>
       </template>
 
-      <!-- Days Rented -->
       <template #item.daysRented="{ item }">
-        {{ calculateDaysRented(item.issuedAt) }} days
+        <span class="font-weight-medium">{{ calculateDaysRented(item.issuedAt) }}</span>
+        <small class="grey--text text--darken-1 ml-1">days</small>
       </template>
 
-      <!-- View Details Button -->
-      <template #item.actions="{ item }">
-        <v-btn color="primary" size="small" @click="viewRentalDetails(item)"> View Details </v-btn>
+      <template v-if="isAdmin" #item.issuedAt="{ item }">
+        {{ formatDate(item.issuedAt) }}
+      </template>
+
+      <template v-if="isAdmin" #item.dueDate="{ item }">
+        {{ formatDate(item.dueDate) }}
+      </template>
+
+      <template v-if="isAdmin" #item.returnedAt="{ item }">
+        {{ item.returnedAt ? formatDate(item.returnedAt) : 'Not returned' }}
       </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { ref, onMounted, computed } from 'vue'
+import { getActiveRentals } from '@/api/RentalController'
+import useAuthenticationStore from '@/stores/Authentication'
 
-// Table headers
-const headers = [
-  { title: 'Image', value: 'equipmentImage', sortable: false },
-  { title: 'Equipment Name', value: 'equipment.name' },
-  { title: 'Customer', value: 'customer.fullName' },
-  { title: 'Days Rented', value: 'daysRented', sortable: false },
-  { title: 'Actions', value: 'actions', sortable: false },
-]
+const useAuthStore = useAuthenticationStore()
 
-// Data
+const isAdmin = ref(useAuthStore.authRole)
+
+const tableHeaders = computed(() => {
+  const baseHeaders = [
+    { title: 'Image', value: 'equipmentImage', sortable: false },
+    { title: 'Equipment Name', value: 'equipment.name' },
+    { title: 'Customer', value: 'customer.name' },
+    { title: 'Days Rented', value: 'daysRented', sortable: false },
+  ]
+
+  const adminHeaders = [
+    { title: 'Issue Date', value: 'issuedAt' },
+    { title: 'Due Date', value: 'dueDate' },
+    { title: 'Return Date', value: 'returnedAt' },
+  ]
+
+  return isAdmin.value ? [...baseHeaders, ...adminHeaders] : baseHeaders
+})
+
 const rentals = ref([])
 
-// Fetch active rentals on mount
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/rentals/active')
-    rentals.value = response.data
+    rentals.value = await getActiveRentals()
   } catch (error) {
     console.error('Failed to fetch rentals:', error)
   }
 })
 
-// Compute days since IssuedAt
 function calculateDaysRented(issuedAt) {
   const issuedDate = new Date(issuedAt)
   const now = new Date()
-  const diffTime = Math.abs(now - issuedDate)
+  const diffTime = now - issuedDate
   return Math.floor(diffTime / (1000 * 60 * 60 * 24))
 }
 
-// Handle "View Details"
-function viewRentalDetails(rental) {
-  // This could navigate or open a modal
-  console.log('View rental:', rental)
+function formatDate(date) {
+  if (!date) return 'N/A'
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 </script>
+
+<style scoped>
+.font-weight-medium {
+  font-weight: 500;
+}
+</style>

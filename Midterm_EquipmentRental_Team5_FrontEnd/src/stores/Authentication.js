@@ -2,28 +2,49 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 const useAuthenticationStore = defineStore('Authentication', () => {
-  const role = ref('Admin')
+  const authRole = ref(null)
   const authToken = ref(null)
 
-  function getCookie(name) {
-    const match = document.cookie.match(name)
+  function getAuthToken() {
+    const match = document.cookie.match(/(?:^|; )auth_token=([^;]*)/)
     if (match) {
-      const [key, value] = match.input.split('=')
-      return { key, value }
+      return { key: 'auth_token', value: decodeURIComponent(match[1]) }
     }
     return null
   }
 
-  function checkCookie() {
-    const token = getCookie('auth_token')
+  function getAuthRole() {
+    const match = document.cookie.match(/(?:^|; )auth_role=([^;]*)/)
+    if (match) {
+      return { key: 'auth_role', value: decodeURIComponent(match[1]) }
+    }
+    return null
+  }
+
+  function checkToken() {
+    const token = getAuthToken()
     if (!token) return false
+    return true
+  }
+
+  function checkRole() {
+    const role = getAuthRole()
+    if (!role) return false
     return true
   }
 
   function checkAuthToken() {
     if (!authToken.value) {
-      if (!checkCookie()) return false
-      setToken(getCookie('auth_token').value)
+      if (!checkToken()) return false
+      setToken(getAuthToken().value)
+    }
+    return true
+  }
+
+  function checkAuthRole() {
+    if (!authRole.value) {
+      if (!checkRole()) return false
+      setRole(getAuthRole().value)
     }
     return true
   }
@@ -33,7 +54,12 @@ const useAuthenticationStore = defineStore('Authentication', () => {
     document.cookie = `auth_token=${token}; path=/; max-age=3600; Secure; SameSite=Strict;`
   }
 
-  return { checkAuthToken, setToken, role, authToken }
+  function setRole(newRole) {
+    authRole.value = newRole
+    document.cookie = `auth_role=${newRole}; path=/; max-age=3600; Secure; SameSite=Strict;`
+  }
+
+  return { checkAuthToken, checkAuthRole, setToken, setRole, authRole, authToken }
 })
 
 export default useAuthenticationStore

@@ -34,14 +34,18 @@
             required
           ></v-text-field>
 
-          <v-text-field
+          <v-select
             v-model="customerModel.role"
             label="Role"
+            :items="roleOptions"
             :rules="[rules.required]"
             required
-          ></v-text-field>
+            placeholder="Select a role"
+          ></v-select>
           <input type="hidden" v-model="customerModel.id" />
-          <v-btn type="submit" color="primary" class="mt-4">Submit</v-btn>
+          <v-btn type="submit" color="primary" class="mt-4" :loading="loading" :disabled="!valid">
+            Submit
+          </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -50,12 +54,16 @@
 
 <script setup>
 import { createCustomer, updateCustomer } from '@/api/CustomerController'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, defineEmits } from 'vue'
+
+const emit = defineEmits(['customer-saved'])
 
 const valid = ref(false)
+const loading = ref(false)
+
+const roleOptions = ['User', 'Admin']
 
 const props = defineProps({
-  modelValue: Boolean,
   customer: Object,
 })
 
@@ -96,12 +104,21 @@ const rules = {
   email: (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email must be valid',
 }
 
-const submitForm = () => {
+const submitForm = async () => {
   if (valid.value) {
-    if (customerModel.value.id) {
-      updateCustomer(customerModel.value.id, customerModel.value)
-    } else {
-      createCustomer(customerModel.value)
+    try {
+      if (customerModel.value.id) {
+        // 4. Wait for the API call to finish
+        await updateCustomer(customerModel.value.id, customerModel.value)
+      } else {
+        // 4. Wait for the API call to finish
+        await createCustomer(customerModel.value)
+      }
+      // 5. After success, emit the event to the parent
+      emit('customer-saved')
+    } catch (error) {
+      console.error('Failed to save the customer:', error)
+      // Optionally, show an error message to the user here
     }
   }
 }
