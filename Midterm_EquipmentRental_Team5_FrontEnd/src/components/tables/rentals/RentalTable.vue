@@ -2,14 +2,11 @@
   <v-card class="pa-6" elevation="3" rounded>
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h5 font-weight-semibold">Rented Equipment</span>
-      <v-btn icon @click="refreshData" aria-label="Refresh">
-        <v-icon>mdi-refresh</v-icon>
-      </v-btn>
     </v-card-title>
 
     <v-data-table
       :headers="headers"
-      :items="equipment"
+      :items="rentals"
       :items-per-page="10"
       class="elevation-1"
       density="comfortable"
@@ -18,48 +15,104 @@
       fixed-header
       height="600"
     >
-      <!-- Name column with router-link -->
-      <template #item.name="{ item }">
-        <router-link :to="`equipments/${item.id}`" class="text-decoration-none font-weight-medium">
-          {{ item.name }}
+      <!-- Equipment Name with link -->
+      <template #item.equipment.name="{ item }">
+        <router-link
+          :to="`equipments/${item.equipment.id}`"
+          class="text-decoration-none font-weight-medium"
+        >
+          {{ item.equipment.name }}
         </router-link>
       </template>
 
-      <!-- Category Chip -->
-      <template #item.category="{ item }">
+      <!-- Category -->
+      <template #item.equipment.category="{ item }">
         <v-chip color="blue lighten-4" text-color="blue darken-3" label small class="ma-0">
-          {{ item.category }}
+          {{ item.equipment.category }}
         </v-chip>
       </template>
 
-      <!-- Condition Chip -->
-      <template #item.condition="{ item }">
-        <v-chip color="grey lighten-3" text-color="black" label small class="ma-0">
-          {{ item.condition }}
-        </v-chip>
+      <!-- Customer Name -->
+      <template #item.customer.name="{ item }">
+        {{ item.customer.name }}
       </template>
 
-      <!-- Rental Price -->
-      <template #item.rentalPrice="{ item }">
-        <span class="font-mono font-weight-medium">
-          {{ formatCurrency(item.rentalPrice) }}
-        </span>
+      <!-- Issued At -->
+      <template #item.issuedAt="{ item }">
+        {{ formatDate(item.issuedAt) }}
       </template>
 
-      <template #item.isAvailable="{ item }">
+      <!-- Due Date -->
+      <template #item.dueDate="{ item }">
+        {{ formatDate(item.dueDate) }}
+      </template>
+
+      <!-- Returned At -->
+      <template #item.returnedAt="{ item }">
+        {{ item.returnedAt ? formatDate(item.returnedAt) : 'Not Returned' }}
+      </template>
+
+      <!-- Active Status -->
+      <template #item.isActive="{ item }">
         <v-chip
-          :color="item.isAvailable ? 'green lighten-4' : 'red lighten-4'"
-          :text-color="item.isAvailable ? 'green darken-2' : 'red darken-2'"
+          :color="item.isActive ? 'green lighten-4' : 'red lighten-4'"
+          :text-color="item.isActive ? 'green darken-2' : 'red darken-2'"
           label
           small
           class="ma-0"
         >
-          {{ item.isAvailable ? 'Available' : 'Unavailable' }}
+          {{ item.isActive ? 'Active' : 'Completed' }}
         </v-chip>
       </template>
 
-      <template #item.createdAt="{ item }">
-        {{ formatDate(item.createdAt) }}
+      <!-- Overdue Fee -->
+      <template #item.overdueFee="{ item }">
+        <span class="font-mono font-weight-medium">
+          {{ item.overdueFee ? formatCurrency(item.overdueFee) : '$0.00' }}
+        </span>
+      </template>
+
+      <!-- Extension Reason -->
+      <template #item.extensionReason="{ item }">
+        <span>{{ item.extensionReason || '—' }}</span>
+      </template>
+
+      <template #item.actions="{ item }">
+        <div class="d-flex align-center ga-2">
+          <!-- View Details Button -->
+          <v-tooltip text="View rental details" location="top">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :to="`rentals/${item.id}`"
+                color="primary"
+                variant="flat"
+                size="small"
+                class="text-capitalize"
+                aria-label="View rental details"
+              >
+                <v-icon start size="18" class="mr-1">mdi-eye</v-icon>
+                Details
+              </v-btn>
+            </template>
+          </v-tooltip>
+
+          <v-tooltip text="Mark as returned" location="top">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                icon
+                color="red darken-2"
+                size="small"
+                :disabled="!item.isActive"
+                aria-label="Mark as returned"
+                :to="`rentals/return`"
+              >
+                <v-icon>mdi-logout</v-icon>
+              </v-btn>
+            </template>
+          </v-tooltip>
+        </div>
       </template>
     </v-data-table>
   </v-card>
@@ -67,29 +120,33 @@
 
 <script setup>
 import { ref, onBeforeMount } from 'vue'
-import { getRentedEquipmentSummary } from '@/api/EquipmentController'
+import { getAllRentals, returnEquipment } from '@/api/RentalController'
 
 const headers = [
-  { title: 'Equipment Name', value: 'name' },
-  { title: 'Category', value: 'category' },
-  { title: 'Condition', value: 'condition' },
-  { title: 'Rental Price ($)', value: 'rentalPrice' },
-  { title: 'Availability', value: 'isAvailable' },
-  { title: 'Created Date', value: 'createdAt' },
+  { title: 'Equipment', value: 'equipment.name' },
+  { title: 'Category', value: 'equipment.category' },
+  { title: 'Customer', value: 'customer.name' },
+  { title: 'Issued At', value: 'issuedAt' },
+  { title: 'Due Date', value: 'dueDate' },
+  { title: 'Returned At', value: 'returnedAt' },
+  { title: 'Status', value: 'isActive' },
+  { title: 'Overdue Fee', value: 'overdueFee' },
+  { title: 'Extension Reason', value: 'extensionReason' },
+  { title: 'Actions', value: 'actions', sortable: false },
 ]
 
-const equipment = ref([])
+const rentals = ref([])
 
-const loadEquipment = async () => {
+const loadRentals = async () => {
   try {
-    const response = await getRentedEquipmentSummary()
-    equipment.value = response || []
+    const response = await getAllRentals()
+    rentals.value = response || []
   } catch (error) {
-    console.error('Failed to load equipment:', error)
+    console.error('Failed to load rentals:', error)
   }
 }
 
-onBeforeMount(loadEquipment)
+onBeforeMount(loadRentals)
 
 function formatCurrency(value) {
   return new Intl.NumberFormat('en-US', {
@@ -100,18 +157,6 @@ function formatCurrency(value) {
 
 function formatDate(date) {
   return new Date(date).toLocaleDateString()
-}
-
-function viewEquipment(item) {
-  console.log('View equipment:', item)
-}
-
-function editEquipment(item) {
-  console.log('Edit equipment:', item)
-}
-
-function refreshData() {
-  loadEquipment()
 }
 </script>
 

@@ -24,51 +24,19 @@
         <span class="font-weight-medium">{{ calculateDaysRented(item.issuedAt) }}</span>
         <small class="grey--text text--darken-1 ml-1">days</small>
       </template>
-
-      <!-- Actions -->
-      <template #item.actions="{ item }">
-        <v-btn
-          color="primary"
-          rounded
-          small
-          elevation="2"
-          @click=""
-          aria-label="View rental details"
-        >
-          View Details
-        </v-btn>
-        <v-tooltip top>
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              icon
-              color="red darken-3"
-              size="small"
-              aria-label="Mark as returned"
-              @click="handleReturnNow(item)"
-              :disabled="returningId === item.id"
-            >
-              <v-icon v-if="returningId !== item.id">mdi-logout</v-icon>
-              <v-progress-circular v-else indeterminate color="white" size="18" width="2" />
-            </v-btn>
-          </template>
-          Mark as returned
-        </v-tooltip>
-      </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getActiveRentals } from '@/api/RentalController'
+import { getActiveRentals, returnEquipment } from '@/api/RentalController'
 
 const headers = [
   { title: 'Image', value: 'equipmentImage', sortable: false },
   { title: 'Equipment Name', value: 'equipment.name' },
   { title: 'Customer', value: 'customer.fullName' },
   { title: 'Days Rented', value: 'daysRented', sortable: false },
-  { title: 'Actions', value: 'actions', sortable: false },
 ]
 
 const rentals = ref([])
@@ -88,9 +56,14 @@ function calculateDaysRented(issuedAt) {
   return Math.floor(diffTime / (1000 * 60 * 60 * 24))
 }
 
-function viewRentalDetails(rental) {
-  // Implement your logic here or navigate to rental details page
-  console.log('Viewing rental details:', rental)
+async function returnRental(id) {
+  if (confirm('Do you want to return equipment')) {
+    try {
+      await returnEquipment(id)
+    } catch (error) {
+      console.error('Failed to delete customer:', error)
+    }
+  }
 }
 </script>
 

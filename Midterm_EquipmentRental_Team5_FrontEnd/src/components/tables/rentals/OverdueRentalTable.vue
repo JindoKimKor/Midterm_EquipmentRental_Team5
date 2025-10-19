@@ -18,6 +18,7 @@
       loading-text="Loading overdue rentals..."
       no-data-text="No overdue rentals found"
     >
+      <!-- Due Date -->
       <template #item.dueDate="{ item }">
         <span>{{ formatDate(item.dueDate) }}</span>
       </template>
@@ -37,36 +38,6 @@
           >
         </v-chip>
       </template>
-
-      <template #item.actions="{ item }">
-        <v-btn
-          color="primary"
-          rounded
-          small
-          elevation="2"
-          @click=""
-          aria-label="View rental details"
-        >
-          View Details
-        </v-btn>
-        <v-tooltip top>
-          <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              icon
-              color="red darken-3"
-              size="small"
-              aria-label="Mark as returned"
-              @click="handleReturnNow(item)"
-              :disabled="returningId === item.id"
-            >
-              <v-icon v-if="returningId !== item.id">mdi-logout</v-icon>
-              <v-progress-circular v-else indeterminate color="white" size="18" width="2" />
-            </v-btn>
-          </template>
-          Mark as returned
-        </v-tooltip>
-      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -80,7 +51,7 @@ const headers = [
   { title: 'Customer', value: 'customer.fullName' },
   { title: 'Due Date', value: 'dueDate' },
   { title: 'Days Overdue', value: 'daysOverdue' },
-  { title: 'Actions', value: 'actions', sortable: false },
+  f,
 ]
 
 const overdueRentals = ref([])

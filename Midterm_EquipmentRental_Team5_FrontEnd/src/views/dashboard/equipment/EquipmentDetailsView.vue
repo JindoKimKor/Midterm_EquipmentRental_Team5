@@ -1,75 +1,42 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row dense>
       <!-- Equipment Image -->
       <v-col cols="12" md="4">
         <v-img
-          :src="equipment.image || 'https://via.placeholder.com/300x200?text=No+Image'"
+          :src="
+            equipment.image ||
+            'https://m.media-amazon.com/images/I/61UEK6ShB2L._UF1000,1000_QL80_.jpg'
+          "
           alt="Equipment Image"
-          height="200"
-          class="rounded"
+          height="240"
+          class="rounded-lg elevation-2"
+          cover
         />
       </v-col>
 
-      <!-- Equipment Info -->
+      <!-- Equipment Details -->
       <v-col cols="12" md="8">
-        <v-card>
-          <v-card-title>
-            <span class="text-h6">{{ equipment.name }}</span>
-            <v-spacer />
-            <div v-if="isAdmin">
-              <v-btn icon color="blue" @click="editEquipment">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-              <v-btn icon color="red" @click="deleteEquipment">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </div>
-          </v-card-title>
+        <v-card class="rounded-lg elevation-2">
+          <v-divider />
 
-          <v-card-text>
-            <v-list dense>
-              <v-list-item>
-                <v-list-item-title>
-                  <strong>Category:</strong> {{ equipment.category }}
-                </v-list-item-title>
-              </v-list-item>
+          <v-card-text class="pt-4">
+            <v-row dense>
+              <v-col cols="12" sm="6">
+                <div class="mb-2"><strong>Category:</strong> {{ equipment.category || '—' }}</div>
+                <div class="mb-2"><strong>Condition:</strong> {{ equipment.condition || '—' }}</div>
+              </v-col>
 
-              <v-list-item>
-                <v-list-item-title>
-                  <strong>Condition:</strong> {{ equipment.condition }}
-                </v-list-item-title>
-              </v-list-item>
-
-              <v-list-item>
-                <v-list-item-title>
-                  <strong>Status:</strong>
-                  <v-chip :color="statusColor(status)" dark>
+              <v-col cols="12" sm="6">
+                <div class="mb-2 d-flex align-center">
+                  <strong class="me-2">Status:</strong>
+                  <v-chip :color="statusColor(status)" dark size="small">
                     {{ status }}
                   </v-chip>
-                </v-list-item-title>
-              </v-list-item>
-
-              <v-list-item v-if="isAdmin">
-                <v-list-item-title>
-                  <!--
-                  <router-link
-                    :to="{ name: 'EquipmentHistory', params: { equipmentId: equipment.id } }"
-                  >
-                    View Rental History
-                  </router-link>
-                  -->
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
+                </div>
+              </v-col>
+            </v-row>
           </v-card-text>
-
-          <v-card-actions v-if="isUser && status === 'Available'">
-            <v-btn color="green" @click="issueEquipment">
-              <v-icon start>mdi-hand-extended</v-icon>
-              Issue Equipment
-            </v-btn>
-          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
@@ -77,15 +44,12 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref, computed } from 'vue'
+import { ref, onBeforeMount, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { getEquipment } from '@/api/EquipmentController'
 
 const route = useRoute()
 const equipmentId = route.params.id
-
-const isAdmin = true
-const isUser = !isAdmin
 
 const equipment = ref({})
 
@@ -93,7 +57,6 @@ onBeforeMount(async () => {
   equipment.value = await getEquipment(equipmentId)
 })
 
-// Derive status string from isAvailable boolean
 const status = computed(() => {
   return equipment.value.isAvailable ? 'Available' : 'Unavailable'
 })
@@ -112,20 +75,14 @@ const statusColor = (status) => {
       return 'grey'
   }
 }
-
-const editEquipment = () => {
-  console.log('Navigate to edit page for equipment ID:', equipment.value.id)
-}
-
-const deleteEquipment = () => {
-  if (confirm('Delete this equipment?')) {
-    console.log('Deleting equipment', equipment.value.id)
-    // Add your deletion logic here
-  }
-}
-
-const issueEquipment = () => {
-  console.log('Issue this equipment', equipment.value.id)
-  // Add your issue logic here
-}
 </script>
+
+<style scoped>
+.v-img {
+  object-fit: cover;
+}
+
+.v-btn {
+  transition: 0.2s ease-in-out;
+}
+</style>
