@@ -30,10 +30,12 @@
 <script setup>
 import { ref } from 'vue'
 import useAuthenicationStore from '@/stores/Authentication'
+import { useUserInformationStore } from '@/stores/UserInformation'
 import { login } from '@/api/AuthController'
 import router from '@/router'
 
 const authStore = useAuthenicationStore()
+const userStore = useUserInformationStore()
 
 const userName = ref('')
 const password = ref('')
@@ -48,7 +50,7 @@ async function loginHandler() {
     Username: userName.value,
     Password: password.value,
   })
-  console.log(user)
+  userStore.setUser(user)
   if (token) {
     authStore.setToken(token)
     authStore.setRole(user.role)

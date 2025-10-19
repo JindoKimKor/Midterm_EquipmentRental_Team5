@@ -22,7 +22,7 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public ICustomer? ValidateLogin(ILoginRequest loginRequest)
         {
-            var user = _unitOfWork.Customers.GetCustomerByPasswordAndUsername((ILoginRequest)loginRequest) as ICustomer ?? null;
+            var user = _unitOfWork.Customers.GetCustomerByPasswordAndUsername(loginRequest) ?? null;
             return user;
         }
 
@@ -30,7 +30,8 @@ namespace Midterm_EquipmentRental_Team5.Services
         {
             var claims = new[]{
                 new Claim(ClaimTypes.Name, customer.UserName),
-                new Claim(ClaimTypes.Role, customer.Role)
+                new Claim(ClaimTypes.Role, customer.Role),
+                new Claim(ClaimTypes.NameIdentifier, customer.Id.ToString())
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));

@@ -7,7 +7,7 @@
         <v-list-item
           v-for="(item, idx) in section.items"
           :key="`item-${index}-${idx}`"
-          :to="resolveUrl(item.url)"
+          :to="item.url"
           router
           link
           exact-active-class="v-item--active"
@@ -30,26 +30,23 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import useAuthenticationStore from '@/stores/Authentication'
+import { useUserInformationStore } from '@/stores/UserInformation'
 
-// Simulate reactive user info — replace with your store logic
-const userId = ref(123)
-const role = ref('Admin') // or 'User', etc.
+const role = ref('Admin')
+const authStore = useAuthenticationStore()
+const userStore = useUserInformationStore()
 
-// Compute navigation based on role reactively
 const navigation = computed(() => {
-  return role.value === 'Admin' ? AdminNavigationItems : UserNavigationItems
+  return role.value === authStore.authRole ? AdminNavigationItems : UserNavigationItems
 })
 
-// Replace :userId placeholder with actual ID in URLs
-const resolveUrl = (url) => url.replace(':userId', userId.value)
-
-// Navigation configuration for users
 const UserNavigationItems = [
   {
     categoryTitle: 'User Profile',
     items: [
       {
-        url: '/dashboard/customers/:userId',
+        url: `/dashboard/customers/${userStore.id}`,
         title: 'My Profile',
         prependIcon: 'mdi-account',
       },
@@ -59,12 +56,12 @@ const UserNavigationItems = [
     categoryTitle: 'Rental Management',
     items: [
       {
-        url: '/dashboard/customers/:userId/rentals',
+        url: `/dashboard/customers/${userStore.id}/rentals`,
         title: 'My Rentals',
         prependIcon: 'mdi-history',
       },
       {
-        url: '/dashboard/customers/:userId/active-rental',
+        url: `/dashboard/customers/${userStore.id}/active-rental`,
         title: 'Active Rental',
         prependIcon: 'mdi-checkbox-marked-outline',
       },
@@ -72,7 +69,6 @@ const UserNavigationItems = [
   },
 ]
 
-// Navigation configuration for admins
 const AdminNavigationItems = [
   {
     categoryTitle: 'Customer Management',
