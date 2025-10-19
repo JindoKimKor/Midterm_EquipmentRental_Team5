@@ -30,7 +30,6 @@ const emit = defineEmits(['update:modelValue'])
 const isOpen = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val),
-  π,
 })
 
 const equipment = computed(() => props.equipment)
