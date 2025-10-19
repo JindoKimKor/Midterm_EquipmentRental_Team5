@@ -23,7 +23,7 @@ api.interceptors.request.use((config) => {
 })
 
 const handleError = (error) => {
-  console.error('API Error:', message)
+  console.error('API Error:', error)
   if (error.status === 401) {
     router.push('/')
   } else {
