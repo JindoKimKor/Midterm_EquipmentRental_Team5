@@ -84,9 +84,6 @@ async function loadOptions() {
 
     equipmentOptions.value = equipRes?.data || equipRes || []
     customerOptions.value = customerRes?.data || customerRes || []
-
-    console.log('Equipment loaded:', equipmentOptions.value)
-    console.log('Customers loaded:', customerOptions.value)
   } catch (error) {
     console.error('Failed to load options', error)
   } finally {
