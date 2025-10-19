@@ -15,7 +15,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IEnumerable<ICustomer>?> GetAllCustomersAsync(int page = 1)
+        public IEnumerable<ICustomer>? GetAllCustomersAsync(int page = 1)
         {
             var customers = _unitOfWork.Customers.ListAllCustomers();
             if (customers != null)
@@ -23,16 +23,16 @@ namespace Midterm_EquipmentRental_Team5.Services
                 int skip = (page - 1) * PageSize;
                 customers = customers.Skip(skip).Take(PageSize);
             }
-            return Task.FromResult(customers);
+            return customers;
         }
 
-        public Task<ICustomer?> GetCustomerByIdAsync(int id)
+        public ICustomer? GetCustomerByIdAsync(int id)
         {
             var customer = _unitOfWork.Customers.GetCustomerDetails(id);
-            return Task.FromResult(customer);
+            return customer;
         }
 
-        public Task AddCustomerAsync(ICustomer newCustomer)
+        public void AddCustomerAsync(ICustomer newCustomer)
         {
 
 
@@ -45,10 +45,9 @@ namespace Midterm_EquipmentRental_Team5.Services
                 Role = newCustomer.Role,
             });
             _unitOfWork.SaveChanges();
-            return Task.CompletedTask;
         }
 
-        public Task<ICustomer?> UpdateCustomerAsync(int id, ICustomer updatedCustomer)
+        public ICustomer? UpdateCustomerAsync(int id, ICustomer updatedCustomer)
         {
             var existingCustomer = _unitOfWork.Customers.GetCustomerDetails(id);
             if (existingCustomer != null)
@@ -62,27 +61,27 @@ namespace Midterm_EquipmentRental_Team5.Services
                 _unitOfWork.Customers.UpdateCustomer(existingCustomer);
                 _unitOfWork.SaveChanges();
             }
-            return Task.FromResult(existingCustomer);
+            return existingCustomer;
         }
 
-        public Task<ICustomer?> DeleteCustomerAsync(int id)
+        public ICustomer? DeleteCustomerAsync(int id)
         {
             var customer = _unitOfWork.Customers.GetCustomerDetails(id);
             _unitOfWork.Customers.DeleteCustomer(id);
             _unitOfWork.SaveChanges();
-            return Task.FromResult(customer);
+            return customer;
         }
 
-        public Task<IEnumerable<IRental>?> GetCustomerRentalHistoryAsync(int customerId)
+        public IEnumerable<IRental>? GetCustomerRentalHistoryAsync(int customerId)
         {
             var rentals = _unitOfWork.Customers.GetCustomerRentalHistory(customerId) ?? null;
-            return Task.FromResult(rentals);
+            return rentals;
         }
 
-        public Task<IRental?> GetCustomerActiveRentalAsync(int customerId)
+        public IRental? GetCustomerActiveRentalAsync(int customerId)
         {
             var activeRental = _unitOfWork.Customers.GetCustomerActiveRental(customerId) ?? null;
-            return Task.FromResult(activeRental);
+            return activeRental;
         }
     }
 }
