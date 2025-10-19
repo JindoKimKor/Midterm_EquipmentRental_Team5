@@ -11,6 +11,7 @@ namespace Midterm_EquipmentRental_Team5.Repositories.Interfaces
         ICustomer? GetCustomerDetails(int id);
         ICustomer? GetCustomerByPasswordAndUsername(ILoginRequest loginRequest);
         IRental? GetCustomerActiveRental(int id);
+        IEnumerable<ICustomer>? GetCustomersUnactiveRental();
         IEnumerable<IRental>? GetCustomerRentalHistory(int id);
         IEnumerable<ICustomer>? ListAllCustomers();
     }

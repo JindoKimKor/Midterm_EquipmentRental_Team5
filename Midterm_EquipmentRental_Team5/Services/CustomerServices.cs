@@ -26,6 +26,14 @@ namespace Midterm_EquipmentRental_Team5.Services
             return customers;
         }
 
+        public IEnumerable<ICustomer>? GetUnactiveCustomersAsync()
+        {
+            var customers = _unitOfWork.Customers.GetCustomersUnactiveRental();
+
+            return customers;
+        }
+
+
         public ICustomer? GetCustomerByIdAsync(int id)
         {
             var customer = _unitOfWork.Customers.GetCustomerDetails(id);

@@ -34,6 +34,22 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             }
         }
 
+        [HttpGet("unactive-customer")]
+        [Authorize(Roles = "Admin")]
+        public ActionResult<IEnumerable<IRental>> GetUnactiveCustomers(int page = 1)
+        {
+            try
+            {
+                var customers = _customerService.GetUnactiveCustomersAsync();
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
         // GET /api/customers/{id} - Get customer details
         [HttpGet("{id}")]
         public ActionResult<IRental> GetCustomer(int id)
