@@ -47,7 +47,7 @@ import { getCompletedRentals } from '@/api/RentalController'
 
 const headers = [
   { title: 'Equipment', value: 'equipment.name' },
-  { title: 'Customer', value: 'customer.fullName' },
+  { title: 'Customer', value: 'customer.name' },
   { title: 'Return Date', value: 'returnedAt' },
   { title: 'Duration', value: 'duration', sortable: false, width: '110' },
   { title: 'Status', value: 'status', sortable: false, width: '100' },

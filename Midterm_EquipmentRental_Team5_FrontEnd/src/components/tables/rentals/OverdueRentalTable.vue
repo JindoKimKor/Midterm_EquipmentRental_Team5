@@ -48,7 +48,7 @@ import { getOverdueRentals, returnEquipment } from '@/api/RentalController'
 
 const headers = [
   { title: 'Equipment', value: 'equipment.name' },
-  { title: 'Customer', value: 'customer.fullName' },
+  { title: 'Customer', value: 'customer.name' },
   { title: 'Due Date', value: 'dueDate' },
   { title: 'Days Overdue', value: 'daysOverdue' },
 ]

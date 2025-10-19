@@ -1,9 +1,9 @@
 <template>
   <v-card class="pa-6" elevation="3" rounded>
-    <v-card-title class="text-h5 font-weight-bold mb-4"> Active Rentals </v-card-title>
+    <v-card-title class="text-h5 font-weight-bold mb-4">Active Rentals</v-card-title>
 
     <v-data-table
-      :headers="headers"
+      :headers="tableHeaders"
       :items="rentals"
       class="elevation-2"
       density="comfortable"
@@ -12,32 +12,60 @@
       hover
       item-key="id"
     >
-      <!-- Equipment Image -->
       <template #item.equipmentImage="{ item }">
         <v-avatar size="64" tile>
-          <v-img :src="item.equipment.imageUrl" alt="Equipment Image" />
+          <v-img
+            :src="item.equipment.imageUrl || 'https://via.placeholder.com/64'"
+            alt="Equipment Image"
+          />
         </v-avatar>
       </template>
 
-      <!-- Days Rented -->
       <template #item.daysRented="{ item }">
         <span class="font-weight-medium">{{ calculateDaysRented(item.issuedAt) }}</span>
         <small class="grey--text text--darken-1 ml-1">days</small>
+      </template>
+
+      <template v-if="isAdmin" #item.issuedAt="{ item }">
+        {{ formatDate(item.issuedAt) }}
+      </template>
+
+      <template v-if="isAdmin" #item.dueDate="{ item }">
+        {{ formatDate(item.dueDate) }}
+      </template>
+
+      <template v-if="isAdmin" #item.returnedAt="{ item }">
+        {{ item.returnedAt ? formatDate(item.returnedAt) : 'Not returned' }}
       </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { getActiveRentals, returnEquipment } from '@/api/RentalController'
+import { ref, onMounted, computed } from 'vue'
+import { getActiveRentals } from '@/api/RentalController'
+import useAuthenticationStore from '@/stores/Authentication'
 
-const headers = [
-  { title: 'Image', value: 'equipmentImage', sortable: false },
-  { title: 'Equipment Name', value: 'equipment.name' },
-  { title: 'Customer', value: 'customer.fullName' },
-  { title: 'Days Rented', value: 'daysRented', sortable: false },
-]
+const useAuthStore = useAuthenticationStore()
+
+const isAdmin = ref(useAuthStore.authRole)
+
+const tableHeaders = computed(() => {
+  const baseHeaders = [
+    { title: 'Image', value: 'equipmentImage', sortable: false },
+    { title: 'Equipment Name', value: 'equipment.name' },
+    { title: 'Customer', value: 'customer.name' },
+    { title: 'Days Rented', value: 'daysRented', sortable: false },
+  ]
+
+  const adminHeaders = [
+    { title: 'Issue Date', value: 'issuedAt' },
+    { title: 'Due Date', value: 'dueDate' },
+    { title: 'Return Date', value: 'returnedAt' },
+  ]
+
+  return isAdmin.value ? [...baseHeaders, ...adminHeaders] : baseHeaders
+})
 
 const rentals = ref([])
 
@@ -56,14 +84,13 @@ function calculateDaysRented(issuedAt) {
   return Math.floor(diffTime / (1000 * 60 * 60 * 24))
 }
 
-async function returnRental(id) {
-  if (confirm('Do you want to return equipment')) {
-    try {
-      await returnEquipment(id)
-    } catch (error) {
-      console.error('Failed to delete customer:', error)
-    }
-  }
+function formatDate(date) {
+  if (!date) return 'N/A'
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 </script>
 
