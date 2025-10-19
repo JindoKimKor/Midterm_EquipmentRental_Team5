@@ -51,7 +51,6 @@ const headers = [
   { title: 'Customer', value: 'customer.fullName' },
   { title: 'Due Date', value: 'dueDate' },
   { title: 'Days Overdue', value: 'daysOverdue' },
-  f,
 ]
 
 const overdueRentals = ref([])

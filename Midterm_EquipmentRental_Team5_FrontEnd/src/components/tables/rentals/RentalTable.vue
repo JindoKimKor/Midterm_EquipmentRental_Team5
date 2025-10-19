@@ -1,7 +1,7 @@
 <template>
   <v-card class="pa-6" elevation="3" rounded>
     <v-card-title class="d-flex justify-space-between align-center">
-      <span class="text-h5 font-weight-semibold">Rented Equipment</span>
+      <b class="text-h5 font-weight-bold">Rental</b>
     </v-card-title>
 
     <v-data-table
