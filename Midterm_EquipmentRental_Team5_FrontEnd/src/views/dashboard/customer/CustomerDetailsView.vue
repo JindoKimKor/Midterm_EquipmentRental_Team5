@@ -4,10 +4,17 @@
       <v-card-title class="d-flex align-center justify-space-between">
         <div class="text-h6 font-weight-medium">
           {{ customer?.name || 'Customer Information' }}
+          <v-chip color="primary" class="text-uppercase" variant="elevated" size="small">
+            {{ customer?.role || 'N/A' }}
+          </v-chip>
         </div>
-        <v-chip color="primary" class="text-uppercase" variant="elevated" size="small">
-          {{ customer?.role || 'N/A' }}
-        </v-chip>
+
+        <AddCustomerDialog
+          @click="editCustomerHandler(customer)"
+          v-model="isAddCustomerDialogOpen"
+          :customer="customer"
+          @saved="refreshCustomers"
+        />
       </v-card-title>
 
       <v-divider />
@@ -45,15 +52,23 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import CustomerRentedHistory from '@/components/tables/customer/CustomerRentedHistory.vue'
 import { getCustomer } from '@/api/CustomerController'
+import AddCustomerDialog from '@/components/dialog/AddCustomerDialog.vue'
 
 const route = useRoute()
 const customerId = route.params.id
+const isAddCustomerDialogOpen = ref(false)
+
+const editCustomerHandler = () => {
+  isAddCustomerDialogOpen.value = true
+}
 
 const customer = ref(null)
 const loading = ref(true)
 const error = ref(false)
 
-onMounted(async () => {
+onMounted(async () => await refreshCustomers())
+
+async function refreshCustomers() {
   try {
     const res = await getCustomer(customerId)
     customer.value = res?.data ?? res
@@ -63,7 +78,7 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
-})
+}
 </script>
 
 <style scoped>
