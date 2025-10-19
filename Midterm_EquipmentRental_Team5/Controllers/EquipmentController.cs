@@ -16,11 +16,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/equipment - Get all equipment with pagination
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<IEquipment>>> GetAllEquipment(int page = 1)
+        public ActionResult<IEnumerable<IEquipment>> GetAllEquipment(int page = 1)
         {
             try
             {
-                var equipment = await _equipmentService.GetAllEquipmentAsync(page);
+                var equipment = _equipmentService.GetAllEquipmentAsync(page);
                 return Ok(equipment);
             }
             catch (KeyNotFoundException ex)
@@ -35,11 +35,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/equipment/{id} - Get specific equipment details
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEquipment>> GetEquipment(int id)
+        public ActionResult<IEquipment> GetEquipment(int id)
         {
             try
             {
-                var equipment = await _equipmentService.GetEquipmentByIdAsync(id);
+                var equipment = _equipmentService.GetEquipmentByIdAsync(id);
 
                 if (equipment == null)
                 {
@@ -61,11 +61,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // POST /api/equipment - Add new equipment (Admin only)
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> AddEquipment([FromBody] Equipment newEquipment)
+        public ActionResult AddEquipment([FromBody] Equipment newEquipment)
         {
             try
             {
-                await _equipmentService.AddEquipmentAsync(newEquipment);
+               _equipmentService.AddEquipmentAsync(newEquipment);
                 return NoContent();
             }
             catch (Exception ex)
@@ -77,11 +77,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // PUT /api/equipment/{id} - Update equipment (Admin only)
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> UpdateEquipment(int id, [FromBody] Equipment updatedEquipment)
+        public ActionResult UpdateEquipment(int id, [FromBody] Equipment updatedEquipment)
         {
             try
             {
-                await _equipmentService.UpdateEquipmentAsync(id, updatedEquipment);
+                _equipmentService.UpdateEquipmentAsync(id, updatedEquipment);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -97,11 +97,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // DELETE /api/equipment/{id} - Delete equipment (Admin only)
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> DeleteEquipment(int id)
+        public ActionResult DeleteEquipment(int id)
         {
             try
             {
-                await _equipmentService.DeleteEquipmentAsync(id);
+                _equipmentService.DeleteEquipmentAsync(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -117,11 +117,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/equipment/available - Get list of available equipment
         [HttpGet("available")]
-        public async Task<ActionResult<IEnumerable<IEquipment>>> GetAvailableEquipment()
+        public ActionResult<IEnumerable<IEquipment>> GetAvailableEquipment()
         {
             try
             {
-                var availableEquipment = await _equipmentService.GetAvailableEquipmentAsync();
+                var availableEquipment = _equipmentService.GetAvailableEquipmentAsync();
                 return Ok(availableEquipment);
             }
             catch (KeyNotFoundException ex)
@@ -137,11 +137,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // GET /api/equipment/rented - Get rented equipment summary (Admin only)
         [HttpGet("rented")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEquipment>> GetRentedEquipmentSummary()
+        public ActionResult<IEquipment> GetRentedEquipmentSummary()
         {
             try
             {
-                var rentedEquipment = await _equipmentService.GetRentedEquipmentAsync();
+                var rentedEquipment = _equipmentService.GetRentedEquipmentAsync();
                 return Ok(rentedEquipment);
             }
             catch (KeyNotFoundException ex)

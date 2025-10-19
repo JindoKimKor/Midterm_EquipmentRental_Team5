@@ -17,21 +17,21 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IEnumerable<IRental>> GetAllRentalsAsync(int page = 1)
+        public IEnumerable<IRental> GetAllRentalsAsync(int page = 1)
         {
             var allRentals = _unitOfWork.Rentals.GetAllRentals();
             int skip = (page - 1) * PageSize;
             var paginatedRentals = allRentals.Skip(skip).Take(PageSize);
-            return Task.FromResult(paginatedRentals);
+            return paginatedRentals;
         }
 
-        public Task<IRental> GetRentalByIdAsync(int id)
+        public IRental GetRentalByIdAsync(int id)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(id);
-            return Task.FromResult(rental);
+            return rental;
         }
 
-        public Task IssueEquipmentAsync(IIssueRequest request)
+        public void IssueEquipmentAsync(IIssueRequest request)
         {
             var equipment = _unitOfWork.Equipments.GetSpecificEquipment(request.EquipmentId) ?? throw new KeyNotFoundException($"Equipment with ID {request.EquipmentId} not found.");
             if (!equipment.IsAvailable)
@@ -60,10 +60,9 @@ namespace Midterm_EquipmentRental_Team5.Services
             equipment.IsAvailable = false;
             _unitOfWork.Equipments.UpdateEquipment(equipment);
             _unitOfWork.SaveChanges();
-            return Task.CompletedTask;
         }
 
-        public Task ReturnEquipmentAsync(IReturnRequest request)
+        public void ReturnEquipmentAsync(IReturnRequest request)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(request.RentalId) ?? throw new KeyNotFoundException($"Rental with ID {request.RentalId} not found.");
             if (rental.ReturnedAt.HasValue)
@@ -91,34 +90,33 @@ namespace Midterm_EquipmentRental_Team5.Services
             }
 
             _unitOfWork.SaveChanges();
-            return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<IRental>> GetActiveRentalsAsync()
+        public IEnumerable<IRental> GetActiveRentalsAsync()
         {
             var activeRentals = _unitOfWork.Rentals.GetActiveRentals();
-            return Task.FromResult(activeRentals);
+            return activeRentals;
         }
 
-        public Task<IEnumerable<IRental>> GetCompletedRentalsAsync()
+        public IEnumerable<IRental> GetCompletedRentalsAsync()
         {
             var completedRentals = _unitOfWork.Rentals.GetCompletedRentals();
-            return Task.FromResult(completedRentals);
+            return completedRentals;
         }
 
-        public Task<IEnumerable<IRental>> GetOverdueRentalsAsync()
+        public IEnumerable<IRental> GetOverdueRentalsAsync()
         {
             var overdueRentals = _unitOfWork.Rentals.GetOverdueRentals();
-            return Task.FromResult(overdueRentals);
+            return overdueRentals;
         }
 
-        public Task<IEnumerable<IRental>> GetRentalHistoryByEquipmentAsync(int equipmentId)
+        public IEnumerable<IRental> GetRentalHistoryByEquipmentAsync(int equipmentId)
         {
             var rentalHistory = _unitOfWork.Rentals.GetEquipmentRentalHistory(equipmentId);
-            return Task.FromResult(rentalHistory);
+            return rentalHistory;
         }
 
-        public Task ExtendRentalAsync(int rentalId, IExtensionRequest request)
+        public void ExtendRentalAsync(int rentalId, IExtensionRequest request)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId);
             if (rental == null)
@@ -134,11 +132,9 @@ namespace Midterm_EquipmentRental_Team5.Services
             rental.ExtensionReason = request.Reason;
             _unitOfWork.Rentals.UpdateRental(rental);
             _unitOfWork.SaveChanges();
-
-            return Task.CompletedTask;
         }
 
-        public Task CancelRentalAsync(int rentalId)
+        public void CancelRentalAsync(int rentalId)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId) ?? throw new KeyNotFoundException($"Rental with ID {rentalId} not found.");
             rental.ReturnedAt = DateTime.Now;
@@ -160,7 +156,6 @@ namespace Midterm_EquipmentRental_Team5.Services
             }
 
             _unitOfWork.SaveChanges();
-            return Task.CompletedTask;
         }
     }
 }
