@@ -60,12 +60,33 @@
       </template>
 
       <template #item.actions="{ item }">
-        <v-btn icon size="small" color="primary" @click="viewEquipment(item)" title="View">
-          <v-icon>mdi-eye</v-icon>
+        <v-btn
+          color="primary"
+          rounded
+          small
+          elevation="2"
+          @click=""
+          aria-label="View rental details"
+        >
+          View Details
         </v-btn>
-        <v-btn icon size="small" color="orange" @click="editEquipment(item)" title="Edit">
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              icon
+              color="red darken-3"
+              size="small"
+              aria-label="Mark as returned"
+              @click="handleReturnNow(item)"
+              :disabled="returningId === item.id"
+            >
+              <v-icon v-if="returningId !== item.id">mdi-logout</v-icon>
+              <v-progress-circular v-else indeterminate color="white" size="18" width="2" />
+            </v-btn>
+          </template>
+          Mark as returned
+        </v-tooltip>
       </template>
     </v-data-table>
   </v-card>

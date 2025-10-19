@@ -32,11 +32,28 @@
           rounded
           small
           elevation="2"
-          @click="viewRentalDetails(item)"
+          @click=""
           aria-label="View rental details"
         >
           View Details
         </v-btn>
+        <v-tooltip top>
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              icon
+              color="red darken-3"
+              size="small"
+              aria-label="Mark as returned"
+              @click="handleReturnNow(item)"
+              :disabled="returningId === item.id"
+            >
+              <v-icon v-if="returningId !== item.id">mdi-logout</v-icon>
+              <v-progress-circular v-else indeterminate color="white" size="18" width="2" />
+            </v-btn>
+          </template>
+          Mark as returned
+        </v-tooltip>
       </template>
     </v-data-table>
   </v-card>
@@ -47,11 +64,11 @@ import { ref, onMounted } from 'vue'
 import { getActiveRentals } from '@/api/RentalController'
 
 const headers = [
-  { title: 'Image', value: 'equipmentImage', sortable: false, width: '80' },
+  { title: 'Image', value: 'equipmentImage', sortable: false },
   { title: 'Equipment Name', value: 'equipment.name' },
   { title: 'Customer', value: 'customer.fullName' },
-  { title: 'Days Rented', value: 'daysRented', sortable: false, width: '120' },
-  { title: 'Actions', value: 'actions', sortable: false, width: '140' },
+  { title: 'Days Rented', value: 'daysRented', sortable: false },
+  { title: 'Actions', value: 'actions', sortable: false },
 ]
 
 const rentals = ref([])

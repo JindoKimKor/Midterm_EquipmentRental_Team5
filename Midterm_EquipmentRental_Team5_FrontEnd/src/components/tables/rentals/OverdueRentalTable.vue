@@ -39,6 +39,16 @@
       </template>
 
       <template #item.actions="{ item }">
+        <v-btn
+          color="primary"
+          rounded
+          small
+          elevation="2"
+          @click=""
+          aria-label="View rental details"
+        >
+          View Details
+        </v-btn>
         <v-tooltip top>
           <template #activator="{ props }">
             <v-btn

@@ -61,15 +61,6 @@
       <template #item.createdAt="{ item }">
         {{ formatDate(item.createdAt) }}
       </template>
-
-      <template #item.actions="{ item }">
-        <v-btn icon size="small" color="primary" @click="viewEquipment(item)" title="View">
-          <v-icon>mdi-eye</v-icon>
-        </v-btn>
-        <v-btn icon size="small" color="orange" @click="editEquipment(item)" title="Edit">
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -85,7 +76,6 @@ const headers = [
   { title: 'Rental Price ($)', value: 'rentalPrice' },
   { title: 'Availability', value: 'isAvailable' },
   { title: 'Created Date', value: 'createdAt' },
-  { title: 'Actions', value: 'actions', sortable: false },
 ]
 
 const equipment = ref([])
