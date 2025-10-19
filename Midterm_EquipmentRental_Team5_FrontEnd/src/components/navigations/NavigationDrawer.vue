@@ -106,12 +106,22 @@ const AdminNavigationItems = [
       {
         url: '/dashboard/rentals/issue',
         title: 'Issue Equipment',
-        prependIcon: 'mdi-arrow-up-bold-box',
+        prependIcon: 'mdi-truck-fast-outline', // Issuing = dispatching
       },
       {
         url: '/dashboard/rentals/return',
         title: 'Return Equipment',
         prependIcon: 'mdi-arrow-down-bold-box',
+      },
+      {
+        url: '/dashboard/rentals/extend',
+        title: 'Extend Equipment',
+        prependIcon: 'mdi-calendar-plus',
+      },
+      {
+        url: '/dashboard/rentals/cancel',
+        title: 'Cancel Equipment',
+        prependIcon: 'mdi-cancel',
       },
     ],
   },
