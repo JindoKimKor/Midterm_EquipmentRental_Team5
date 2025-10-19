@@ -18,7 +18,7 @@
     >
       <!-- Name as link -->
       <template #item.name="{ item }">
-        <router-link :to="`/equipments/${item.id}`" class="text-decoration-none font-weight-medium">
+        <router-link :to="`equipments/${item.id}`" class="text-decoration-none font-weight-medium">
           {{ item.name }}
         </router-link>
       </template>

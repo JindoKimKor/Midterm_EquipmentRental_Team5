@@ -2,9 +2,6 @@
   <v-card class="pa-6" elevation="3" rounded>
     <v-card-title class="d-flex justify-space-between align-center">
       <span class="text-h5 font-weight-semibold">Rented Equipment</span>
-      <v-btn icon @click="refreshData" aria-label="Refresh">
-        <v-icon>mdi-refresh</v-icon>
-      </v-btn>
     </v-card-title>
 
     <v-data-table
@@ -20,7 +17,7 @@
     >
       <!-- Name column with router-link -->
       <template #item.name="{ item }">
-        <router-link :to="`/equipments/${item.id}`" class="text-decoration-none font-weight-medium">
+        <router-link :to="`equipments/${item.id}`" class="text-decoration-none font-weight-medium">
           {{ item.name }}
         </router-link>
       </template>

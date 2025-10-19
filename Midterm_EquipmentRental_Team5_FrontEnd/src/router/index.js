@@ -28,7 +28,7 @@ const router = createRouter({
           meta: { requiresAuth: true },
         },
         {
-          path: 'equipment/:id',
+          path: 'equipments/:id',
           name: 'EquipmentDetailView',
           component: () => import('../views/dashboard/equipment/EquipmentDetailsView.vue'),
           props: true,
