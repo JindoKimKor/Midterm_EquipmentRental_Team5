@@ -50,7 +50,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getAvailableEquipment } from '@/api/EquipmentController'
-import { getAllCustomers } from '@/api/CustomerController'
+import { getUnactiveCustomer } from '@/api/CustomerController'
 import { issueEquipment } from '@/api/RentalController'
 
 const form = ref({
@@ -77,7 +77,10 @@ async function loadOptions() {
   loadingCustomers.value = true
 
   try {
-    const [equipRes, customerRes] = await Promise.all([getAvailableEquipment(), getAllCustomers()])
+    const [equipRes, customerRes] = await Promise.all([
+      getAvailableEquipment(),
+      getUnactiveCustomer(),
+    ])
 
     equipmentOptions.value = equipRes?.data || equipRes || []
     customerOptions.value = customerRes?.data || customerRes || []
