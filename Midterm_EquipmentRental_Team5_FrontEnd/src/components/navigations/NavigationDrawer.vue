@@ -103,6 +103,16 @@ const AdminNavigationItems = [
         title: 'Rentals',
         prependIcon: 'mdi-clipboard-list',
       },
+      {
+        url: '/dashboard/rentals/issue',
+        title: 'Issue Equipment',
+        prependIcon: 'mdi-arrow-up-bold-box',
+      },
+      {
+        url: '/dashboard/rentals/return',
+        title: 'Return Equipment',
+        prependIcon: 'mdi-arrow-down-bold-box',
+      },
     ],
   },
 ]

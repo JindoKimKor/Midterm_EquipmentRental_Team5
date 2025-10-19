@@ -26,7 +26,10 @@ import { ref, onMounted } from 'vue'
 import { getCustomerActiveRental } from '@/api/CustomerController'
 import { useUserInformationStore } from '@/stores/UserInformation'
 
-const rental = ref(null) // ✅ single rental
+// Emits rental data back to parent
+const emit = defineEmits(['rental-loaded'])
+
+const rental = ref(null)
 const loading = ref(true)
 
 const userInfoStore = useUserInformationStore()
@@ -38,7 +41,13 @@ function formatDate(date) {
 async function fetchRental() {
   try {
     const response = await getCustomerActiveRental(userInfoStore.id)
-    rental.value = response
+
+    // Adjust depending on your API response structure
+    rental.value = response?.data || response
+
+    if (rental.value) {
+      emit('rental-loaded', rental.value)
+    }
   } catch (error) {
     console.error('Failed to load rental:', error)
   } finally {

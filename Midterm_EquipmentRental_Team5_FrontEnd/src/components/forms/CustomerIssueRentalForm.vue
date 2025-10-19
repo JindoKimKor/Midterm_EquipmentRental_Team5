@@ -53,21 +53,26 @@ import { getAvailableEquipment } from '@/api/EquipmentController'
 import { getAllCustomers } from '@/api/CustomerController'
 import { issueEquipment } from '@/api/RentalController'
 
+// Form state
 const form = ref({
   equipmentId: null,
   customerId: null,
 })
 const isFormValid = ref(false)
 
+// Dropdown options
 const equipmentOptions = ref([])
 const customerOptions = ref([])
 
+// Loading states
 const loadingEquipment = ref(false)
 const loadingCustomers = ref(false)
 const submitting = ref(false)
 
+// Validation rule
 const required = (value) => !!value || 'Required'
 
+// Load equipment and customers
 onMounted(async () => {
   await loadOptions()
 })
@@ -113,6 +118,7 @@ async function submitForm() {
     form.value.equipmentId = null
     form.value.customerId = null
 
+    // Reload equipment to update available items
     await loadOptions()
   } catch (error) {
     console.error('Issue failed', error)

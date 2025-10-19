@@ -6,12 +6,20 @@
       </v-toolbar>
 
       <v-card-text>
-        <IssueRentalForm />
+        <IssueRentalForm v-if="role === 'Admin'" />
+        <CustomerIssueRentalForm v-if="role === 'User'" />
       </v-card-text>
     </v-card>
   </v-container>
 </template>
 
 <script setup>
+import CustomerIssueRentalForm from '@/components/forms/CustomerIssueRentalForm.vue'
 import IssueRentalForm from '@/components/forms/IssueRentalForm.vue'
+import { useUserInformationStore } from '@/stores/UserInformation'
+import { ref } from 'vue'
+
+const userInfoStore = useUserInformationStore()
+
+const role = ref(userInfoStore.role)
 </script>
