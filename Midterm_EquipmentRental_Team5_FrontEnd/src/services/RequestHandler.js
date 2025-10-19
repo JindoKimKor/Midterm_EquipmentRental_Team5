@@ -1,5 +1,6 @@
 import axios from 'axios'
 import useAuthenticationStore from '@/stores/Authentication'
+import router from '@/router'
 
 const authStore = useAuthenticationStore()
 
@@ -22,9 +23,12 @@ api.interceptors.request.use((config) => {
 })
 
 const handleError = (error) => {
-  const message = error.response?.data?.message || error.message || 'Something went wrong'
   console.error('API Error:', message)
-  throw new Error(message)
+  if (error.status === 401) {
+    router.push('/')
+  } else {
+    throw new Error(message)
+  }
 }
 
 export const get = async (url, params = {}) => {
