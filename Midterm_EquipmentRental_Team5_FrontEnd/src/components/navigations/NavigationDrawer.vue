@@ -9,7 +9,7 @@
           :to="item.url"
           router
           link
-          exact-active-class="v-item--active"
+          :exact="item.url === '/dashboard'"
           :aria-label="item.title"
           @click="item.function?.()"
         >
@@ -53,6 +53,16 @@ const navigation = computed(() => {
 
 const UserNavigationItems = [
   {
+    categoryTitle: '',
+    items: [
+      {
+        url: `/dashboard`,
+        title: 'Home',
+        prependIcon: 'mdi-home',
+      },
+    ],
+  },
+  {
     categoryTitle: 'User Profile',
     items: [
       {
@@ -82,9 +92,30 @@ const UserNavigationItems = [
       },
     ],
   },
+  {
+    categoryTitle: '',
+    items: [
+      {
+        url: '/',
+        title: 'Logout',
+        prependIcon: 'mdi-logout',
+        function: () => authStore.logout(),
+      },
+    ],
+  },
 ]
 
 const AdminNavigationItems = [
+  {
+    categoryTitle: 'Dashboard',
+    items: [
+      {
+        url: `/dashboard`,
+        title: 'Home',
+        prependIcon: 'mdi-home',
+      },
+    ],
+  },
   {
     categoryTitle: 'Customer Management',
     items: [
