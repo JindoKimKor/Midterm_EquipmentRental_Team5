@@ -43,6 +43,12 @@ async function loadOptions() {
   }
 }
 
+function removeFromOptions(id) {
+  rentalOptions = rentalOptions.map((m) => {
+    if (m.id != id) return m
+  })
+}
+
 async function submitForm() {
   if (!form.value.rentalId) return
   submitting.value = true
@@ -50,8 +56,8 @@ async function submitForm() {
   try {
     await cancelRental(form.value.rentalId)
     alert('Rental cancelled.')
+    removeFromOptions(form.value.rentalId)
     form.value.rentalId = null
-    await loadOptions()
   } catch (err) {
     alert('Cancellation failed.')
   } finally {

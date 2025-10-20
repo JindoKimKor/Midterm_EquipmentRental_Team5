@@ -52,7 +52,6 @@ const isAdmin = ref(useAuthStore.authRole)
 
 const tableHeaders = computed(() => {
   const baseHeaders = [
-    { title: 'Image', value: 'equipmentImage', sortable: false },
     { title: 'Equipment Name', value: 'equipment.name' },
     { title: 'Customer', value: 'customer.name' },
     { title: 'Days Rented', value: 'daysRented', sortable: false },
