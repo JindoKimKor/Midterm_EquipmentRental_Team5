@@ -17,19 +17,19 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public IEnumerable<IEquipment>? GetAllEquipment(int page = 1)
         {
-            var allEquipment = _unitOfWork.Equipments.GetAllEquipment() ?? throw new KeyNotFoundException();
-            if (allEquipment != null)
+            var allEquipment = _unitOfWork.Equipments.GetAllEquipment();
+            if (allEquipment.Any())
             {
                 // pagnation
                 var skip = (page - 1) * PageSize;
                 allEquipment = allEquipment.Skip(skip).Take(PageSize);
             }
-            return allEquipment;
+            return allEquipment ?? null;
         }
 
         public IEquipment GetEquipmentById(int id)
         {
-            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException();
+            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(id);
             return equipment;
         }
 
@@ -48,7 +48,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork.SaveChanges();
         }
 
-        public IEquipment? UpdateEquipment(int id, IEquipment updatedEquipment)
+        public void UpdateEquipment(int id, IEquipment updatedEquipment)
         {
             var existingEquipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException();
             if (existingEquipment != null)
@@ -62,24 +62,28 @@ namespace Midterm_EquipmentRental_Team5.Services
                 _unitOfWork.Equipments.UpdateEquipment(existingEquipment);
                 _unitOfWork.SaveChanges();
             }
-            return existingEquipment;
         }
 
         public void DeleteEquipment(int id)
         {
-            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException($"Equipment with ID {id} not found.");
-            _unitOfWork.Equipments.DeleteEquipment(id);
-            _unitOfWork.SaveChanges();
+            var existingEquipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException();
+            if (existingEquipment != null)
+            {
+                _unitOfWork.Equipments.DeleteEquipment((int)existingEquipment.Id);
+                _unitOfWork.SaveChanges();
+            }
         }
 
         public IEnumerable<IEquipment>? GetAvailableEquipment()
         {
-            return _unitOfWork.Equipments.ListAvailableEquipment() ?? throw new KeyNotFoundException();
+            var equipments = _unitOfWork.Equipments.ListAvailableEquipment();
+            return equipments.Any() ? equipments : null;
         }
 
         public IEnumerable<IEquipment>? GetRentedEquipment()
         {
-            return _unitOfWork.Equipments.GetRentedEquipment() ?? throw new KeyNotFoundException();
+            var equipments = _unitOfWork.Equipments.GetRentedEquipment();
+            return equipments.Any() ? equipments : null;
         }
     }
 }

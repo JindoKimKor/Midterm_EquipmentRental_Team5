@@ -34,19 +34,15 @@ onMounted(loadOptions)
 async function loadOptions() {
   try {
     const rentals = await getActiveRentals()
-    rentalOptions.value = rentals.map((r) => ({
-      id: r.id,
-      title: `${r.customer.name} - ${r.equipment.name}`,
-    }))
+    if (rentals) {
+      rentalOptions.value = rentals.map((r) => ({
+        id: r.id,
+        title: `${r.customer.name} - ${r.equipment.name}`,
+      }))
+    }
   } catch (err) {
     console.error(err)
   }
-}
-
-function removeFromOptions(id) {
-  rentalOptions = rentalOptions.map((m) => {
-    if (m.id != id) return m
-  })
 }
 
 async function submitForm() {
@@ -56,8 +52,9 @@ async function submitForm() {
   try {
     await cancelRental(form.value.rentalId)
     alert('Rental cancelled.')
-    removeFromOptions(form.value.rentalId)
+
     form.value.rentalId = null
+    await loadOptions()
   } catch (err) {
     alert('Cancellation failed.')
   } finally {

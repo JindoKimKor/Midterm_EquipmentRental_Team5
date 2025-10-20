@@ -57,12 +57,13 @@ const conditionOptions = ['New', 'Excellent', 'Good', 'Fair', 'Poor']
 onMounted(async () => {
   try {
     const response = await getActiveRentals()
-    rentalOptions.value = response.map((r) => {
-      return {
-        id: r.id,
-        title: r.customer.name + ' - ' + r.equipment.name,
-      }
-    })
+    if (response)
+      rentalOptions.value = response.map((r) => {
+        return {
+          id: r.id,
+          title: r.customer.name + ' - ' + r.equipment.name,
+        }
+      })
   } catch (error) {
     console.error('Failed to load rentals', error)
   }
