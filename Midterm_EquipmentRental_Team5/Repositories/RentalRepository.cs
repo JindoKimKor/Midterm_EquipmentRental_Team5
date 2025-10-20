@@ -26,12 +26,14 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             _context.Rentals.Update((Rental)rental);
         }
 
-        public IEnumerable<IRental> GetAllRentals()
+        public IEnumerable<IRental>? GetAllRentals()
         {
-            return _context.Rentals
+            var rentals = _context.Rentals
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
                 .ToList();
+
+            return rentals.Count != 0 ? rentals : null;
         }
 
         public IRental? GetRentalDetails(int id)
@@ -78,43 +80,52 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             _context.Rentals.Update(rental);
         }
 
-        public IEnumerable<IRental> GetActiveRentals()
+        public IEnumerable<IRental>? GetActiveRentals()
         {
-            return _context.Rentals
+            var rentals = _context.Rentals
                 .Where(r => r.IsActive)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
                 .ToList();
+
+            return rentals.Count != 0 ? rentals : null;
         }
 
-        public IEnumerable<IRental> GetCompletedRentals()
+        public IEnumerable<IRental>? GetCompletedRentals()
         {
             // Completed: EndDate not null and not cancelled
-            return _context.Rentals
+            var rentals = _context.Rentals
                 .Where(r => !r.IsActive && r.ReturnedAt != null)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
                 .ToList();
+
+            return rentals.Count != 0 ? rentals : null;
         }
 
-        public IEnumerable<IRental> GetEquipmentRentalHistory(int equipmentId)
+        public IEnumerable<IRental>? GetEquipmentRentalHistory(int equipmentId)
         {
-            return _context.Rentals
+            var rentals = _context.Rentals
                 .Where(r => r.EquipmentId == equipmentId)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
                 .ToList();
+
+            return rentals.Count != 0 ? rentals : null;
         }
 
-        public IEnumerable<IRental> GetOverdueRentals()
+        public IEnumerable<IRental>? GetOverdueRentals()
         {
             // Active rentals where DueDate < Now and not yet returned
-            return _context.Rentals
+            var rentals = _context.Rentals
                 .Where(r => r.IsActive && r.DueDate < DateTime.UtcNow && r.ReturnedAt == null)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
                 .OrderBy(r => r.DueDate)
                 .ToList();
+
+
+            return rentals.Count != 0 ? rentals : null;
         }
     }
 }

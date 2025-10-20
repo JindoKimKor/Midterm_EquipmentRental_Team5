@@ -17,17 +17,17 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<IRental> GetAllRentalsAsync(int page = 1)
+        public IEnumerable<IRental>? GetAllRentalsAsync(int page = 1)
         {
-            var allRentals = _unitOfWork.Rentals.GetAllRentals();
+            var allRentals = _unitOfWork.Rentals.GetAllRentals() ?? throw new KeyNotFoundException($"No rental was found");
             int skip = (page - 1) * PageSize;
             var paginatedRentals = allRentals.Skip(skip).Take(PageSize);
             return paginatedRentals;
         }
 
-        public IRental GetRentalByIdAsync(int id)
+        public IRental? GetRentalByIdAsync(int id)
         {
-            var rental = _unitOfWork.Rentals.GetRentalDetails(id);
+            var rental = _unitOfWork.Rentals.GetRentalDetails(id) ?? throw new KeyNotFoundException($"Rental with ID {id} not found.");
             return rental;
         }
 
@@ -92,37 +92,33 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork.SaveChanges();
         }
 
-        public IEnumerable<IRental> GetActiveRentalsAsync()
+        public IEnumerable<IRental>? GetActiveRentalsAsync()
         {
-            var activeRentals = _unitOfWork.Rentals.GetActiveRentals();
+            var activeRentals = _unitOfWork.Rentals.GetActiveRentals() ?? throw new KeyNotFoundException($"Could not get active rentals");
             return activeRentals;
         }
 
-        public IEnumerable<IRental> GetCompletedRentalsAsync()
+        public IEnumerable<IRental>? GetCompletedRentalsAsync()
         {
-            var completedRentals = _unitOfWork.Rentals.GetCompletedRentals();
+            var completedRentals = _unitOfWork.Rentals.GetCompletedRentals() ?? throw new KeyNotFoundException($"Could not get completed rentals");
             return completedRentals;
         }
 
-        public IEnumerable<IRental> GetOverdueRentalsAsync()
+        public IEnumerable<IRental>? GetOverdueRentalsAsync()
         {
-            var overdueRentals = _unitOfWork.Rentals.GetOverdueRentals();
+            var overdueRentals = _unitOfWork.Rentals.GetOverdueRentals() ?? throw new KeyNotFoundException($"Could not get overdue rentals");
             return overdueRentals;
         }
 
-        public IEnumerable<IRental> GetRentalHistoryByEquipmentAsync(int equipmentId)
+        public IEnumerable<IRental>? GetRentalHistoryByEquipmentAsync(int equipmentId)
         {
-            var rentalHistory = _unitOfWork.Rentals.GetEquipmentRentalHistory(equipmentId);
+            var rentalHistory = _unitOfWork.Rentals.GetEquipmentRentalHistory(equipmentId) ?? throw new KeyNotFoundException($"Could not get rental history");
             return rentalHistory;
         }
 
         public void ExtendRentalAsync(int rentalId, IExtensionRequest request)
         {
-            var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId);
-            if (rental == null)
-            {
-                throw new KeyNotFoundException($"Rental with ID {rentalId} not found.");
-            }
+            var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId) ?? throw new KeyNotFoundException($"Rental with ID {rentalId} not found.");
             if (rental.ReturnedAt.HasValue)
             {
                 throw new InvalidOperationException("Cannot extend a completed rental.");

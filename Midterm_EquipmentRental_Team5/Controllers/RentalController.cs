@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models.DTOs;
+using Midterm_EquipmentRental_Team5.Models.Interfaces;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
@@ -20,7 +21,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/rentals - Get all rentals (Admin sees all, User sees own)
         [HttpGet]
-        public ActionResult<IEnumerable<object>> GetAllRentals(int page = 1)
+        public ActionResult<IEnumerable<IRental>> GetAllRentals(int page = 1)
         {
             try
             {
@@ -38,6 +39,10 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
                 return Ok(rentals);
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -46,7 +51,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/rentals/{id} - Get rental details
         [HttpGet("{id}")]
-        public ActionResult<object> GetRentalDetails(int id)
+        public ActionResult<IRental> GetRentalDetails(int id)
         {
             try
             {
@@ -68,6 +73,10 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 }
 
                 return Ok(rental);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -152,7 +161,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/rentals/active - Get active rentals
         [HttpGet("active")]
-        public ActionResult<IEnumerable<object>> GetActiveRentals()
+        public ActionResult<IEnumerable<IRental>> GetActiveRentals()
         {
             try
             {
@@ -170,6 +179,10 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
                 return Ok(activeRentals);
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -178,7 +191,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/rentals/completed - Get completed rentals
         [HttpGet("completed")]
-        public ActionResult<IEnumerable<object>> GetCompletedRentals()
+        public ActionResult<IEnumerable<IRental>> GetCompletedRentals()
         {
             try
             {
@@ -196,6 +209,10 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
                 return Ok(completedRentals);
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -205,12 +222,16 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // GET /api/rentals/overdue - Get overdue rentals (Admin only)
         [HttpGet("overdue")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<IEnumerable<object>> GetOverdueRentals()
+        public ActionResult<IEnumerable<IRental>> GetOverdueRentals()
         {
             try
             {
                 var overdueRentals = _rentalService.GetOverdueRentalsAsync();
                 return Ok(overdueRentals);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -220,12 +241,16 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/rentals/equipment/{equipmentId} - Get equipment rental history
         [HttpGet("equipment/{equipmentId}")]
-        public ActionResult<IEnumerable<object>> GetEquipmentRentalHistory(int equipmentId)
+        public ActionResult<IEnumerable<IRental>> GetEquipmentRentalHistory(int equipmentId)
         {
             try
             {
                 var rentalHistory = _rentalService.GetRentalHistoryByEquipmentAsync(equipmentId);
                 return Ok(rentalHistory);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

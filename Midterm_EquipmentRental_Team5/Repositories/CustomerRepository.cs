@@ -61,7 +61,8 @@ namespace Midterm_EquipmentRental_Team5.Repositories
 
         public IEnumerable<ICustomer>? ListAllCustomers()
         {
-            return _context.Customers.ToList() ?? null;
+            var customers = _context.Customers.ToList();
+            return customers.Count != 0 ? customers : null;
         }
 
         public ICustomer? UpdateCustomer(ICustomer customer)
@@ -73,6 +74,7 @@ namespace Midterm_EquipmentRental_Team5.Repositories
             }
             return existingCustomer;
         }
+
         public ICustomer? GetCustomerByPasswordAndUsername(ILoginRequest loginRequest)
         {
             return _context.Customers.FirstOrDefault(c => loginRequest.Password == c.Password && loginRequest.Username == c.UserName);
