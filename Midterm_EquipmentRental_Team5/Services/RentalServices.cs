@@ -9,7 +9,7 @@ namespace Midterm_EquipmentRental_Team5.Services
     public class RentalServices : IRentalServices
     {
         private readonly IUnitOfWork _unitOfWork;
-        private const int PageSize = 10;
+        private const int PageSize = 100;
         private const decimal OverdueFeePerDay = 10.00m;
 
         public RentalServices(IUnitOfWork unitOfWork)

@@ -8,7 +8,7 @@ namespace Midterm_EquipmentRental_Team5.Services
     public class CustomerServices : ICustomerServices
     {
         private readonly IUnitOfWork _unitOfWork;
-        private const int PageSize = 10;
+        private const int PageSize = 100;
 
         public CustomerServices(IUnitOfWork unitOfWork)
         {
