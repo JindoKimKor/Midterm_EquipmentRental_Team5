@@ -55,10 +55,11 @@ onMounted(loadOptions)
 async function loadOptions() {
   try {
     const rentals = await getActiveRentals()
-    rentalOptions.value = rentals.map((r) => ({
-      id: r.id,
-      title: `${r.customer.name} - ${r.equipment.name}`,
-    }))
+    if (rentals)
+      rentalOptions.value = rentals.map((r) => ({
+        id: r.id,
+        title: `${r.customer.name} - ${r.equipment.name}`,
+      }))
   } catch (err) {
     console.error(err)
   }

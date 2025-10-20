@@ -62,7 +62,8 @@ onMounted(fetchOverdueRentals)
 async function fetchOverdueRentals() {
   loading.value = true
   try {
-    overdueRentals.value = await getOverdueRentals()
+    const res = await getOverdueRentals()
+    if (res) overdueRentals.value = res
   } catch (error) {
     console.error('Failed to fetch overdue rentals:', error)
   } finally {

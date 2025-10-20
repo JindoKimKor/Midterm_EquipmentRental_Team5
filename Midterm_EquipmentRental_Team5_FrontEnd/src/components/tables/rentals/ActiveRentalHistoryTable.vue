@@ -70,7 +70,8 @@ const rentals = ref([])
 
 onMounted(async () => {
   try {
-    rentals.value = await getActiveRentals()
+    const res = await getActiveRentals()
+    if (res) rentals.value = res
   } catch (error) {
     console.error('Failed to fetch rentals:', error)
   }

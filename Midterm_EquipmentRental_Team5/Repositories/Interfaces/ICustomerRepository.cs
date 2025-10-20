@@ -5,14 +5,14 @@ namespace Midterm_EquipmentRental_Team5.Repositories.Interfaces
 {
     public interface ICustomerRepository
     {
-        ICustomer CreateCustomer(ICustomer customer);
-        ICustomer? DeleteCustomer(int id);
-        ICustomer? UpdateCustomer(ICustomer customer);
-        ICustomer? GetCustomerDetails(int id);
-        ICustomer? GetCustomerByPasswordAndUsername(ILoginRequest loginRequest);
+        void CreateCustomer(ICustomer customer);
+        void DeleteCustomer(int id);
         IRental? GetCustomerActiveRental(int id);
-        IEnumerable<ICustomer>? GetCustomersUnactiveRental();
-        IEnumerable<IRental>? GetCustomerRentalHistory(int id);
-        IEnumerable<ICustomer>? ListAllCustomers();
+        IEnumerable<ICustomer> GetCustomersUnactiveRental();
+        ICustomer? GetCustomerDetails(int id);
+        IEnumerable<IRental> GetCustomerRentalHistory(int id);
+        IEnumerable<ICustomer> ListAllCustomers();
+        void UpdateCustomer(ICustomer customer);
+        ICustomer? GetCustomerByPasswordAndUsername(ILoginRequest loginRequest);
     }
 }

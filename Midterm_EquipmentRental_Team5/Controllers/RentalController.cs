@@ -25,7 +25,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var rentals = _rentalService.GetAllRentals(page);
+                var rentals = _rentalService.GetAllRentals(page) ?? throw new KeyNotFoundException();
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -39,9 +39,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
                 return Ok(rentals);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -55,7 +55,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var rental = _rentalService.GetRentalById(id);
+                var rental = _rentalService.GetRentalById(id) ?? throw new KeyNotFoundException();
 
                 if (rental == null)
                 {
@@ -74,9 +74,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
                 return Ok(rental);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -102,7 +102,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 }
 
                 _rentalService.IssueEquipment(issueRequest);
-                return Ok(new { Message = "Equipment issued successfully." });
+                return Ok();
             }
             catch (KeyNotFoundException ex)
             {
@@ -125,7 +125,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             try
             {
                 // Get rental to check ownership
-                var rental = _rentalService.GetRentalById(returnRequest.RentalId);
+                var rental = _rentalService.GetRentalById(returnRequest.RentalId) ?? throw new KeyNotFoundException();
 
                 if (rental == null)
                 {
@@ -143,7 +143,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 }
 
                 _rentalService.ReturnEquipment(returnRequest);
-                return Ok(new { Message = "Equipment returned successfully." });
+                return Ok();
             }
             catch (KeyNotFoundException ex)
             {
@@ -165,7 +165,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var activeRentals = _rentalService.GetActiveRentals();
+                var activeRentals = _rentalService.GetActiveRentals() ?? throw new KeyNotFoundException();
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -179,9 +179,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
                 return Ok(activeRentals);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -195,7 +195,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var completedRentals = _rentalService.GetCompletedRentals();
+                var completedRentals = _rentalService.GetCompletedRentals() ?? throw new KeyNotFoundException();
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -209,9 +209,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
                 return Ok(completedRentals);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -226,12 +226,12 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var overdueRentals = _rentalService.GetOverdueRentals();
+                var overdueRentals = _rentalService.GetOverdueRentals() ?? throw new KeyNotFoundException();
                 return Ok(overdueRentals);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -245,12 +245,12 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var rentalHistory = _rentalService.GetRentalHistoryByEquipment(equipmentId);
+                var rentalHistory = _rentalService.GetRentalHistoryByEquipment(equipmentId) ?? throw new KeyNotFoundException();
                 return Ok(rentalHistory);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -266,7 +266,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             try
             {
                 _rentalService.ExtendRental(id, extensionRequest);
-                return NoContent();
+                return Ok();
             }
             catch (KeyNotFoundException ex)
             {
@@ -290,7 +290,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             try
             {
                 _rentalService.CancelRental(id);
-                return NoContent();
+                return Ok();
             }
             catch (KeyNotFoundException ex)
             {
