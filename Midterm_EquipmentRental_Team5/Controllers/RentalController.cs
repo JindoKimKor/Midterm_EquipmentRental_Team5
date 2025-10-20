@@ -24,7 +24,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var rentals = _rentalService.GetAllRentalsAsync(page);
+                var rentals = _rentalService.GetAllRentals(page);
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -50,7 +50,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var rental = _rentalService.GetRentalByIdAsync(id);
+                var rental = _rentalService.GetRentalById(id);
 
                 if (rental == null)
                 {
@@ -92,7 +92,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                     issueRequest.CustomerId = currentUserId;
                 }
 
-                _rentalService.IssueEquipmentAsync(issueRequest);
+                _rentalService.IssueEquipment(issueRequest);
                 return Ok(new { Message = "Equipment issued successfully." });
             }
             catch (KeyNotFoundException ex)
@@ -116,7 +116,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             try
             {
                 // Get rental to check ownership
-                var rental = _rentalService.GetRentalByIdAsync(returnRequest.RentalId);
+                var rental = _rentalService.GetRentalById(returnRequest.RentalId);
 
                 if (rental == null)
                 {
@@ -133,7 +133,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                     return Forbid();
                 }
 
-                _rentalService.ReturnEquipmentAsync(returnRequest);
+                _rentalService.ReturnEquipment(returnRequest);
                 return Ok(new { Message = "Equipment returned successfully." });
             }
             catch (KeyNotFoundException ex)
@@ -156,7 +156,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var activeRentals = _rentalService.GetActiveRentalsAsync();
+                var activeRentals = _rentalService.GetActiveRentals();
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -182,7 +182,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var completedRentals = _rentalService.GetCompletedRentalsAsync();
+                var completedRentals = _rentalService.GetCompletedRentals();
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -209,7 +209,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var overdueRentals = _rentalService.GetOverdueRentalsAsync();
+                var overdueRentals = _rentalService.GetOverdueRentals();
                 return Ok(overdueRentals);
             }
             catch (Exception ex)
@@ -224,7 +224,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var rentalHistory = _rentalService.GetRentalHistoryByEquipmentAsync(equipmentId);
+                var rentalHistory = _rentalService.GetRentalHistoryByEquipment(equipmentId);
                 return Ok(rentalHistory);
             }
             catch (Exception ex)
@@ -240,7 +240,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                _rentalService.ExtendRentalAsync(id, extensionRequest);
+                _rentalService.ExtendRental(id, extensionRequest);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -264,7 +264,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                _rentalService.CancelRentalAsync(id);
+                _rentalService.CancelRental(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)

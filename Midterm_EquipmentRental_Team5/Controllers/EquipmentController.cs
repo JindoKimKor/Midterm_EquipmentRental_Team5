@@ -19,7 +19,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var equipment = equipmentService.GetAllEquipmentAsync(page);
+                var equipment = equipmentService.GetAllEquipment(page);
                 return Ok(equipment);
             }
             catch (KeyNotFoundException ex)
@@ -39,7 +39,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 return BadRequest("No image file provided");
 
             // ✅ Added await
-            var equipment = equipmentService.GetEquipmentByIdAsync(id);
+            var equipment = equipmentService.GetEquipmentById(id);
             if (equipment == null)
                 return NotFound("Equipment not found");
             // Validate file type
@@ -65,7 +65,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             }
             // ImageUrl will work since it's on the interface
             equipment.ImageUrl = $"/images/equipment/{fileName}";
-            equipmentService.UpdateEquipmentAsync(id, equipment);
+            equipmentService.UpdateEquipment(id, equipment);
 
             return Ok(new { imageUrl = equipment.ImageUrl });
         }
@@ -76,7 +76,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var equipment = _equipmentService.GetEquipmentByIdAsync(id);
+                var equipment = _equipmentService.GetEquipmentById(id);
 
                 if (equipment == null)
                 {
@@ -102,7 +102,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-               _equipmentService.AddEquipmentAsync(newEquipment);
+               _equipmentService.AddEquipment(newEquipment);
                 return NoContent();
             }
             catch (Exception ex)
@@ -118,7 +118,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                _equipmentService.UpdateEquipmentAsync(id, updatedEquipment);
+                _equipmentService.UpdateEquipment(id, updatedEquipment);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -138,7 +138,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                _equipmentService.DeleteEquipmentAsync(id);
+                _equipmentService.DeleteEquipment(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -158,7 +158,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var availableEquipment = _equipmentService.GetAvailableEquipmentAsync();
+                var availableEquipment = _equipmentService.GetAvailableEquipment();
                 return Ok(availableEquipment);
             }
             catch (KeyNotFoundException ex)
@@ -177,7 +177,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var rentedEquipment = _equipmentService.GetRentedEquipmentAsync();
+                var rentedEquipment = _equipmentService.GetRentedEquipment();
                 return Ok(rentedEquipment);
             }
             catch (KeyNotFoundException ex)

@@ -25,7 +25,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var customers = _customerService.GetAllCustomersAsync(page);
+                var customers = _customerService.GetAllCustomers(page);
                 return Ok(customers);
             }
             catch (Exception ex)
@@ -40,7 +40,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var customers = _customerService.GetUnactiveCustomersAsync();
+                var customers = _customerService.GetUnactiveCustomers();
                 return Ok(customers);
             }
             catch (Exception ex)
@@ -63,7 +63,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 // Return 403 if user tries to access another user's data
                 if (userRole != "Admin" && currentUserId != id) return Forbid();
 
-                var customer = _customerService.GetCustomerByIdAsync(id) ?? throw new KeyNotFoundException();
+                var customer = _customerService.GetCustomerById(id) ?? throw new KeyNotFoundException();
 
                 return Ok(customer);
             }
@@ -84,7 +84,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                _customerService.AddCustomerAsync(newCustomer);
+                _customerService.AddCustomer(newCustomer);
                 return Ok();
             }
             catch (Exception ex)
@@ -109,11 +109,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 // If user is not admin, prevent role change
                 if (userRole != "Admin")
                 {
-                    var customer = _customerService.GetCustomerByIdAsync(id) ?? throw new KeyNotFoundException();
+                    var customer = _customerService.GetCustomerById(id) ?? throw new KeyNotFoundException();
                     updatedCustomer.Role = customer.Role; // Keep original role
                 }
 
-                var existingCustomer = _customerService.UpdateCustomerAsync(id, updatedCustomer) ?? throw new KeyNotFoundException();
+                var existingCustomer = _customerService.UpdateCustomer(id, updatedCustomer) ?? throw new KeyNotFoundException();
 
                 return NoContent();
             }
@@ -134,7 +134,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var result = _customerService.DeleteCustomerAsync(id) ?? throw new KeyNotFoundException();
+                var result = _customerService.DeleteCustomer(id) ?? throw new KeyNotFoundException();
                 return Ok(result);
             }
             catch (KeyNotFoundException ex)
@@ -159,7 +159,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 // Users can only view their own rental history
                 if (userRole != "Admin" && currentUserId != id) return Forbid();
 
-                var rentalHistory = _customerService.GetCustomerRentalHistoryAsync(id) ?? throw new KeyNotFoundException();
+                var rentalHistory = _customerService.GetCustomerRentalHistory(id) ?? throw new KeyNotFoundException();
                 return Ok(rentalHistory);
             }
             catch (KeyNotFoundException ex)
@@ -184,7 +184,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 // Users can only view their own active rental
                 if (userRole != "Admin" && currentUserId != id) return Forbid();
 
-                var activeRental = _customerService.GetCustomerActiveRentalAsync(id) ?? throw new KeyNotFoundException();
+                var activeRental = _customerService.GetCustomerActiveRental(id) ?? throw new KeyNotFoundException();
 
                 return Ok(activeRental);
             }

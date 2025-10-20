@@ -17,7 +17,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<IRental> GetAllRentalsAsync(int page = 1)
+        public IEnumerable<IRental> GetAllRentals(int page = 1)
         {
             var allRentals = _unitOfWork.Rentals.GetAllRentals();
             int skip = (page - 1) * PageSize;
@@ -25,13 +25,13 @@ namespace Midterm_EquipmentRental_Team5.Services
             return paginatedRentals;
         }
 
-        public IRental GetRentalByIdAsync(int id)
+        public IRental GetRentalById(int id)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(id);
             return rental;
         }
 
-        public void IssueEquipmentAsync(IIssueRequest request)
+        public void IssueEquipment(IIssueRequest request)
         {
             var equipment = _unitOfWork.Equipments.GetSpecificEquipment(request.EquipmentId) ?? throw new KeyNotFoundException($"Equipment with ID {request.EquipmentId} not found.");
             if (!equipment.IsAvailable)
@@ -62,7 +62,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork.SaveChanges();
         }
 
-        public void ReturnEquipmentAsync(IReturnRequest request)
+        public void ReturnEquipment(IReturnRequest request)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(request.RentalId) ?? throw new KeyNotFoundException($"Rental with ID {request.RentalId} not found.");
             if (rental.ReturnedAt.HasValue)
@@ -92,31 +92,31 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork.SaveChanges();
         }
 
-        public IEnumerable<IRental> GetActiveRentalsAsync()
+        public IEnumerable<IRental> GetActiveRentals()
         {
             var activeRentals = _unitOfWork.Rentals.GetActiveRentals();
             return activeRentals;
         }
 
-        public IEnumerable<IRental> GetCompletedRentalsAsync()
+        public IEnumerable<IRental> GetCompletedRentals()
         {
             var completedRentals = _unitOfWork.Rentals.GetCompletedRentals();
             return completedRentals;
         }
 
-        public IEnumerable<IRental> GetOverdueRentalsAsync()
+        public IEnumerable<IRental> GetOverdueRentals()
         {
             var overdueRentals = _unitOfWork.Rentals.GetOverdueRentals();
             return overdueRentals;
         }
 
-        public IEnumerable<IRental> GetRentalHistoryByEquipmentAsync(int equipmentId)
+        public IEnumerable<IRental> GetRentalHistoryByEquipment(int equipmentId)
         {
             var rentalHistory = _unitOfWork.Rentals.GetEquipmentRentalHistory(equipmentId);
             return rentalHistory;
         }
 
-        public void ExtendRentalAsync(int rentalId, IExtensionRequest request)
+        public void ExtendRental(int rentalId, IExtensionRequest request)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId);
             if (rental == null)
@@ -134,7 +134,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork.SaveChanges();
         }
 
-        public void CancelRentalAsync(int rentalId)
+        public void CancelRental(int rentalId)
         {
             var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId) ?? throw new KeyNotFoundException($"Rental with ID {rentalId} not found.");
             rental.ReturnedAt = DateTime.Now;

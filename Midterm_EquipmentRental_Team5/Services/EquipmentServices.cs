@@ -15,7 +15,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<IEquipment>? GetAllEquipmentAsync(int page = 1)
+        public IEnumerable<IEquipment>? GetAllEquipment(int page = 1)
         {
             var allEquipment = _unitOfWork.Equipments.GetAllEquipment() ?? throw new KeyNotFoundException();
             if (allEquipment != null)
@@ -27,13 +27,13 @@ namespace Midterm_EquipmentRental_Team5.Services
             return allEquipment;
         }
 
-        public IEquipment GetEquipmentByIdAsync(int id)
+        public IEquipment GetEquipmentById(int id)
         {
             var equipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException();
             return equipment;
         }
 
-        public void AddEquipmentAsync(IEquipment newEquipment)
+        public void AddEquipment(IEquipment newEquipment)
         {
             _unitOfWork.Equipments.AddNewEquipment(new Equipment()
             {
@@ -48,7 +48,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork.SaveChanges();
         }
 
-        public IEquipment? UpdateEquipmentAsync(int id, IEquipment updatedEquipment)
+        public IEquipment? UpdateEquipment(int id, IEquipment updatedEquipment)
         {
             var existingEquipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException();
             if (existingEquipment != null)
@@ -65,19 +65,19 @@ namespace Midterm_EquipmentRental_Team5.Services
             return existingEquipment;
         }
 
-        public void DeleteEquipmentAsync(int id)
+        public void DeleteEquipment(int id)
         {
             var equipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException($"Equipment with ID {id} not found.");
             _unitOfWork.Equipments.DeleteEquipment(id);
             _unitOfWork.SaveChanges();
         }
 
-        public IEnumerable<IEquipment>? GetAvailableEquipmentAsync()
+        public IEnumerable<IEquipment>? GetAvailableEquipment()
         {
             return _unitOfWork.Equipments.ListAvailableEquipment() ?? throw new KeyNotFoundException();
         }
 
-        public IEnumerable<IEquipment>? GetRentedEquipmentAsync()
+        public IEnumerable<IEquipment>? GetRentedEquipment()
         {
             return _unitOfWork.Equipments.GetRentedEquipment() ?? throw new KeyNotFoundException();
         }

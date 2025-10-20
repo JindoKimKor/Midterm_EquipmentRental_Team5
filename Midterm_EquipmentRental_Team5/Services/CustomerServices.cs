@@ -15,7 +15,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<ICustomer>? GetAllCustomersAsync(int page = 1)
+        public IEnumerable<ICustomer>? GetAllCustomers(int page = 1)
         {
             var customers = _unitOfWork.Customers.ListAllCustomers();
             if (customers != null)
@@ -26,7 +26,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             return customers;
         }
 
-        public IEnumerable<ICustomer>? GetUnactiveCustomersAsync()
+        public IEnumerable<ICustomer>? GetUnactiveCustomers()
         {
             var customers = _unitOfWork.Customers.GetCustomersUnactiveRental();
 
@@ -34,13 +34,13 @@ namespace Midterm_EquipmentRental_Team5.Services
         }
 
 
-        public ICustomer? GetCustomerByIdAsync(int id)
+        public ICustomer? GetCustomerById(int id)
         {
             var customer = _unitOfWork.Customers.GetCustomerDetails(id);
             return customer;
         }
 
-        public void AddCustomerAsync(ICustomer newCustomer)
+        public void AddCustomer(ICustomer newCustomer)
         {
 
 
@@ -55,7 +55,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             _unitOfWork.SaveChanges();
         }
 
-        public ICustomer? UpdateCustomerAsync(int id, ICustomer updatedCustomer)
+        public ICustomer? UpdateCustomer(int id, ICustomer updatedCustomer)
         {
             var existingCustomer = _unitOfWork.Customers.GetCustomerDetails(id);
             if (existingCustomer != null)
@@ -72,7 +72,7 @@ namespace Midterm_EquipmentRental_Team5.Services
             return existingCustomer;
         }
 
-        public ICustomer? DeleteCustomerAsync(int id)
+        public ICustomer? DeleteCustomer(int id)
         {
             var customer = _unitOfWork.Customers.GetCustomerDetails(id);
             _unitOfWork.Customers.DeleteCustomer(id);
@@ -80,13 +80,13 @@ namespace Midterm_EquipmentRental_Team5.Services
             return customer;
         }
 
-        public IEnumerable<IRental>? GetCustomerRentalHistoryAsync(int customerId)
+        public IEnumerable<IRental>? GetCustomerRentalHistory(int customerId)
         {
             var rentals = _unitOfWork.Customers.GetCustomerRentalHistory(customerId) ?? null;
             return rentals;
         }
 
-        public IRental? GetCustomerActiveRentalAsync(int customerId)
+        public IRental? GetCustomerActiveRental(int customerId)
         {
             var activeRental = _unitOfWork.Customers.GetCustomerActiveRental(customerId) ?? null;
             return activeRental;
