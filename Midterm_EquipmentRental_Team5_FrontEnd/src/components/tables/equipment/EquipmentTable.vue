@@ -74,6 +74,22 @@
 
       <!-- Actions with tooltips -->
       <template #item.actions="{ item }">
+        <!-- Past Rentals Button -->
+        <v-tooltip text="Past Rentals" location="top">
+          <template #activator="{ props }">
+            <v-btn
+              icon
+              size="small"
+              color="info darken-2"
+              @click="viewPastRentals(item)"
+              v-bind="props"
+              aria-label="View past rentals"
+            >
+              <v-icon>mdi-history</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
+
         <v-tooltip text="Edit" location="top">
           <template #activator="{ props }">
             <v-btn
@@ -110,8 +126,11 @@
 
 <script setup>
 import { ref, onBeforeMount } from 'vue'
+import { useRouter } from 'vue-router'
 import { getAllEquipment, deleteEquipment } from '@/api/EquipmentController'
 import AddEquipmentDialog from '@/components/dialog/equipment/AddEquipmentDialog.vue'
+
+const router = useRouter()
 
 const isAdmin = true
 const isAddEquipmentDialogOpen = ref(false)
@@ -138,6 +157,14 @@ const loadEquipment = async () => {
 }
 
 onBeforeMount(loadEquipment)
+
+// ✅ Navigate to Past Rentals page
+const viewPastRentals = (item) => {
+  router.push({
+    name: 'EquipmentRentalHistory',
+    params: { id: item.id }
+  })
+}
 
 const editEquipment = (item) => {
   selectedEquipment.value = item
