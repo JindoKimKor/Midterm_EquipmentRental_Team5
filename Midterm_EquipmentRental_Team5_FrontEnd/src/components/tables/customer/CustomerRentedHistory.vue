@@ -1,38 +1,32 @@
 <template>
-  <v-container>
-    <v-card>
-      <v-card-title>Rental History</v-card-title>
+  <v-data-table :headers="headers" :items="rentals" class="elevation-1">
+    <!-- Custom rendering for equipment name -->
+    <template #item.equipment="{ item }">
+      {{ item.equipment?.name || 'Unknown' }}
+    </template>
 
-      <v-data-table :headers="headers" :items="rentals" class="elevation-1">
-        <!-- Custom rendering for equipment name -->
-        <template #item.equipment="{ item }">
-          {{ item.equipment?.name || 'Unknown' }}
-        </template>
+    <template #item.issuedAt="{ item }">
+      {{ formatDate(item.issuedAt) }}
+    </template>
 
-        <template #item.issuedAt="{ item }">
-          {{ formatDate(item.issuedAt) }}
-        </template>
+    <template #item.dueDate="{ item }">
+      {{ formatDate(item.dueDate) }}
+    </template>
 
-        <template #item.dueDate="{ item }">
-          {{ formatDate(item.dueDate) }}
-        </template>
+    <template #item.returnedAt="{ item }">
+      {{ item.returnedAt ? formatDate(item.returnedAt) : 'Not Returned' }}
+    </template>
 
-        <template #item.returnedAt="{ item }">
-          {{ item.returnedAt ? formatDate(item.returnedAt) : 'Not Returned' }}
-        </template>
+    <template #item.isActive="{ item }">
+      <v-chip :color="item.isActive ? 'green' : 'grey'" dark>
+        {{ item.isActive ? 'Active' : 'Completed' }}
+      </v-chip>
+    </template>
 
-        <template #item.isActive="{ item }">
-          <v-chip :color="item.isActive ? 'green' : 'grey'" dark>
-            {{ item.isActive ? 'Active' : 'Completed' }}
-          </v-chip>
-        </template>
-
-        <template #item.overdueFee="{ item }">
-          {{ item.overdueFee ? `$${item.overdueFee.toFixed(2)}` : 'None' }}
-        </template>
-      </v-data-table>
-    </v-card>
-  </v-container>
+    <template #item.overdueFee="{ item }">
+      {{ item.overdueFee ? `$${item.overdueFee.toFixed(2)}` : 'None' }}
+    </template>
+  </v-data-table>
 </template>
 
 <script setup>
@@ -55,7 +49,8 @@ const headers = [
 const rentals = ref([])
 
 onMounted(async () => {
-  rentals.value = await getCustomerRentalHistory(props.customerId)
+  const res = await getCustomerRentalHistory(props.customerId)
+  if (res) rentals.value = res
 })
 
 function formatDate(dateStr) {

@@ -52,7 +52,7 @@ const router = createRouter({
           name: 'CustomerRentalView',
           component: () => import('../views/dashboard/rental/RentalView.vue'),
           props: true,
-          meta: { requiresAuth: true, admin: true },
+          meta: { requiresAuth: true },
         },
         {
           path: 'rentals',

@@ -80,16 +80,16 @@ const adminCards = [
 
 const customerCards = [
   {
-    title: 'Browse Equipment',
-    description: 'Find tools and machines to rent.',
+    title: 'User Profile',
+    description: 'Find user infromation and rental information',
     icon: 'mdi-magnify',
-    route: '/equipment',
+    route: `/dashboard/customers/${userStore.id}`,
   },
   {
     title: 'My Rentals',
-    description: 'View your current and past rentals.',
+    description: 'Current rental information',
     icon: 'mdi-clock-outline',
-    route: '/rentals',
+    route: `/dashboard/customers/${userStore.id}/rentals`,
   },
 ]
 

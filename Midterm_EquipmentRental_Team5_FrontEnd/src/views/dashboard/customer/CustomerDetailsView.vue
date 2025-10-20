@@ -9,12 +9,7 @@
           </v-chip>
         </div>
 
-        <v-btn
-          color="primary"
-          variant="elevated"
-          prepend-icon="mdi-pencil"
-          @click="openEditDialog"
-        >
+        <v-btn color="primary" variant="elevated" prepend-icon="mdi-pencil" @click="openEditDialog">
           Edit Profile
         </v-btn>
       </v-card-title>
@@ -84,8 +79,7 @@ async function refreshCustomers() {
 
   try {
     const res = await getCustomer(customerId)
-    customer.value = res?.data ?? res
-    console.log('Customer loaded:', customer.value)
+    if (res) customer.value = res?.data ?? res
   } catch (err) {
     console.error('Error loading customer:', err)
     error.value = true
