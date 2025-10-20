@@ -9,12 +9,14 @@
           </v-chip>
         </div>
 
-        <AddCustomerDialog
-          @click="editCustomerHandler(customer)"
-          v-model="isAddCustomerDialogOpen"
-          :customer="customer"
-          @saved="refreshCustomers"
-        />
+        <v-btn
+          color="primary"
+          variant="elevated"
+          prepend-icon="mdi-pencil"
+          @click="openEditDialog"
+        >
+          Edit Profile
+        </v-btn>
       </v-card-title>
 
       <v-divider />
@@ -44,6 +46,14 @@
         <CustomerRentedHistory :customer-id="customerId" />
       </v-card-text>
     </v-card>
+
+    <!-- Edit Profile Dialog -->
+    <AddCustomerDialog
+      v-model="isAddCustomerDialogOpen"
+      :customer="customer"
+      :show-activator="false"
+      @saved="refreshCustomers"
+    />
   </v-container>
 </template>
 
@@ -58,20 +68,24 @@ const route = useRoute()
 const customerId = route.params.id
 const isAddCustomerDialogOpen = ref(false)
 
-const editCustomerHandler = () => {
-  isAddCustomerDialogOpen.value = true
-}
-
 const customer = ref(null)
 const loading = ref(true)
 const error = ref(false)
 
+const openEditDialog = () => {
+  isAddCustomerDialogOpen.value = true
+}
+
 onMounted(async () => await refreshCustomers())
 
 async function refreshCustomers() {
+  loading.value = true
+  error.value = false
+
   try {
     const res = await getCustomer(customerId)
     customer.value = res?.data ?? res
+    console.log('Customer loaded:', customer.value)
   } catch (err) {
     console.error('Error loading customer:', err)
     error.value = true

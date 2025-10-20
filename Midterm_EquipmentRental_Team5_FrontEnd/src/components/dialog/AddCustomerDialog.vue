@@ -1,21 +1,34 @@
 <template>
-  <v-dialog max-width="500" v-model="isOpen">
-    <template v-slot:activator="{ props: activatorProps }">
-      <v-btn color="primary" v-bind="activatorProps">
-        <v-icon start>mdi-account-plus</v-icon>
-        Add Customer
+  <v-dialog
+    max-width="500"
+    v-model="isOpen"
+    :attach="true"
+    scroll-strategy="block"
+  >
+    <template v-slot:activator="{ props: activatorProps }" v-if="showActivator">
+      <v-btn
+        :color="buttonColor"
+        v-bind="activatorProps"
+        :prepend-icon="buttonIcon"
+        :variant="buttonVariant"
+      >
+        {{ buttonText }}
       </v-btn>
     </template>
 
-    <template v-slot:default="{ isActive }">
-      <CustomerForm :customer="props.customer" @customer-saved="handleSave" />
+    <template v-slot:default>
+      <CustomerForm
+        v-if="isOpen"
+        :customer="props.customer"
+        :is-edit-mode="!!props.customer?.id"
+        @customer-saved="handleSave"
+      />
     </template>
   </v-dialog>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { defineProps, defineEmits } from 'vue'
 import CustomerForm from '../forms/CustomerForm.vue'
 
 const emit = defineEmits(['update:modelValue', 'saved'])
@@ -23,6 +36,26 @@ const emit = defineEmits(['update:modelValue', 'saved'])
 const props = defineProps({
   modelValue: Boolean,
   customer: Object,
+  showActivator: {
+    type: Boolean,
+    default: true
+  },
+  buttonText: {
+    type: String,
+    default: 'Add Customer'
+  },
+  buttonIcon: {
+    type: String,
+    default: 'mdi-account-plus'
+  },
+  buttonColor: {
+    type: String,
+    default: 'primary'
+  },
+  buttonVariant: {
+    type: String,
+    default: 'elevated'
+  }
 })
 
 const isOpen = computed({
@@ -30,9 +63,8 @@ const isOpen = computed({
   set: (val) => emit('update:modelValue', val),
 })
 
-// function now gets called when the form emits 'customer-saved'
 const handleSave = () => {
-  emit('saved') // Tell the parent table to refresh
-  isOpen.value = false // Close the dialog
+  emit('saved')
+  isOpen.value = false
 }
 </script>

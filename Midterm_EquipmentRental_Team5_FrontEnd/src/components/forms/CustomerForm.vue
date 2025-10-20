@@ -1,125 +1,218 @@
 <template>
-  <v-container class="pa-4">
-    <v-card>
-      <v-card-title>Customer Form</v-card-title>
-      <v-card-text>
-        <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
-          <v-text-field
-            v-model="customerModel.userName"
-            label="Username"
-            :rules="[rules.required]"
-            required
-          ></v-text-field>
+  <v-card>
+    <v-card-title class="text-h5 pa-4">
+      {{ isEditMode ? 'Edit Profile' : 'Add Customer' }}
+    </v-card-title>
 
-          <v-text-field
-            v-model="customerModel.password"
-            label="Password"
-            type="password"
-            :rules="[rules.required]"
-            required
-          ></v-text-field>
+    <v-divider />
 
-          <v-text-field
-            v-model="customerModel.name"
-            label="Name"
-            :rules="[rules.required]"
-            required
-          ></v-text-field>
+    <v-card-text class="pa-6">
+      <v-form ref="formRef" v-model="isFormValid">
+        <v-row dense>
+          <!-- Username -->
+          <v-col cols="12">
+            <v-text-field
+              v-model="form.userName"
+              label="Username"
+              variant="outlined"
+              density="comfortable"
+              :readonly="isEditMode"
+              :disabled="isEditMode"
+              :rules="isEditMode ? [] : [rules.required]"
+            />
+          </v-col>
 
-          <v-text-field
-            v-model="customerModel.email"
-            label="Email"
-            type="email"
-            :rules="[rules.required, rules.email]"
-            required
-          ></v-text-field>
+          <!-- Password -->
+          <v-col cols="12">
+            <v-text-field
+              v-model="form.password"
+              label="Password"
+              type="password"
+              variant="outlined"
+              density="comfortable"
+              :rules="isEditMode ? [] : [rules.required, rules.minLength]"
+              :placeholder="isEditMode ? 'Leave blank to keep current password' : ''"
+            />
+          </v-col>
 
-          <v-select
-            v-model="customerModel.role"
-            label="Role"
-            :items="roleOptions"
-            :rules="[rules.required]"
-            required
-            placeholder="Select a role"
-          ></v-select>
-          <input type="hidden" v-model="customerModel.id" />
-          <v-btn type="submit" color="primary" class="mt-4" :loading="loading" :disabled="!valid">
-            Submit
-          </v-btn>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-container>
+          <!-- Name -->
+          <v-col cols="12">
+            <v-text-field
+              v-model="form.name"
+              label="Name"
+              variant="outlined"
+              density="comfortable"
+              :rules="[rules.required]"
+            />
+          </v-col>
+
+          <!-- Email -->
+          <v-col cols="12">
+            <v-text-field
+              v-model="form.email"
+              label="Email"
+              type="email"
+              variant="outlined"
+              density="comfortable"
+              :rules="[rules.required, rules.email]"
+            />
+          </v-col>
+
+          <!-- Role (only show for new customers, not in edit mode) -->
+          <v-col cols="12" v-if="!isEditMode">
+            <v-select
+              v-model="form.role"
+              :items="['User', 'Admin']"
+              label="Role"
+              variant="outlined"
+              density="comfortable"
+              :rules="[rules.required]"
+            />
+          </v-col>
+        </v-row>
+      </v-form>
+    </v-card-text>
+
+    <v-divider />
+
+    <v-card-actions class="pa-4">
+      <v-spacer />
+      <v-btn variant="text" @click="closeDialog">
+        Cancel
+      </v-btn>
+      <v-btn
+        color="primary"
+        variant="elevated"
+        @click="saveCustomer"
+        :loading="loading"
+        :disabled="!isFormValid"
+      >
+        {{ isEditMode ? 'SAVE' : 'SUBMIT' }}
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script setup>
+import { ref, watch, onMounted } from 'vue'
 import { createCustomer, updateCustomer } from '@/api/CustomerController'
-import { onBeforeMount, ref, defineEmits } from 'vue'
+
+const props = defineProps({
+  customer: {
+    type: Object,
+    default: null
+  },
+  isEditMode: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const emit = defineEmits(['customer-saved'])
 
-const valid = ref(false)
+const formRef = ref(null)
+const isFormValid = ref(false)
 const loading = ref(false)
 
-const roleOptions = ['User', 'Admin']
-
-const props = defineProps({
-  customer: Object,
-})
-
-const customerModel = ref({
-  id: 0,
-  name: '',
-  email: '',
+const form = ref({
   userName: '',
   password: '',
-  role: '',
+  name: '',
+  email: '',
+  role: 'User'
 })
 
-onBeforeMount(() => {
-  const { customer } = props
-  if (customer) {
-    customerModel.value = {
-      id: customer.id,
-      name: customer.name,
-      email: customer.email,
-      userName: customer.userName,
-      password: customer.password,
-      role: customer.role,
-    }
-  } else {
-    customerModel.value = {
-      id: 0,
-      name: '',
-      email: '',
-      userName: '',
-      password: '',
-      role: '',
-    }
-  }
-})
-
+// Validation rules
 const rules = {
-  required: (v) => !!v || 'This field is required',
-  email: (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Email must be valid',
+  required: (value) => !!value || 'This field is required',
+  email: (value) => {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return pattern.test(value) || 'Invalid email address'
+  },
+  minLength: (value) => {
+    if (!value && props.isEditMode) return true
+    return value.length >= 5 || 'Password must be at least 5 characters'
+  }
 }
 
-const submitForm = async () => {
-  if (valid.value) {
-    try {
-      if (customerModel.value.id) {
-        // 4. Wait for the API call to finish
-        await updateCustomer(customerModel.value.id, customerModel.value)
-      } else {
-        // 4. Wait for the API call to finish
-        await createCustomer(customerModel.value)
-      }
-      // 5. After success, emit the event to the parent
-      emit('customer-saved')
-    } catch (error) {
-      console.error('Failed to save the customer:', error)
-      // Optionally, show an error message to the user here
+// ✅ Define functions BEFORE watch
+const loadCustomerData = () => {
+  if (props.customer && props.customer.id) {
+    form.value = {
+      userName: props.customer.userName || '',
+      password: '',
+      name: props.customer.name || '',
+      email: props.customer.email || '',
+      role: props.customer.role || 'User'
     }
   }
 }
+
+const resetForm = () => {
+  form.value = {
+    userName: '',
+    password: '',
+    name: '',
+    email: '',
+    role: 'User'
+  }
+  formRef.value?.reset()
+}
+
+const closeDialog = () => {
+  resetForm()
+  emit('customer-saved')
+}
+
+const saveCustomer = async () => {
+  const { valid } = await formRef.value.validate()
+
+  if (!valid) return
+
+  loading.value = true
+
+  try {
+    const customerData = {
+      name: form.value.name,
+      email: form.value.email,
+      userName: form.value.userName,
+      role: form.value.role
+    }
+
+    if (form.value.password) {
+      customerData.password = form.value.password
+    }
+
+    if (props.isEditMode && props.customer?.id) {
+      await updateCustomer(props.customer.id, customerData)
+      alert('Profile updated successfully!')
+    } else {
+      customerData.password = form.value.password
+      await createCustomer(customerData)
+      alert('Customer added successfully!')
+    }
+
+    emit('customer-saved')
+    resetForm()
+  } catch (error) {
+    console.error('Error saving customer:', error)
+    alert(`Failed to ${props.isEditMode ? 'update' : 'add'} customer. Please try again.`)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Watch comes AFTER function definitions
+watch(() => props.customer, (newCustomer) => {
+  if (newCustomer && newCustomer.id) {
+    loadCustomerData()
+  }
+}, { immediate: true })
+
+// load on mount for safety
+onMounted(() => {
+  if (props.customer && props.customer.id) {
+    loadCustomerData()
+  }
+})
 </script>
