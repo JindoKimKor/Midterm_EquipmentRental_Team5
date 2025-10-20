@@ -56,3 +56,6 @@ UI will run at: http://localhost:5173
 - Username: `user3` | Password: `user3`
 - Username: `user4` | Password: `user4`
 - Username: `user5` | Password: `user5`
+
+### AI Assistance Used
+- 

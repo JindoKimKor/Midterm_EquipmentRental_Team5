@@ -10,7 +10,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize] // All endpoints require authentication
-    public class EquipmentController(IEquipmentServices equipmentService, IWebHostEnvironment environment) : ControllerBase
+    public class EquipmentController(IEquipmentServices equipmentService) : ControllerBase
     {
         private readonly IEquipmentServices _equipmentService = equipmentService;
         // GET /api/equipment - Get all equipment with pagination
