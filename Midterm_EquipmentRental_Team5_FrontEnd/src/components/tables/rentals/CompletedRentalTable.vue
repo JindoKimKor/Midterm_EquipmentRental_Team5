@@ -12,6 +12,14 @@
       hover
       item-key="id"
     >
+      <template #item.equipment.name="{ item }">
+        <router-link
+          :to="`equipments/${item.equipment.id}`"
+          class="text-decoration-none font-weight-medium"
+        >
+          {{ item.equipment.name }}
+        </router-link>
+      </template>
       <!-- Return Date -->
       <template #item.returnedAt="{ item }">
         <span>{{ formatDate(item.returnedAt) }}</span>
@@ -37,6 +45,26 @@
           {{ getStatus(item) }}
         </v-chip>
       </template>
+      <template #item.actions="{ item }">
+        <div class="d-flex align-center ga-2">
+          <v-tooltip text="View rental details" location="top">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                :to="`rentals/${item.id}`"
+                color="primary"
+                variant="flat"
+                size="small"
+                class="text-capitalize"
+                aria-label="View rental details"
+              >
+                <v-icon start size="18" class="mr-1">mdi-eye</v-icon>
+                Details
+              </v-btn>
+            </template>
+          </v-tooltip>
+        </div>
+      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -51,6 +79,7 @@ const headers = [
   { title: 'Return Date', value: 'returnedAt' },
   { title: 'Duration', value: 'duration', sortable: false, width: '110' },
   { title: 'Status', value: 'status', sortable: false, width: '100' },
+  { title: 'Actions', value: 'actions', sortable: false },
 ]
 
 const completedRentals = ref([])

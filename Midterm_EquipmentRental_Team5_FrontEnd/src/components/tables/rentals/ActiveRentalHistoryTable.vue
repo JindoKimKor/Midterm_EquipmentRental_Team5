@@ -83,7 +83,6 @@
           </v-tooltip>
         </div>
       </template>
-
     </v-data-table>
   </v-card>
 </template>
@@ -108,7 +107,7 @@ const tableHeaders = computed(() => {
     { title: 'Issue Date', value: 'issuedAt' },
     { title: 'Due Date', value: 'dueDate' },
     { title: 'Return Date', value: 'returnedAt' },
-    { title: 'Actions', value: 'actions', sortable: false }
+    { title: 'Actions', value: 'actions', sortable: false },
   ]
 
   return isAdmin.value ? [...baseHeaders, ...adminHeaders] : baseHeaders
