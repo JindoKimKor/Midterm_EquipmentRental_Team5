@@ -46,8 +46,9 @@ namespace Midterm_EquipmentRental_Team5.Data
                     Category = "Heavy Machinery",
                     Condition = "Excellent",
                     RentalPrice = 500.00m,
-                    IsAvailable = true, // Available for rent
-                    CreatedAt = new DateTime(2024, 1, 1)
+                    IsAvailable = true,
+                    CreatedAt = new DateTime(2024, 1, 1),
+                    ImageUrl = "/images/equipment/Excavator.png" 
                 },
                 new Equipment
                 {
@@ -57,8 +58,9 @@ namespace Midterm_EquipmentRental_Team5.Data
                     Category = "Heavy Machinery",
                     Condition = "Good",
                     RentalPrice = 150.00m,
-                    IsAvailable = false, // Currently rented (overdue)
-                    CreatedAt = new DateTime(2024, 1, 1)
+                    IsAvailable = false,
+                    CreatedAt = new DateTime(2024, 1, 1),
+                    ImageUrl = "/images/equipment/Concrete.png"
                 },
                 new Equipment
                 {
@@ -68,8 +70,9 @@ namespace Midterm_EquipmentRental_Team5.Data
                     Category = "Power Tools",
                     Condition = "New",
                     RentalPrice = 30.00m,
-                    IsAvailable = false, // Currently rented (active)
-                    CreatedAt = new DateTime(2024, 1, 1)
+                    IsAvailable = false,
+                    CreatedAt = new DateTime(2024, 1, 1),
+                    ImageUrl = "/images/equipment/CordlessDrill.png" 
                 },
                 new Equipment
                 {
@@ -79,8 +82,9 @@ namespace Midterm_EquipmentRental_Team5.Data
                     Category = "Vehicles",
                     Condition = "Good",
                     RentalPrice = 200.00m,
-                    IsAvailable = true, // Available for rent
-                    CreatedAt = new DateTime(2024, 1, 1)
+                    IsAvailable = true,
+                    CreatedAt = new DateTime(2024, 1, 1),
+                    ImageUrl = "/images/equipment/Truck.png" 
                 },
                 new Equipment
                 {
@@ -90,8 +94,9 @@ namespace Midterm_EquipmentRental_Team5.Data
                     Category = "Safety",
                     Condition = "Excellent",
                     RentalPrice = 25.00m,
-                    IsAvailable = true, // Available for rent
-                    CreatedAt = new DateTime(2024, 1, 1)
+                    IsAvailable = true,
+                    CreatedAt = new DateTime(2024, 1, 1),
+                    ImageUrl = "/images/equipment/Hardness_Kit.png" 
                 },
                 new Equipment
                 {
@@ -101,11 +106,12 @@ namespace Midterm_EquipmentRental_Team5.Data
                     Category = "Surveying",
                     Condition = "New",
                     RentalPrice = 40.00m,
-                    IsAvailable = true, // Available for rent
-                    CreatedAt = new DateTime(2024, 1, 1)
+                    IsAvailable = true,
+                    CreatedAt = new DateTime(2024, 1, 1),
+                    ImageUrl = "/images/equipment/Laser_Level.png" 
                 }
             );
-
+            
             // Seed Rentals (Active, Completed, Overdue)
             modelBuilder.Entity<Rental>().HasData(
                 // Active rental - John has the drill
