@@ -41,7 +41,7 @@ import { useUserInformationStore } from '@/stores/UserInformation'
 import { useTheme } from 'vuetify'
 
 const theme = useTheme()
-const themeName = ref(theme.name)
+const isDarkTheme = ref(theme.name === 'Dark')
 
 const role = ref('Admin')
 const authStore = useAuthenticationStore()
