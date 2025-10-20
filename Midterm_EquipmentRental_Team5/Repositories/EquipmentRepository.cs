@@ -24,7 +24,8 @@ namespace Midterm_EquipmentRental_Team5.Repositories
 
         public IEnumerable<IEquipment>? GetAllEquipment()
         {
-            return _context.Equipment.ToList() ?? null;
+            var equipments = _context.Equipment.ToList();
+            return equipments.Count != 0 ? equipments : null;
         }
 
         public IEnumerable<IEquipment>? GetRentedEquipment()
@@ -39,7 +40,8 @@ namespace Midterm_EquipmentRental_Team5.Repositories
 
         public IEnumerable<IEquipment>? ListAvailableEquipment()
         {
-            return _context.Equipment.Where(e => e.IsAvailable).ToList() ?? null;
+            var equipments = _context.Equipment.Where(e => e.IsAvailable).ToList();
+            return equipments.Count != 0 ? equipments : null;
         }
 
         public IEquipment? UpdateEquipment(IEquipment equipment)
