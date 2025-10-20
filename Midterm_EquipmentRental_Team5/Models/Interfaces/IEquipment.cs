@@ -2,7 +2,7 @@ namespace Midterm_EquipmentRental_Team5.Models.Interfaces
 {
     public interface IEquipment
     {
-        int Id { get; set; }
+        int? Id { get; set; }
         string? Name { get; set; }
         string? Description { get; set; }
         string? Category { get; set; }

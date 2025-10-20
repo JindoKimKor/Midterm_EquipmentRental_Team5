@@ -55,7 +55,7 @@
 
 <script setup>
 import { onBeforeMount, ref } from 'vue'
-import { addEquipment } from '@/api/EquipmentController'
+import { addEquipment, updateEquipment } from '@/api/EquipmentController'
 
 const valid = ref(false)
 
@@ -90,13 +90,16 @@ const submitForm = async () => {
 
   try {
     const payload = { ...equipment.value }
+    if (payload.Id) {
+      await updateEquipment(payload.Id, payload)
+    } else {
+      await addEquipment(payload)
+    }
 
-    await addEquipment(payload)
     alert('Equipment successfully submitted!')
     emit('customerSaved')
     resetForm()
   } catch (error) {
-    console.error('Submission failed:', error)
     alert('Submission failed. Please try again.')
   }
 }
