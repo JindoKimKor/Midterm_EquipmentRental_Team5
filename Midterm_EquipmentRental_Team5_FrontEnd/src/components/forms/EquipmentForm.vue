@@ -14,16 +14,18 @@
             required
           />
 
-          <v-text-field
+          <v-select
             v-model="equipment.Category"
             label="Category"
+            :items="categoryOptions"
             :rules="[rules.required]"
             required
           />
 
-          <v-text-field
+          <v-select
             v-model="equipment.Condition"
             label="Condition"
+            :items="conditionOptions"
             :rules="[rules.required]"
             required
           />
@@ -66,6 +68,22 @@ const props = defineProps({
 const emit = defineEmits(['customerSaved'])
 
 const equipment = ref({})
+
+const categoryOptions = [
+  'Heavy Machinery',
+  'Power Tools',
+  'Vehicles',
+  'Safety',
+  'Surveying'
+]
+
+const conditionOptions = [
+  'New',
+  'Excellent',
+  'Good',
+  'Fair',
+  'Poor'
+]
 
 onBeforeMount(() => {
   equipment.value = {
