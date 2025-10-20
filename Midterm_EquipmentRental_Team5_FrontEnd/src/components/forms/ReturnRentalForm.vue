@@ -52,7 +52,7 @@ const isFormValid = ref(false)
 const required = (value) => !!value || 'Required'
 
 const rentalOptions = ref([])
-const conditionOptions = ['Good', 'Damaged', 'Broken', 'Needs Maintenance']
+const conditionOptions = ['New', 'Excellent', 'Good', 'Fair', 'Poor']
 
 onMounted(async () => {
   try {

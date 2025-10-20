@@ -170,7 +170,6 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         // GET /api/equipment/rented - Get rented equipment summary (Admin only)
         [HttpGet("rented")]
         [Authorize(Roles = "Admin")]
