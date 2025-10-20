@@ -1,7 +1,5 @@
 <template>
-  <v-card class="pa-4" max-width="600">
-    <v-card-title class="text-h6">Issue Equipment</v-card-title>
-
+  <v-container class="pa-4" max-width="600">
     <div v-if="loadingRental" class="text-center pa-4">
       <v-progress-circular indeterminate color="primary" />
     </div>
@@ -41,7 +39,7 @@
         </v-col>
       </v-row>
     </v-form>
-  </v-card>
+  </v-container>
 </template>
 
 <script setup>

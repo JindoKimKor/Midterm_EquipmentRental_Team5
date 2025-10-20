@@ -104,7 +104,6 @@ async function submitForm() {
 
     const response = await issueEquipment(payload)
 
-    console.log('Rental issued successfully:', response)
     alert('Equipment issued successfully!')
 
     // Reset form
