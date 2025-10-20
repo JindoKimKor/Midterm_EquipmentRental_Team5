@@ -102,6 +102,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+app.UseStaticFiles(); // Serves files from wwwroot
 
 // Enable CORS
 app.UseCors("Frontend");

@@ -10,5 +10,6 @@ namespace Midterm_EquipmentRental_Team5.Models.Interfaces
         decimal RentalPrice { get; set; }
         bool IsAvailable { get; set; }
         DateTime CreatedAt { get; set; }
+        string? ImageUrl { get; set; }
     }
 }

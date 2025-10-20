@@ -10,17 +10,16 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize] // All endpoints require authentication
-    public class EquipmentController(IEquipmentServices equipmentService) : ControllerBase
+    public class EquipmentController(IEquipmentServices equipmentService, IWebHostEnvironment environment) : ControllerBase
     {
         private readonly IEquipmentServices _equipmentService = equipmentService;
-
         // GET /api/equipment - Get all equipment with pagination
         [HttpGet]
         public ActionResult<IEnumerable<IEquipment>> GetAllEquipment(int page = 1)
         {
             try
             {
-                var equipment = _equipmentService.GetAllEquipmentAsync(page);
+                var equipment = equipmentService.GetAllEquipmentAsync(page);
                 return Ok(equipment);
             }
             catch (KeyNotFoundException ex)
@@ -31,6 +30,44 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        
+        [HttpPost("{id}/upload-image")]
+        public async Task<IActionResult> UploadImage(int id, IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+                return BadRequest("No image file provided");
+
+            // ✅ Added await
+            var equipment = equipmentService.GetEquipmentByIdAsync(id);
+            if (equipment == null)
+                return NotFound("Equipment not found");
+            // Validate file type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
+                return BadRequest("Invalid file type. Only jpg, jpeg, png, gif allowed");
+
+            // Create unique filename
+            var fileName = $"equipment_{id}_{Guid.NewGuid()}{extension}";
+            var uploadsFolder = Path.Combine(environment.WebRootPath, "images", "equipment");
+
+            // Create directory if it doesn't exist
+            Directory.CreateDirectory(uploadsFolder);
+
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            // Save file - use await using
+            await using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+            // ImageUrl will work since it's on the interface
+            equipment.ImageUrl = $"/images/equipment/{fileName}";
+            equipmentService.UpdateEquipmentAsync(id, equipment);
+
+            return Ok(new { imageUrl = equipment.ImageUrl });
         }
 
         // GET /api/equipment/{id} - Get specific equipment details
@@ -133,7 +170,6 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         // GET /api/equipment/rented - Get rented equipment summary (Admin only)
         [HttpGet("rented")]
         [Authorize(Roles = "Admin")]
