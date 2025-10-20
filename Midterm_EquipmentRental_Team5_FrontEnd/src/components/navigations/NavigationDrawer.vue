@@ -24,6 +24,12 @@
 
         <v-divider v-if="index !== navigation.length - 1" class="my-2" />
       </template>
+      <v-switch
+        v-model="isDarkTheme"
+        :label="`${isDarkTheme ? 'Dark' : 'Light'}`"
+        @change="theme.toggle()"
+        inset
+      />
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -32,6 +38,10 @@
 import { ref, computed } from 'vue'
 import useAuthenticationStore from '@/stores/Authentication'
 import { useUserInformationStore } from '@/stores/UserInformation'
+import { useTheme } from 'vuetify'
+
+const theme = useTheme()
+const themeName = ref(theme.name)
 
 const role = ref('Admin')
 const authStore = useAuthenticationStore()
