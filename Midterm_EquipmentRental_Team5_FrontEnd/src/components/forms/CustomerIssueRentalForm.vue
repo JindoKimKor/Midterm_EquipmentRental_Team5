@@ -48,6 +48,7 @@ import { getAvailableEquipment } from '@/api/EquipmentController'
 import { issueEquipment } from '@/api/RentalController'
 import { getCustomerActiveRental } from '@/api/CustomerController'
 import { useUserInformationStore } from '@/stores/UserInformation'
+import router from '@/router'
 
 const userStoreInfo = useUserInformationStore()
 
@@ -122,6 +123,6 @@ async function submitForm() {
 }
 
 function resetForm() {
-  form.value.equipmentId = null
+  router.go(0)
 }
 </script>

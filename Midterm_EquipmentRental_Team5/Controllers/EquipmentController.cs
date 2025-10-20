@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Models.Interfaces;
-using Midterm_EquipmentRental_Team5.Services;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
@@ -21,12 +20,12 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var equipment = equipmentService.GetAllEquipment(page);
+                var equipment = equipmentService.GetAllEquipment(page) ?? throw new KeyNotFoundException();
                 return Ok(equipment);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -69,18 +68,12 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var equipment = _equipmentService.GetEquipmentById(id);
-
-                if (equipment == null)
-                {
-                    return NotFound($"Equipment with ID {id} not found.");
-                }
-
+                var equipment = _equipmentService.GetEquipmentById(id) ?? throw new KeyNotFoundException();
                 return Ok(equipment);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -95,7 +88,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-               _equipmentService.AddEquipment(newEquipment);
+                _equipmentService.AddEquipment(newEquipment);
                 return NoContent();
             }
             catch (Exception ex)
@@ -114,10 +107,6 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 _equipmentService.UpdateEquipment(id, updatedEquipment);
                 return NoContent();
             }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -134,11 +123,6 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 _equipmentService.DeleteEquipment(id);
                 return NoContent();
             }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -151,12 +135,12 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var availableEquipment = _equipmentService.GetAvailableEquipment();
+                var availableEquipment = _equipmentService.GetAvailableEquipment() ?? throw new KeyNotFoundException();
                 return Ok(availableEquipment);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -170,12 +154,12 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         {
             try
             {
-                var rentedEquipment = _equipmentService.GetRentedEquipment();
+                var rentedEquipment = _equipmentService.GetRentedEquipment() ?? throw new KeyNotFoundException();
                 return Ok(rentedEquipment);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {

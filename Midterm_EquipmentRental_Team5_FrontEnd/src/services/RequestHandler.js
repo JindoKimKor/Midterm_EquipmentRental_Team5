@@ -26,8 +26,6 @@ const handleError = (error) => {
   console.error('API Error:', error)
   if (error.status === 401) {
     router.push('/')
-  } else {
-    throw new Error(message)
   }
 }
 

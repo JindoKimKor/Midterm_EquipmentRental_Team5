@@ -21,12 +21,16 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public ActionResult<IEnumerable<IRental>> GetAllCustomers(int page = 1)
+        public ActionResult<IEnumerable<ICustomer>> GetAllCustomers(int page = 1)
         {
             try
             {
-                var customers = _customerService.GetAllCustomers(page);
+                var customers = _customerService.GetAllCustomers(page) ?? throw new KeyNotFoundException();
                 return Ok(customers);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -36,12 +40,16 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         [HttpGet("unactive-customer")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<IEnumerable<IRental>> GetUnactiveCustomers(int page = 1)
+        public ActionResult<IEnumerable<ICustomer>> GetUnactiveCustomers(int page = 1)
         {
             try
             {
-                var customers = _customerService.GetUnactiveCustomers();
+                var customers = _customerService.GetUnactiveCustomers() ?? throw new KeyNotFoundException();
                 return Ok(customers);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -52,7 +60,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
         // GET /api/customers/{id} - Get customer details
         [HttpGet("{id}")]
-        public ActionResult<IRental> GetCustomer(int id)
+        public ActionResult<ICustomer> GetCustomer(int id)
         {
             try
             {
@@ -67,9 +75,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
                 return Ok(customer);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -113,13 +121,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                     updatedCustomer.Role = customer.Role; // Keep original role
                 }
 
-                var existingCustomer = _customerService.UpdateCustomer(id, updatedCustomer) ?? throw new KeyNotFoundException();
+                _customerService.UpdateCustomer(id, updatedCustomer);
 
                 return NoContent();
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -130,16 +134,12 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         // DELETE /api/customers/{id} - Delete customer and rental history (Admin only)
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<IRental> DeleteCustomer(int id)
+        public ActionResult DeleteCustomer(int id)
         {
             try
             {
-                var result = _customerService.DeleteCustomer(id) ?? throw new KeyNotFoundException();
-                return Ok(result);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
+                _customerService.DeleteCustomer(id);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -162,9 +162,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 var rentalHistory = _customerService.GetCustomerRentalHistory(id) ?? throw new KeyNotFoundException();
                 return Ok(rentalHistory);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -188,9 +188,9 @@ namespace Midterm_EquipmentRental_Team5.Controllers
 
                 return Ok(activeRental);
             }
-            catch (KeyNotFoundException ex)
+            catch (KeyNotFoundException)
             {
-                return NotFound(ex.Message);
+                return NoContent();
             }
             catch (Exception ex)
             {
