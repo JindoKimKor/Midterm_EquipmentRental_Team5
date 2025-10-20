@@ -3,7 +3,6 @@
     <v-list dense nav aria-label="Primary Navigation">
       <template v-for="(section, index) in navigation" :key="`section-${index}`">
         <v-subheader>{{ section.categoryTitle }}</v-subheader>
-
         <v-list-item
           v-for="(item, idx) in section.items"
           :key="`item-${index}-${idx}`"
@@ -12,6 +11,7 @@
           link
           exact-active-class="v-item--active"
           :aria-label="item.title"
+          @click="item.function?.()"
         >
           <template v-slot:prepend>
             <v-icon>{{ item.prependIcon }}</v-icon>
@@ -122,6 +122,17 @@ const AdminNavigationItems = [
         url: '/dashboard/rentals/cancel',
         title: 'Cancel Rental',
         prependIcon: 'mdi-cancel',
+      },
+    ],
+  },
+  {
+    categoryTitle: '',
+    items: [
+      {
+        url: '/',
+        title: 'Logout',
+        prependIcon: 'mdi-logout',
+        function: () => authStore.logout(),
       },
     ],
   },
