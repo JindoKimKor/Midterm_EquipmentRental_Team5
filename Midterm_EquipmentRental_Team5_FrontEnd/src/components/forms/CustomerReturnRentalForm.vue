@@ -55,7 +55,7 @@ const form = ref({
 const isFormValid = ref(false)
 
 // Dropdown options
-const conditionOptions = ['Good', 'Damaged', 'Broken', 'Needs Maintenance']
+const conditionOptions = ['New', 'Excellent', 'Good', 'Fair', 'Poor']
 
 // Validation rule
 const required = (value) => !!value || 'This field is required.'
