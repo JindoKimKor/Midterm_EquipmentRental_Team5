@@ -60,7 +60,7 @@ const form = ref({
   notes: '',
 })
 
-const conditionOptions = ['Good', 'Damaged', 'Broken', 'Needs Maintenance']
+const conditionOptions = ['New', 'Excellent', 'Good', 'Fair', 'Poor']
 const required = (value) => !!value || 'This field is required.'
 
 function handleRentalLoaded(rental) {
