@@ -7,6 +7,7 @@
         v-model="isAddCustomerDialogOpen"
         :customer="selectedCustomer"
         @saved="refreshCustomers"
+        @closed="cleanup"
       />
     </v-card-title>
 
@@ -21,9 +22,7 @@
       height="600"
     >
       <template #item.userName="{ item }">
-        <router-link :to="`customers/${item.id}`" class="text-decoration-none font-weight-medium">
-          {{ item.userName }}
-        </router-link>
+        <span class="font-weight-medium">{{ item.userName }}</span>
       </template>
 
       <template #item.password="{ item }">
@@ -37,6 +36,25 @@
           {{ showPasswords[item.id] ? 'mdi-eye-off' : 'mdi-eye' }}
         </v-icon>
         <span>{{ showPasswords[item.id] ? item.password : maskedPassword(item.password) }}</span>
+      </template>
+
+      <template #item.details="{ item }">
+        <v-tooltip text="View customer details" location="top">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              :to="`customers/${item.id}`"
+              color="primary"
+              variant="flat"
+              size="small"
+              class="text-capitalize"
+              aria-label="View customer details"
+            >
+              <v-icon start size="18" class="mr-1">mdi-eye</v-icon>
+              Details
+            </v-btn>
+          </template>
+        </v-tooltip>
       </template>
 
       <template #item.actions="{ item }">
@@ -91,6 +109,7 @@ const headers = [
   { title: 'Password', value: 'password' },
   { title: 'Name', value: 'name' },
   { title: 'Email', value: 'email' },
+  { title: 'Details', value: 'details', sortable: false },
   { title: 'Role', value: 'role' },
   { title: 'Actions', value: 'actions', sortable: false },
 ]
@@ -111,6 +130,10 @@ onMounted(loadCustomers)
 const editCustomerHandler = (item) => {
   selectedCustomer.value = item
   isAddCustomerDialogOpen.value = true
+}
+
+const cleanup = () => {
+  selectedCustomer.value = null
 }
 
 const deleteCustomerHandler = async (id) => {

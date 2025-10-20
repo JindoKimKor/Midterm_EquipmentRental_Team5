@@ -3,15 +3,15 @@
     <v-list dense nav aria-label="Primary Navigation">
       <template v-for="(section, index) in navigation" :key="`section-${index}`">
         <v-subheader>{{ section.categoryTitle }}</v-subheader>
-
         <v-list-item
           v-for="(item, idx) in section.items"
           :key="`item-${index}-${idx}`"
           :to="item.url"
           router
           link
-          exact-active-class="v-item--active"
+          :exact="item.url === '/dashboard'"
           :aria-label="item.title"
+          @click="item.function?.()"
         >
           <template v-slot:prepend>
             <v-icon>{{ item.prependIcon }}</v-icon>
@@ -24,6 +24,12 @@
 
         <v-divider v-if="index !== navigation.length - 1" class="my-2" />
       </template>
+      <v-switch
+        v-model="isDarkTheme"
+        :label="`${isDarkTheme ? 'Dark' : 'Light'}`"
+        @change="theme.toggle()"
+        inset
+      />
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -32,6 +38,10 @@
 import { ref, computed } from 'vue'
 import useAuthenticationStore from '@/stores/Authentication'
 import { useUserInformationStore } from '@/stores/UserInformation'
+import { useTheme } from 'vuetify'
+
+const theme = useTheme()
+const isDarkTheme = ref(theme.name === 'Dark')
 
 const role = ref('Admin')
 const authStore = useAuthenticationStore()
@@ -42,6 +52,16 @@ const navigation = computed(() => {
 })
 
 const UserNavigationItems = [
+  {
+    categoryTitle: '',
+    items: [
+      {
+        url: `/dashboard`,
+        title: 'Home',
+        prependIcon: 'mdi-home',
+      },
+    ],
+  },
   {
     categoryTitle: 'User Profile',
     items: [
@@ -72,9 +92,30 @@ const UserNavigationItems = [
       },
     ],
   },
+  {
+    categoryTitle: '',
+    items: [
+      {
+        url: '/',
+        title: 'Logout',
+        prependIcon: 'mdi-logout',
+        function: () => authStore.logout(),
+      },
+    ],
+  },
 ]
 
 const AdminNavigationItems = [
+  {
+    categoryTitle: 'Dashboard',
+    items: [
+      {
+        url: `/dashboard`,
+        title: 'Home',
+        prependIcon: 'mdi-home',
+      },
+    ],
+  },
   {
     categoryTitle: 'Customer Management',
     items: [
@@ -122,6 +163,17 @@ const AdminNavigationItems = [
         url: '/dashboard/rentals/cancel',
         title: 'Cancel Rental',
         prependIcon: 'mdi-cancel',
+      },
+    ],
+  },
+  {
+    categoryTitle: '',
+    items: [
+      {
+        url: '/',
+        title: 'Logout',
+        prependIcon: 'mdi-logout',
+        function: () => authStore.logout(),
       },
     ],
   },

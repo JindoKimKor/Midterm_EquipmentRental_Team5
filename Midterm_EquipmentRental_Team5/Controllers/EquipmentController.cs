@@ -10,9 +10,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize] // All endpoints require authentication
-    public class EquipmentController(IEquipmentServices equipmentService, IWebHostEnvironment environment) : ControllerBase
+    public class EquipmentController(IEquipmentServices equipmentService, IRentalServices rentalServices) : ControllerBase
     {
         private readonly IEquipmentServices _equipmentService = equipmentService;
+        private readonly IRentalServices _rentalService = rentalServices;
+        
         // GET /api/equipment - Get all equipment with pagination
         [HttpGet]
         public ActionResult<IEnumerable<IEquipment>> GetAllEquipment(int page = 1)
@@ -32,43 +34,34 @@ namespace Midterm_EquipmentRental_Team5.Controllers
             }
         }
         
-        [HttpPost("{id}/upload-image")]
-        public async Task<IActionResult> UploadImage(int id, IFormFile image)
+        // Get rental history for specific equipment
+        [HttpGet("{id}/rental-history")]
+        public ActionResult<IEnumerable<IRental>> GetEquipmentRentalHistory(int id)
         {
-            if (image == null || image.Length == 0)
-                return BadRequest("No image file provided");
-
-            // ✅ Added await
-            var equipment = equipmentService.GetEquipmentById(id);
-            if (equipment == null)
-                return NotFound("Equipment not found");
-            // Validate file type
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
-
-            if (!allowedExtensions.Contains(extension))
-                return BadRequest("Invalid file type. Only jpg, jpeg, png, gif allowed");
-
-            // Create unique filename
-            var fileName = $"equipment_{id}_{Guid.NewGuid()}{extension}";
-            var uploadsFolder = Path.Combine(environment.WebRootPath, "images", "equipment");
-
-            // Create directory if it doesn't exist
-            Directory.CreateDirectory(uploadsFolder);
-
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            // Save file - use await using
-            await using (var stream = new FileStream(filePath, FileMode.Create))
+            try
             {
-                await image.CopyToAsync(stream);
-            }
-            // ImageUrl will work since it's on the interface
-            equipment.ImageUrl = $"/images/equipment/{fileName}";
-            equipmentService.UpdateEquipment(id, equipment);
+                // First check if equipment exists
+                var equipment = _equipmentService.GetEquipmentById(id);
+                if (equipment == null)
+                {
+                    return NotFound($"Equipment with ID {id} not found.");
+                }
 
-            return Ok(new { imageUrl = equipment.ImageUrl });
+                // Get rental history for this equipment
+                var rentalHistory = _rentalService.GetRentalHistoryByEquipment(id);
+                return Ok(rentalHistory);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+        
+        
 
         // GET /api/equipment/{id} - Get specific equipment details
         [HttpGet("{id}")]

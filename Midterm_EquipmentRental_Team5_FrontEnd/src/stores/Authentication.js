@@ -59,7 +59,12 @@ const useAuthenticationStore = defineStore('Authentication', () => {
     document.cookie = `auth_role=${newRole}; path=/; max-age=3600; Secure; SameSite=Strict;`
   }
 
-  return { checkAuthToken, checkAuthRole, setToken, setRole, authRole, authToken }
+  function logout() {
+    document.cookie = 'auth_role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+    document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+  }
+
+  return { checkAuthToken, checkAuthRole, setToken, setRole, authRole, authToken, logout }
 })
 
 export default useAuthenticationStore

@@ -8,7 +8,7 @@ namespace Midterm_EquipmentRental_Team5.Services
     public class CustomerServices : ICustomerServices
     {
         private readonly IUnitOfWork _unitOfWork;
-        private const int PageSize = 10;
+        private const int PageSize = 100;
 
         public CustomerServices(IUnitOfWork unitOfWork)
         {
@@ -36,7 +36,7 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public ICustomer? GetCustomerById(int id)
         {
-            var customer = _unitOfWork.Customers.GetCustomerDetails(id);
+            var customer = _unitOfWork.Customers.GetCustomerDetails(id) ?? throw new KeyNotFoundException();
             return customer;
         }
 
@@ -57,7 +57,7 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public ICustomer? UpdateCustomer(int id, ICustomer updatedCustomer)
         {
-            var existingCustomer = _unitOfWork.Customers.GetCustomerDetails(id);
+            var existingCustomer = _unitOfWork.Customers.GetCustomerDetails(id) ?? throw new KeyNotFoundException();
             if (existingCustomer != null)
             {
                 existingCustomer.Name = updatedCustomer.Name;
@@ -74,7 +74,7 @@ namespace Midterm_EquipmentRental_Team5.Services
 
         public ICustomer? DeleteCustomer(int id)
         {
-            var customer = _unitOfWork.Customers.GetCustomerDetails(id);
+            var customer = _unitOfWork.Customers.GetCustomerDetails(id) ?? throw new KeyNotFoundException();
             _unitOfWork.Customers.DeleteCustomer(id);
             _unitOfWork.SaveChanges();
             return customer;

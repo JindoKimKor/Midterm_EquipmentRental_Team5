@@ -14,16 +14,18 @@
             required
           />
 
-          <v-text-field
+          <v-select
             v-model="equipment.Category"
             label="Category"
+            :items="categoryOptions"
             :rules="[rules.required]"
             required
           />
 
-          <v-text-field
+          <v-select
             v-model="equipment.Condition"
             label="Condition"
+            :items="conditionOptions"
             :rules="[rules.required]"
             required
           />
@@ -55,7 +57,7 @@
 
 <script setup>
 import { onBeforeMount, ref } from 'vue'
-import { addEquipment } from '@/api/EquipmentController'
+import { addEquipment, updateEquipment } from '@/api/EquipmentController'
 
 const valid = ref(false)
 
@@ -63,7 +65,25 @@ const props = defineProps({
   equipment: Object,
 })
 
+const emit = defineEmits(['customerSaved'])
+
 const equipment = ref({})
+
+const categoryOptions = [
+  'Heavy Machinery',
+  'Power Tools',
+  'Vehicles',
+  'Safety',
+  'Surveying'
+]
+
+const conditionOptions = [
+  'New',
+  'Excellent',
+  'Good',
+  'Fair',
+  'Poor'
+]
 
 onBeforeMount(() => {
   equipment.value = {
@@ -88,13 +108,16 @@ const submitForm = async () => {
 
   try {
     const payload = { ...equipment.value }
+    if (payload.Id) {
+      await updateEquipment(payload.Id, payload)
+    } else {
+      await addEquipment(payload)
+    }
 
-    await addEquipment(payload)
     alert('Equipment successfully submitted!')
-
+    emit('customerSaved')
     resetForm()
   } catch (error) {
-    console.error('Submission failed:', error)
     alert('Submission failed. Please try again.')
   }
 }

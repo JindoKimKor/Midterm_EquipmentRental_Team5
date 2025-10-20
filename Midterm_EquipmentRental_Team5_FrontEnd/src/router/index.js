@@ -91,6 +91,11 @@ const router = createRouter({
           component: () => import('../views/dashboard/rental/CancelRentalView.vue'),
           meta: { requiresAuth: true },
         },
+        {
+          path: 'equipment/:id/rental-history',
+          name: 'EquipmentRentalHistory',
+          component: () => import('@/views/dashboard/equipment/EquipmentRentalHistoryView.vue')
+        }
       ],
     },
   ],

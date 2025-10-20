@@ -1,30 +1,24 @@
 <template>
   <v-container fluid class="landing-page pa-0">
-    <!-- Hero Section -->
-    <v-parallax
+    <v-img
+      src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2340"
       height="350"
-      src="https://images.unsplash.com/photo-1603570412141-5c38367c0dfd?auto=format&fit=crop&w=1350&q=80"
+      cover
     >
-      <v-row class="fill-height" align="center" justify="center">
-        <v-col class="text-center text-white">
-          <h1 class="display-2 font-weight-bold">Welcome back, {{ userName }}!</h1>
-          <p class="text-h6">
-            You're logged in as a <strong>{{ userRole }}</strong>
-          </p>
-        </v-col>
-      </v-row>
-    </v-parallax>
+      <!-- Dark overlay -->
+      <div class="overlay">
+        <v-row class="fill-height" align="center" justify="center">
+          <v-col class="text-center text-white">
+            <h1 class="display-2 font-weight-bold text-shadow">Welcome back, {{ userName }}!</h1>
+            <p class="text-h6 text-shadow">
+              You're logged in as a <strong>{{ userRole }}</strong>
+            </p>
+          </v-col>
+        </v-row>
+      </div>
+    </v-img>
 
-    <!-- Quick Actions -->
     <v-container>
-      <v-row justify="center" class="mb-8">
-        <v-col cols="12" md="8" class="text-center">
-          <h2 class="text-h4 font-weight-bold">Quick Actions</h2>
-          <p class="text-subtitle-1">Get started quickly with your daily tasks</p>
-        </v-col>
-      </v-row>
-
-      <!-- Admin Actions -->
       <v-row v-if="userRole === 'Admin'" justify="center" class="text-center">
         <v-col cols="12" sm="6" md="4" v-for="card in adminCards" :key="card.title">
           <v-card class="pa-4 hoverable" elevation="4">
@@ -36,7 +30,6 @@
         </v-col>
       </v-row>
 
-      <!-- Customer Actions -->
       <v-row v-else justify="center" class="text-center">
         <v-col cols="12" sm="6" md="5" v-for="card in customerCards" :key="card.title">
           <v-card class="pa-4 hoverable" elevation="4">
@@ -52,18 +45,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useAuthenicationStore from '@/stores/Authentication'
+import { useUserInformationStore } from '@/stores/UserInformation'
 
 const router = useRouter()
 const authStore = useAuthenicationStore()
+const userStore = useUserInformationStore()
 
 const userRole = ref(authStore.authRole)
+const userName = ref(userStore.name)
 
-onMounted(() => {})
-
-// Action Cards
 const adminCards = [
   {
     title: 'Manage Equipment',
@@ -114,5 +107,24 @@ const goTo = (path) => {
 }
 .v-card:hover {
   transform: translateY(-5px);
+}
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45); /* adjustable opacity */
+  z-index: 1;
+  pointer-events: none;
+}
+
+.v-img > .v-row {
+  position: relative;
+  z-index: 2;
+}
+
+.text-shadow {
+  text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.6);
 }
 </style>
