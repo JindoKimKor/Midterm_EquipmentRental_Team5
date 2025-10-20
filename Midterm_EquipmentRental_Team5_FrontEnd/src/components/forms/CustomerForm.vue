@@ -9,7 +9,6 @@
     <v-card-text class="pa-6">
       <v-form ref="formRef" v-model="isFormValid">
         <v-row dense>
-          <!-- Username -->
           <v-col cols="12">
             <v-text-field
               v-model="form.userName"
@@ -22,20 +21,19 @@
             />
           </v-col>
 
-          <!-- Password -->
           <v-col cols="12">
             <v-text-field
               v-model="form.password"
               label="Password"
-              type="password"
+              :type="showPassword ? 'text' : 'password'"
               variant="outlined"
               density="comfortable"
+              :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+              @click:append="togglePasswordVisibility"
               :rules="isEditMode ? [] : [rules.required, rules.minLength]"
-              :placeholder="isEditMode ? 'Leave blank to keep current password' : ''"
             />
           </v-col>
 
-          <!-- Name -->
           <v-col cols="12">
             <v-text-field
               v-model="form.name"
@@ -46,7 +44,6 @@
             />
           </v-col>
 
-          <!-- Email -->
           <v-col cols="12">
             <v-text-field
               v-model="form.email"
@@ -58,8 +55,7 @@
             />
           </v-col>
 
-          <!-- Role (only show for new customers, not in edit mode) -->
-          <v-col cols="12" v-if="!isEditMode">
+          <v-col cols="12">
             <v-select
               v-model="form.role"
               :items="['User', 'Admin']"
@@ -67,6 +63,7 @@
               variant="outlined"
               density="comfortable"
               :rules="[rules.required]"
+              :disabled="userStore.role != 'Admin'"
             />
           </v-col>
         </v-row>
@@ -77,9 +74,7 @@
 
     <v-card-actions class="pa-4">
       <v-spacer />
-      <v-btn variant="text" @click="closeDialog">
-        Cancel
-      </v-btn>
+      <v-btn variant="text" @click="closeDialog"> Cancel </v-btn>
       <v-btn
         color="primary"
         variant="elevated"
@@ -96,19 +91,21 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { createCustomer, updateCustomer } from '@/api/CustomerController'
+import { useUserInformationStore } from '@/stores/UserInformation'
 
 const props = defineProps({
   customer: {
     type: Object,
-    default: null
+    default: null,
   },
   isEditMode: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const emit = defineEmits(['customer-saved'])
+const userStore = useUserInformationStore()
 
 const formRef = ref(null)
 const isFormValid = ref(false)
@@ -119,7 +116,7 @@ const form = ref({
   password: '',
   name: '',
   email: '',
-  role: 'User'
+  role: 'User',
 })
 
 // Validation rules
@@ -132,7 +129,7 @@ const rules = {
   minLength: (value) => {
     if (!value && props.isEditMode) return true
     return value.length >= 5 || 'Password must be at least 5 characters'
-  }
+  },
 }
 
 // ✅ Define functions BEFORE watch
@@ -140,10 +137,10 @@ const loadCustomerData = () => {
   if (props.customer && props.customer.id) {
     form.value = {
       userName: props.customer.userName || '',
-      password: '',
+      password: props.customer.password || '',
       name: props.customer.name || '',
       email: props.customer.email || '',
-      role: props.customer.role || 'User'
+      role: props.customer.role || 'User',
     }
   }
 }
@@ -154,7 +151,7 @@ const resetForm = () => {
     password: '',
     name: '',
     email: '',
-    role: 'User'
+    role: 'User',
   }
   formRef.value?.reset()
 }
@@ -176,7 +173,7 @@ const saveCustomer = async () => {
       name: form.value.name,
       email: form.value.email,
       userName: form.value.userName,
-      role: form.value.role
+      role: form.value.role,
     }
 
     if (form.value.password) {
@@ -202,12 +199,21 @@ const saveCustomer = async () => {
   }
 }
 
-// Watch comes AFTER function definitions
-watch(() => props.customer, (newCustomer) => {
-  if (newCustomer && newCustomer.id) {
-    loadCustomerData()
-  }
-}, { immediate: true })
+const showPassword = ref(false)
+
+function togglePasswordVisibility() {
+  showPassword.value = !showPassword.value
+}
+
+watch(
+  () => props.customer,
+  (newCustomer) => {
+    if (newCustomer && newCustomer.id) {
+      loadCustomerData()
+    }
+  },
+  { immediate: true },
+)
 
 // load on mount for safety
 onMounted(() => {

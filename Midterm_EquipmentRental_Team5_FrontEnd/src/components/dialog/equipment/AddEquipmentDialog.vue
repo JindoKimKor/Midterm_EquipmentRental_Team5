@@ -8,13 +8,13 @@
     </template>
 
     <template v-slot:default="{ isActive }">
-      <EquipmentForm :equipment="equipment" />
+      <EquipmentForm :equipment="equipment" @customer-saved="handleSave" />
     </template>
   </v-dialog>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { defineProps, defineEmits } from 'vue'
 import EquipmentForm from '@/components/forms/EquipmentForm.vue'
 
@@ -23,12 +23,23 @@ const props = defineProps({
   equipment: Object,
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'saved', 'closed'])
 
 const isOpen = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val),
 })
 
+const handleSave = () => {
+  emit('saved')
+  isOpen.value = false
+}
+
 const equipment = computed(() => props.equipment)
+
+watch(isOpen, (newValue, oldValue) => {
+  if (!newValue && oldValue) {
+    emit('closed')
+  }
+})
 </script>

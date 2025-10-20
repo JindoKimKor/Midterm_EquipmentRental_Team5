@@ -1,10 +1,5 @@
 <template>
-  <v-dialog
-    max-width="500"
-    v-model="isOpen"
-    :attach="true"
-    scroll-strategy="block"
-  >
+  <v-dialog max-width="500" v-model="isOpen" :attach="true" scroll-strategy="block">
     <template v-slot:activator="{ props: activatorProps }" v-if="showActivator">
       <v-btn
         :color="buttonColor"
@@ -28,34 +23,34 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import CustomerForm from '../forms/CustomerForm.vue'
 
-const emit = defineEmits(['update:modelValue', 'saved'])
+const emit = defineEmits(['update:modelValue', 'saved', 'closed'])
 
 const props = defineProps({
   modelValue: Boolean,
   customer: Object,
   showActivator: {
     type: Boolean,
-    default: true
+    default: true,
   },
   buttonText: {
     type: String,
-    default: 'Add Customer'
+    default: 'Add Customer',
   },
   buttonIcon: {
     type: String,
-    default: 'mdi-account-plus'
+    default: 'mdi-account-plus',
   },
   buttonColor: {
     type: String,
-    default: 'primary'
+    default: 'primary',
   },
   buttonVariant: {
     type: String,
-    default: 'elevated'
-  }
+    default: 'elevated',
+  },
 })
 
 const isOpen = computed({
@@ -67,4 +62,10 @@ const handleSave = () => {
   emit('saved')
   isOpen.value = false
 }
+
+watch(isOpen, (newVal, oldVal) => {
+  if (!newVal && oldVal) {
+    emit('closed')
+  }
+})
 </script>

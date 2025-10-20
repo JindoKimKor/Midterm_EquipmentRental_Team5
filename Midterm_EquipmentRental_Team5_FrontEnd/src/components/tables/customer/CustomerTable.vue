@@ -7,6 +7,7 @@
         v-model="isAddCustomerDialogOpen"
         :customer="selectedCustomer"
         @saved="refreshCustomers"
+        @closed="cleanup"
       />
     </v-card-title>
 
@@ -111,6 +112,10 @@ onMounted(loadCustomers)
 const editCustomerHandler = (item) => {
   selectedCustomer.value = item
   isAddCustomerDialogOpen.value = true
+}
+
+const cleanup = () => {
+  selectedCustomer.value = null
 }
 
 const deleteCustomerHandler = async (id) => {

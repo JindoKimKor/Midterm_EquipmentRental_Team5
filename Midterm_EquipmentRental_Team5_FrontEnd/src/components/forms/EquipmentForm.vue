@@ -63,6 +63,8 @@ const props = defineProps({
   equipment: Object,
 })
 
+const emit = defineEmits(['customerSaved'])
+
 const equipment = ref({})
 
 onBeforeMount(() => {
@@ -91,7 +93,7 @@ const submitForm = async () => {
 
     await addEquipment(payload)
     alert('Equipment successfully submitted!')
-
+    emit('customerSaved')
     resetForm()
   } catch (error) {
     console.error('Submission failed:', error)

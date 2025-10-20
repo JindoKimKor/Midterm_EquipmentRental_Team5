@@ -3,7 +3,12 @@
     <v-card-title class="d-flex align-center">
       <span class="text-h5 font-weight-semibold">Equipment List</span>
       <v-spacer />
-      <AddEquipmentDialog v-model="isAddEquipmentDialogOpen" :equipment="selectedEquipment" />
+      <AddEquipmentDialog
+        v-model="isAddEquipmentDialogOpen"
+        :equipment="selectedEquipment"
+        @saved="refreshEquipments"
+        @closed="cleanup"
+      />
     </v-card-title>
 
     <v-data-table
@@ -137,6 +142,14 @@ onBeforeMount(loadEquipment)
 const editEquipment = (item) => {
   selectedEquipment.value = item
   isAddEquipmentDialogOpen.value = true
+}
+
+const cleanup = () => {
+  selectedEquipment.value = null
+}
+
+const refreshEquipments = () => {
+  loadEquipment()
 }
 
 const deleteEquipmentHandler = async (id) => {

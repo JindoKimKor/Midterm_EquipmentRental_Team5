@@ -14,7 +14,7 @@ namespace Midterm_EquipmentRental_Team5.Models
         public decimal RentalPrice { get; set; }
         public bool IsAvailable { get; set; }
         public DateTime CreatedAt { get; set; }
-        public  string? ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
     }
 }
