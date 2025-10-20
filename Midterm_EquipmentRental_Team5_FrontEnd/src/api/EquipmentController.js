@@ -27,6 +27,16 @@ export async function addEquipment(newEquipment) {
   }
 }
 
+export async function getEquipmentRentalHistory(equipmentId) {
+  try {
+    const res = await RequestHandler.get(`equipment/${equipmentId}/rental-history`)
+    return res
+  } catch (error) {
+    console.error(`Error fetching rental history for equipment ID ${equipmentId}:`, error)
+    throw error
+  }
+}
+
 export async function updateEquipment(id, updatedEquipment) {
   try {
     const res = await RequestHandler.put(`equipment/${id}`, updatedEquipment)

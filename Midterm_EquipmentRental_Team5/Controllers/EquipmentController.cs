@@ -9,9 +9,11 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize] // All endpoints require authentication
-    public class EquipmentController(IEquipmentServices equipmentService) : ControllerBase
+    public class EquipmentController(IEquipmentServices equipmentService, IRentalServices rentalServices) : ControllerBase
     {
         private readonly IEquipmentServices _equipmentService = equipmentService;
+        private readonly IRentalServices _rentalService = rentalServices;
+        
         // GET /api/equipment - Get all equipment with pagination
         [HttpGet]
         public ActionResult<IEnumerable<IEquipment>> GetAllEquipment(int page = 1)
@@ -30,6 +32,35 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        
+        // Get rental history for specific equipment
+        [HttpGet("{id}/rental-history")]
+        public ActionResult<IEnumerable<IRental>> GetEquipmentRentalHistory(int id)
+        {
+            try
+            {
+                // First check if equipment exists
+                var equipment = _equipmentService.GetEquipmentById(id);
+                if (equipment == null)
+                {
+                    return NotFound($"Equipment with ID {id} not found.");
+                }
+
+                // Get rental history for this equipment
+                var rentalHistory = _rentalService.GetRentalHistoryByEquipment(id);
+                return Ok(rentalHistory);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        
 
         // GET /api/equipment/{id} - Get specific equipment details
         [HttpGet("{id}")]
