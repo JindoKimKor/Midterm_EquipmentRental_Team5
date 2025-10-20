@@ -25,7 +25,7 @@ const router = createRouter({
           path: 'equipments',
           name: 'EquipmentDashboard',
           component: () => import('../views/dashboard/equipment/EquipmentView.vue'),
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, admin: true },
         },
         {
           path: 'equipments/:id',
@@ -38,7 +38,7 @@ const router = createRouter({
           path: 'customers',
           name: 'CustomerDashboard',
           component: () => import('../views/dashboard/customer/CustomerView.vue'),
-          meta: { requiresAuth: true }, // added auth meta
+          meta: { requiresAuth: true, admin: true }, // added auth meta
         },
         {
           path: 'customers/:id',
@@ -52,20 +52,20 @@ const router = createRouter({
           name: 'CustomerRentalView',
           component: () => import('../views/dashboard/rental/RentalView.vue'),
           props: true,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, admin: true },
         },
         {
           path: 'rentals',
           name: 'RentalDashboard',
           component: () => import('../views/dashboard/rental/RentalView.vue'),
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, admin: true },
         },
         {
           path: 'rentals/:id',
           name: 'RentalDetailView',
           component: () => import('../views/dashboard/rental/RentalDetailsView.vue'),
           props: true,
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, admin: true },
         },
         {
           path: 'rentals/issue',
@@ -83,19 +83,20 @@ const router = createRouter({
           path: 'rentals/extend',
           name: 'ExtendRentalView',
           component: () => import('../views/dashboard/rental/ExtendRentalView.vue'),
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, admin: true },
         },
         {
           path: 'rentals/cancel',
           name: 'CancelRentalView',
           component: () => import('../views/dashboard/rental/CancelRentalView.vue'),
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, admin: true },
         },
         {
           path: 'equipment/:id/rental-history',
           name: 'EquipmentRentalHistory',
-          component: () => import('@/views/dashboard/equipment/EquipmentRentalHistoryView.vue')
-        }
+          component: () => import('@/views/dashboard/equipment/EquipmentRentalHistoryView.vue'),
+          meta: { requiresAuth: true, admin: true },
+        },
       ],
     },
   ],
@@ -105,15 +106,20 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthenticationStore()
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+  const requiresAdmin = to.matched.some((record) => record.meta.admin)
 
   const doesRoleExist = authStore.checkAuthRole()
   const doesTokenExist = authStore.checkAuthToken()
+  const userRole = authStore.authRole
 
-  if (requiresAuth && !doesRoleExist && !doesTokenExist) {
-    next({ name: 'LoginView' })
-  } else {
-    next()
+  if (requiresAuth && (!doesRoleExist || !doesTokenExist)) {
+    return next({ name: 'LoginView' })
   }
+
+  if (requiresAdmin && userRole !== 'Admin') {
+    return next({ name: 'DashboardHomeView' })
+  }
+  next()
 })
 
 export default router

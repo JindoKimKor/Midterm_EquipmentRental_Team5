@@ -1,4 +1,5 @@
 <template>
+  <AvailableEquipmentTable />
   <v-container fluid class="pa-4" style="max-width: 800px">
     <v-card elevation="3" rounded>
       <v-toolbar color="primary" dark flat>
@@ -14,8 +15,10 @@
 </template>
 
 <script setup>
+import ViewAvailableEquipments from '@/components/dialog/equipment/ViewAvailableEquipments.vue'
 import CustomerIssueRentalForm from '@/components/forms/CustomerIssueRentalForm.vue'
 import IssueRentalForm from '@/components/forms/IssueRentalForm.vue'
+import AvailableEquipmentTable from '@/components/tables/equipment/AvailableEquipmentTable.vue'
 import { useUserInformationStore } from '@/stores/UserInformation'
 import { ref } from 'vue'
 
