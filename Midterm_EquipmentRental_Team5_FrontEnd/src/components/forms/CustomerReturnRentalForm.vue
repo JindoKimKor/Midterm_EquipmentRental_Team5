@@ -1,7 +1,7 @@
 <template>
   <UserActiveRental @rental-loaded="handleRentalLoaded" />
 
-  <v-form v-if="form.rentalId" v-model="isFormValid" @submit.prevent="submitForm">
+  <v-form v-if="form.rentalId" v-model="isFormValid" @submit.prevent="submitForm" class="mt-4">
     <v-row dense>
       <v-col cols="12">
         <v-select
@@ -10,7 +10,6 @@
           label="Condition Upon Return"
           :rules="[required]"
           clearable
-          persistent-hint
           variant="outlined"
           density="comfortable"
         />
@@ -29,13 +28,7 @@
       </v-col>
 
       <v-col cols="12" class="d-flex justify-end">
-        <v-btn
-          type="submit"
-          color="primary"
-          :disabled="!isFormValid"
-          variant="elevated"
-          class="text-none"
-        >
+        <v-btn type="submit" color="primary" :disabled="!isFormValid" variant="elevated">
           Submit Return
         </v-btn>
       </v-col>
@@ -52,23 +45,27 @@ import { ref } from 'vue'
 import UserActiveRental from '../UserActiveRental.vue'
 import { returnEquipment } from '@/api/RentalController'
 
-const isFormValid = ref(false)
-
+// Form state
 const form = ref({
   rentalId: null,
   condition: null,
   notes: '',
 })
 
+const isFormValid = ref(false)
+
+// Dropdown options
 const conditionOptions = ['Good', 'Damaged', 'Broken', 'Needs Maintenance']
+
+// Validation rule
 const required = (value) => !!value || 'This field is required.'
 
+// Handle loaded rental from child component
 function handleRentalLoaded(rental) {
-  if (rental?.id) {
-    form.value.rentalId = rental.id
-  }
+  form.value.rentalId = rental?.id || null
 }
 
+// Submit handler
 async function submitForm() {
   try {
     await returnEquipment({ ...form.value })
@@ -76,15 +73,14 @@ async function submitForm() {
     resetForm()
   } catch (error) {
     console.error('Return submission failed:', error)
-    alert('Error submitting return. Please try again.')
+    alert('Failed to submit return. Please try again.')
   }
 }
 
+// Reset form
 function resetForm() {
-  form.value = {
-    rentalId: null,
-    condition: null,
-    notes: '',
-  }
+  form.value.condition = null
+  form.value.notes = ''
+  form.value.rentalId = null
 }
 </script>
