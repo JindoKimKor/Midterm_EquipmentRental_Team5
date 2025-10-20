@@ -66,7 +66,6 @@ const props = defineProps({
 const equipment = ref({})
 
 onBeforeMount(() => {
-  console.log(props.equipment.id)
   equipment.value = {
     Id: props.equipment?.id ?? null,
     Name: props.equipment?.name ?? '',
