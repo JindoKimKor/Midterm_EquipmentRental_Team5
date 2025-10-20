@@ -31,44 +31,6 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
-        [HttpPost("{id}/upload-image")]
-        public async Task<IActionResult> UploadImage(int id, IFormFile image)
-        {
-            if (image == null || image.Length == 0)
-                return BadRequest("No image file provided");
-
-            // ✅ Added await
-            var equipment = equipmentService.GetEquipmentById(id);
-            if (equipment == null)
-                return NotFound("Equipment not found");
-            // Validate file type
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
-
-            if (!allowedExtensions.Contains(extension))
-                return BadRequest("Invalid file type. Only jpg, jpeg, png, gif allowed");
-
-            // Create unique filename
-            var fileName = $"equipment_{id}_{Guid.NewGuid()}{extension}";
-            var uploadsFolder = Path.Combine(environment.WebRootPath, "images", "equipment");
-
-            // Create directory if it doesn't exist
-            Directory.CreateDirectory(uploadsFolder);
-
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            // Save file - use await using
-            await using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await image.CopyToAsync(stream);
-            }
-            // ImageUrl will work since it's on the interface
-            equipment.ImageUrl = $"/images/equipment/{fileName}";
-            equipmentService.UpdateEquipment(id, equipment);
-
-            return Ok(new { imageUrl = equipment.ImageUrl });
-        }
 
         // GET /api/equipment/{id} - Get specific equipment details
         [HttpGet("{id}")]
