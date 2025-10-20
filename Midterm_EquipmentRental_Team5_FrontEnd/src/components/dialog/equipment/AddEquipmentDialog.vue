@@ -8,9 +8,7 @@
     </template>
 
     <template v-slot:default="{ isActive }">
-      <v-card title="Dialog">
-        <EquipmentForm :equipment="equipment" />
-      </v-card>
+      <EquipmentForm :equipment="equipment" />
     </template>
   </v-dialog>
 </template>

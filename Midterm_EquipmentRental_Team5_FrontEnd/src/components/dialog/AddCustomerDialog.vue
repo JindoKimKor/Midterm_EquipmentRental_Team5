@@ -8,10 +8,7 @@
     </template>
 
     <template v-slot:default="{ isActive }">
-      <v-card title="Customer Form">
-        <!--LISTEN TO THE FORM'S EVENT HERE -->
-        <CustomerForm :customer="props.customer" @customer-saved="handleSave" />
-      </v-card>
+      <CustomerForm :customer="props.customer" @customer-saved="handleSave" />
     </template>
   </v-dialog>
 </template>

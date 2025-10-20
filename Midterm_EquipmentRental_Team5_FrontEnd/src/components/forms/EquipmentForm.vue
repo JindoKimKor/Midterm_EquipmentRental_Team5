@@ -4,10 +4,10 @@
       <v-card-title>Equipment Form</v-card-title>
       <v-card-text>
         <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
-          <v-text-field v-model="equipment.name" label="Name" :rules="[rules.required]" required />
+          <v-text-field v-model="equipment.Name" label="Name" :rules="[rules.required]" required />
 
           <v-textarea
-            v-model="equipment.description"
+            v-model="equipment.Description"
             label="Description"
             rows="3"
             :rules="[rules.required]"
@@ -15,31 +15,31 @@
           />
 
           <v-text-field
-            v-model="equipment.category"
+            v-model="equipment.Category"
             label="Category"
             :rules="[rules.required]"
             required
           />
 
           <v-text-field
-            v-model="equipment.condition"
+            v-model="equipment.Condition"
             label="Condition"
             :rules="[rules.required]"
             required
           />
 
           <v-text-field
-            v-model.number="equipment.rentalPrice"
+            v-model.number="equipment.RentalPrice"
             label="Rental Price"
             type="number"
             :rules="[rules.required, rules.positive]"
             required
           />
 
-          <v-switch v-model="equipment.isAvailable" label="Is Available" inset />
+          <v-switch v-model="equipment.IsAvailable" label="Is Available" inset />
 
           <v-text-field
-            v-model="equipment.createdAt"
+            v-model="equipment.CreatedAt"
             label="Created At"
             type="date"
             :rules="[rules.required]"
@@ -66,16 +66,16 @@ const props = defineProps({
 const equipment = ref({})
 
 onBeforeMount(() => {
-  console.log(props.equipment?.createdAt)
+  console.log(props.equipment.id)
   equipment.value = {
-    id: props.equipment?.id ?? null,
-    name: props.equipment?.name ?? '',
-    description: props.equipment?.description ?? '',
-    category: props.equipment?.category ?? '',
-    condition: props.equipment?.condition ?? '',
-    rentalPrice: props.equipment?.rentalPrice ?? 0,
-    isAvailable: props.equipment?.isAvailable ?? true,
-    createdAt: props.equipment?.createdAt.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
+    Id: props.equipment?.id ?? null,
+    Name: props.equipment?.name ?? '',
+    Description: props.equipment?.description ?? '',
+    Category: props.equipment?.category ?? '',
+    Condition: props.equipment?.condition ?? '',
+    RentalPrice: props.equipment?.rentalPrice ?? 0,
+    IsAvailable: props.equipment?.isAvailable ?? true,
+    CreatedAt: props.equipment?.createdAt.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
   }
 })
 
