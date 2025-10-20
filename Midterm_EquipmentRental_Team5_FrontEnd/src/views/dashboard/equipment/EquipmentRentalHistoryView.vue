@@ -112,6 +112,19 @@
           </v-chip>
         </template>
 
+        <!-- Condition Column - using equipment condition -->
+        <template v-slot:item.equipment.condition="{ item }">
+          <v-chip
+            v-if="item.equipment?.condition"
+            size="small"
+            :color="getConditionColor(item.equipment.condition)"
+            variant="flat"
+          >
+            {{ item.equipment.condition }}
+          </v-chip>
+          <span v-else class="text-grey">—</span>
+        </template>
+
         <!-- Status Column -->
         <template v-slot:item.status="{ item }">
           <v-chip
@@ -158,12 +171,12 @@ const equipment = ref(null)
 const rentals = ref([])
 const loading = ref(false)
 
-// ✅ Removed Actions column from headers
 const headers = [
   { title: 'Customer', key: 'customer', sortable: true },
   { title: 'Issued', key: 'issuedAt', sortable: true },
   { title: 'Due Date', key: 'dueDate', sortable: true },
   { title: 'Returned', key: 'returnedAt', sortable: true },
+  { title: 'Condition', key: 'equipment.condition', sortable: true },
   { title: 'Duration', key: 'duration', sortable: false },
   { title: 'Status', key: 'status', sortable: true },
   { title: 'Overdue Fee', key: 'overdueFee', sortable: true, align: 'end' }
@@ -243,5 +256,23 @@ const getStatusColor = (rental) => {
   if (rental.isActive && new Date(rental.dueDate) < new Date()) return 'error'
   if (rental.isActive) return 'primary'
   return 'grey'
+}
+
+const getConditionColor = (condition) => {
+  const conditionLower = condition?.toLowerCase()
+  switch (conditionLower) {
+    case 'new':
+      return 'green'
+    case 'excellent':
+      return 'light-green'
+    case 'good':
+      return 'blue'
+    case 'fair':
+      return 'orange'
+    case 'poor':
+      return 'red'
+    default:
+      return 'grey'
+  }
 }
 </script>
