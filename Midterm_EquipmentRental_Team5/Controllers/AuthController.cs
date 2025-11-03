@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Models;
 using Midterm_EquipmentRental_Team5.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.Models.DTOs;
-using Midterm_EquipmentRental_Team5.Models.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
 {
@@ -36,5 +39,24 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 return Problem("An error occurred while retrieving by id.");
             }
         }
+
+        // Start Google login
+        [HttpGet("google-login")]
+        public IActionResult GoogleLogin(string? returnUrl = "http://localhost:5173")
+        {
+            var props = new AuthenticationProperties { RedirectUri = returnUrl };
+            props.SetParameter("prompt", "select_account");
+            return Challenge(props, GoogleDefaults.AuthenticationScheme);
+        }
+
+        // Optional logout
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            return SignOut(new AuthenticationProperties { RedirectUri = "/" }, CookieAuthenticationDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("denied")]
+        public IActionResult Denied() => Content("Access denied.");
     }
 }

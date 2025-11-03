@@ -13,7 +13,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
     {
         private readonly IEquipmentServices _equipmentService = equipmentService;
         private readonly IRentalServices _rentalService = rentalServices;
-        
+
         // GET /api/equipment - Get all equipment with pagination
         [HttpGet]
         public ActionResult<IEnumerable<IEquipment>> GetAllEquipment(int page = 1)
@@ -32,7 +32,7 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
         // Get rental history for specific equipment
         [HttpGet("{id}/rental-history")]
         public ActionResult<IEnumerable<IRental>> GetEquipmentRentalHistory(int id)
@@ -59,8 +59,8 @@ namespace Midterm_EquipmentRental_Team5.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
-        
+
+
 
         // GET /api/equipment/{id} - Get specific equipment details
         [HttpGet("{id}")]

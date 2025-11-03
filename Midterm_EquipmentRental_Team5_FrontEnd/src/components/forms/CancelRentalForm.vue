@@ -35,6 +35,7 @@ async function loadOptions() {
   try {
     const rentals = await getActiveRentals()
     if (rentals) {
+      console.log(rentals)
       rentalOptions.value = rentals.map((r) => ({
         id: r.id,
         title: `${r.customer.name} - ${r.equipment.name}`,

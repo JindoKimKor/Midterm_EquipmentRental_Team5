@@ -11,3 +11,11 @@ export async function login(request) {
     console.error(error)
   }
 }
+
+export function googleAuthentication() {
+  try {
+    window.location.href = 'http://localhost:5115/api/auth/google-login'
+  } catch (error) {
+    console.error(error)
+  }
+}

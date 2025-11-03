@@ -7,7 +7,7 @@
           <v-text-field
             v-model="userName"
             label="Username"
-            type="Username"
+            type="text"
             :rules="[rules.required]"
             prepend-icon="mdi-email"
             required
@@ -21,6 +21,15 @@
             required
           />
           <v-btn class="mt-4" color="primary" type="submit" :disabled="!valid" block> Login </v-btn>
+
+          <!-- Divider -->
+          <div class="text-center my-4">OR</div>
+
+          <!-- Google Sign-In Button -->
+          <v-btn color="white" class="mt-2" block @click="googleLogin">
+            <v-icon start color="red">mdi-google</v-icon>
+            Sign in with Google
+          </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -31,7 +40,7 @@
 import { ref } from 'vue'
 import useAuthenicationStore from '@/stores/Authentication'
 import { useUserInformationStore } from '@/stores/UserInformation'
-import { login } from '@/api/AuthController'
+import { googleAuthentication, login } from '@/api/AuthController'
 import router from '@/router'
 
 const authStore = useAuthenicationStore()
@@ -56,5 +65,9 @@ async function loginHandler() {
     authStore.setRole(user.role)
     router.push('/dashboard')
   }
+}
+
+const googleLogin = () => {
+  googleAuthentication()
 }
 </script>

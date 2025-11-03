@@ -9,12 +9,40 @@ namespace Midterm_EquipmentRental_Team5.Data
         public DbSet<Equipment> Equipment { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Rental> Rentals { get; set; }
+        public DbSet<AppUser> AppUsers { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<AppUser>().HasData(
+                new AppUser
+                {
+                    Id = 1,
+                    Email = "chrisy.dinh03@gmail.com",
+                    Role = "Admin",
+                    ExternalProvider = "Google",
+                    ExternalId = null
+                },
+                new AppUser
+                {
+                    Id = 2,
+                    Email = "user1@example.com",
+                    Role = "User",
+                    ExternalProvider = "Google",
+                    ExternalId = null
+                },
+                new AppUser
+                {
+                    Id = 3,
+                    Email = "user2@example.com",
+                    Role = "User",
+                    ExternalProvider = "Google",
+                    ExternalId = null
+                }
+            );
 
             // Seed Customers (1 Admin + 5 Users)
             modelBuilder.Entity<Customer>().HasData(
@@ -48,7 +76,7 @@ namespace Midterm_EquipmentRental_Team5.Data
                     RentalPrice = 500.00m,
                     IsAvailable = true,
                     CreatedAt = new DateTime(2024, 1, 1),
-                    ImageUrl = "/images/equipment/Excavator.png" 
+                    ImageUrl = "/images/equipment/Excavator.png"
                 },
                 new Equipment
                 {
@@ -72,7 +100,7 @@ namespace Midterm_EquipmentRental_Team5.Data
                     RentalPrice = 30.00m,
                     IsAvailable = false,
                     CreatedAt = new DateTime(2024, 1, 1),
-                    ImageUrl = "/images/equipment/CordlessDrill.png" 
+                    ImageUrl = "/images/equipment/CordlessDrill.png"
                 },
                 new Equipment
                 {
@@ -84,7 +112,7 @@ namespace Midterm_EquipmentRental_Team5.Data
                     RentalPrice = 200.00m,
                     IsAvailable = true,
                     CreatedAt = new DateTime(2024, 1, 1),
-                    ImageUrl = "/images/equipment/Truck.png" 
+                    ImageUrl = "/images/equipment/Truck.png"
                 },
                 new Equipment
                 {
@@ -96,7 +124,7 @@ namespace Midterm_EquipmentRental_Team5.Data
                     RentalPrice = 25.00m,
                     IsAvailable = true,
                     CreatedAt = new DateTime(2024, 1, 1),
-                    ImageUrl = "/images/equipment/Hardness_Kit.png" 
+                    ImageUrl = "/images/equipment/Hardness_Kit.png"
                 },
                 new Equipment
                 {
@@ -108,10 +136,10 @@ namespace Midterm_EquipmentRental_Team5.Data
                     RentalPrice = 40.00m,
                     IsAvailable = true,
                     CreatedAt = new DateTime(2024, 1, 1),
-                    ImageUrl = "/images/equipment/Laser_Level.png" 
+                    ImageUrl = "/images/equipment/Laser_Level.png"
                 }
             );
-            
+
             // Seed Rentals (Active, Completed, Overdue)
             modelBuilder.Entity<Rental>().HasData(
                 // Active rental - John has the drill
