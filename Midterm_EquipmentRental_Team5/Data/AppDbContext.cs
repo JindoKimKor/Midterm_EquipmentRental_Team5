@@ -29,7 +29,7 @@ namespace Midterm_EquipmentRental_Team5.Data
                 new AppUser
                 {
                     Id = 2,
-                    Email = "user1@example.com",
+                    Email = "n.dinh72943@gmail.com,",
                     Role = "User",
                     ExternalProvider = "Google",
                     ExternalId = null

@@ -47,15 +47,13 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import useAuthenicationStore from '@/stores/Authentication'
-import { useUserInformationStore } from '@/stores/UserInformation'
+import { useAuthenticationStore } from '@/stores/Authentication'
 
 const router = useRouter()
-const authStore = useAuthenicationStore()
-const userStore = useUserInformationStore()
+const authStore = useAuthenticationStore()
 
 const userRole = ref(authStore.authRole)
-const userName = ref(userStore.name)
+const userName = ref(authStore.authUserName)
 
 const adminCards = [
   {
@@ -83,13 +81,13 @@ const customerCards = [
     title: 'User Profile',
     description: 'Find user infromation and rental information',
     icon: 'mdi-magnify',
-    route: `/dashboard/customers/${userStore.id}`,
+    route: `/dashboard/customers/${authStore.authUserId}`,
   },
   {
     title: 'My Rentals',
     description: 'Current rental information',
     icon: 'mdi-clock-outline',
-    route: `/dashboard/customers/${userStore.id}/rentals`,
+    route: `/dashboard/customers/${authStore.authUserId}/rentals`,
   },
 ]
 

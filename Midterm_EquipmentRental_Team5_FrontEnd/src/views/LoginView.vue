@@ -38,13 +38,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import useAuthenicationStore from '@/stores/Authentication'
-import { useUserInformationStore } from '@/stores/UserInformation'
 import { googleAuthentication, login } from '@/api/AuthController'
 import router from '@/router'
-
-const authStore = useAuthenicationStore()
-const userStore = useUserInformationStore()
 
 const userName = ref('')
 const password = ref('')
@@ -55,15 +50,15 @@ const rules = {
 }
 
 async function loginHandler() {
-  const { token, user } = await login({
-    Username: userName.value,
-    Password: password.value,
-  })
-  userStore.setUser(user)
-  if (token) {
-    authStore.setToken(token)
-    authStore.setRole(user.role)
+  try {
+    await login({
+      Username: userName.value,
+      Password: password.value,
+    })
     router.push('/dashboard')
+  } catch (error) {
+    console.error('Login failed:', error)
+    alert('Login failed. Please check your credentials and try again.')
   }
 }
 

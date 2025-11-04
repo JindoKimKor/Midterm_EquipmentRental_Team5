@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Midterm_EquipmentRental_Team5.Controllers
 {
@@ -21,13 +22,38 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        async public Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             try
             {
+
                 var user = _authService.ValidateLogin(request) ?? throw new KeyNotFoundException("User not found");
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Role, user.Role)
+                };
+
+                var claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1)
+                };
+
+                // This generates the cookie and sets it in the response cookie header
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties);
+
                 var token = _authService.GenerateJwtToken(user);
-                return Ok(new { token, user });
+
+                return Ok(new { message = "Login successful", user, token });
             }
             catch (KeyNotFoundException)
             {
@@ -57,6 +83,32 @@ namespace Midterm_EquipmentRental_Team5.Controllers
         }
 
         [HttpGet("denied")]
-        public IActionResult Denied() => Content("Access denied.");
+        public IActionResult Denied()
+        {
+            return Forbid(); // returns 403 Forbidden
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public IActionResult Me()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.FindFirstValue(ClaimTypes.Name);
+            var role = User.FindFirstValue(ClaimTypes.Role);
+
+            return Ok(new
+            {
+                Id = userId,
+                UserName = userName,
+                Role = role
+            });
+        }
+
+        [HttpGet("authorized")]
+        [Authorize]
+        public IActionResult IsUserAuthorized()
+        {
+            return Ok(new { message = "User is authorized" });
+        }
     }
 }

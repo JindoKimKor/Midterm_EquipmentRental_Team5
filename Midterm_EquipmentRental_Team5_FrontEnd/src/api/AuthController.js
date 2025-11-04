@@ -19,3 +19,29 @@ export function googleAuthentication() {
     console.error(error)
   }
 }
+
+export function authMe() {
+  try {
+    const res = RequestHandler.get('/auth/me')
+    return res
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export async function logout() {
+  try {
+    const res = await RequestHandler.post('/auth/logout')
+    return res
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export async function isUserAuthorized() {
+  try {
+    return (await RequestHandler.get('/auth/authorized')) && true
+  } catch (error) {
+    console.error(error)
+  }
+}

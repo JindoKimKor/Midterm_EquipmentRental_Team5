@@ -17,7 +17,7 @@ import ActiveRentalHistoryTable from '@/components/tables/rentals/ActiveRentalHi
 import CompletedRentalTable from '@/components/tables/rentals/CompletedRentalTable.vue'
 import RentalTable from '@/components/tables/rentals/RentalTable.vue'
 import OverdueRentalTable from '@/components/tables/rentals/OverdueRentalTable.vue'
-import useAuthenticationStore from '@/stores/Authentication'
+import { useAuthenticationStore } from '@/stores/Authentication'
 import { ref } from 'vue'
 import UserActiveRental from '@/components/UserActiveRental.vue'
 

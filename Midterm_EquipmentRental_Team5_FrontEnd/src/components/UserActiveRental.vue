@@ -66,15 +66,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { getCustomerActiveRental } from '@/api/CustomerController'
-import { useUserInformationStore } from '@/stores/UserInformation'
+import { useAuthenticationStore } from '@/stores/Authentication'
 
-// Emits rental data back to parent
 const emit = defineEmits(['rental-loaded'])
 
 const rental = ref(null)
 const loading = ref(true)
 
-const userInfoStore = useUserInformationStore()
+const authicationStore = useAuthenticationStore()
 
 function formatDate(date) {
   return new Date(date).toLocaleDateString()
@@ -82,7 +81,7 @@ function formatDate(date) {
 
 async function fetchRental() {
   try {
-    const response = await getCustomerActiveRental(userInfoStore.id)
+    const response = await getCustomerActiveRental(authicationStore.authUserId)
 
     // Adjust depending on your API response structure
     rental.value = response?.data || response

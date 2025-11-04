@@ -47,14 +47,14 @@ import { ref, onMounted } from 'vue'
 import { getAvailableEquipment } from '@/api/EquipmentController'
 import { issueEquipment } from '@/api/RentalController'
 import { getCustomerActiveRental } from '@/api/CustomerController'
-import { useUserInformationStore } from '@/stores/UserInformation'
+import { useAuthenticationStore } from '@/stores/Authentication'
 import router from '@/router'
 
-const userStoreInfo = useUserInformationStore()
+const useAuthStore = useAuthenticationStore()
 
 const form = ref({
   equipmentId: null,
-  customerId: userStoreInfo.id,
+  customerId: useAuthStore.authUserId,
 })
 const isFormValid = ref(false)
 const equipmentOptions = ref([])
@@ -78,10 +78,10 @@ onMounted(async () => {
 async function checkCustomerRental() {
   loadingRental.value = true
   try {
-    const rental = await getCustomerActiveRental(userStoreInfo.id)
+    const rental = await getCustomerActiveRental(useAuthStore.authUserId)
     hasActiveRental.value = !!rental
   } catch (error) {
-    hasActiveRental.value = false // Assume no rental if 404 or failure
+    hasActiveRental.value = false
   } finally {
     loadingRental.value = false
   }
