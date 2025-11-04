@@ -7,7 +7,7 @@
           <v-text-field
             v-model="userName"
             label="Username"
-            type="Username"
+            type="text"
             :rules="[rules.required]"
             prepend-icon="mdi-email"
             required
@@ -21,6 +21,15 @@
             required
           />
           <v-btn class="mt-4" color="primary" type="submit" :disabled="!valid" block> Login </v-btn>
+
+          <!-- Divider -->
+          <div class="text-center my-4">OR</div>
+
+          <!-- Google Sign-In Button -->
+          <v-btn color="white" class="mt-2" block @click="googleLogin">
+            <v-icon start color="red">mdi-google</v-icon>
+            Sign in with Google
+          </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -29,13 +38,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import useAuthenicationStore from '@/stores/Authentication'
-import { useUserInformationStore } from '@/stores/UserInformation'
-import { login } from '@/api/AuthController'
+import { googleAuthentication, login } from '@/api/AuthController'
 import router from '@/router'
-
-const authStore = useAuthenicationStore()
-const userStore = useUserInformationStore()
 
 const userName = ref('')
 const password = ref('')
@@ -46,15 +50,19 @@ const rules = {
 }
 
 async function loginHandler() {
-  const { token, user } = await login({
-    Username: userName.value,
-    Password: password.value,
-  })
-  userStore.setUser(user)
-  if (token) {
-    authStore.setToken(token)
-    authStore.setRole(user.role)
+  try {
+    await login({
+      Username: userName.value,
+      Password: password.value,
+    })
     router.push('/dashboard')
+  } catch (error) {
+    console.error('Login failed:', error)
+    alert('Login failed. Please check your credentials and try again.')
   }
+}
+
+const googleLogin = () => {
+  googleAuthentication()
 }
 </script>

@@ -16,10 +16,10 @@
 <script setup>
 import CustomerReturnRentalForm from '@/components/forms/CustomerReturnRentalForm.vue'
 import ReturnRentalForm from '@/components/forms/ReturnRentalForm.vue'
-import { useUserInformationStore } from '@/stores/UserInformation'
+import { useAuthenticationStore } from '@/stores/Authentication'
 import { ref } from 'vue'
 
-const userInfoStore = useUserInformationStore()
+const userInfoStore = useAuthenticationStore()
 
-const role = ref(userInfoStore.role)
+const role = ref(userInfoStore.authRole)
 </script>

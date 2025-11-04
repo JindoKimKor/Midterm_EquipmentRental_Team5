@@ -1,70 +1,43 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { authMe, isUserAuthorized, logout as logoutController } from '@/api/AuthController'
+import router from '@/router'
 
-const useAuthenticationStore = defineStore('Authentication', () => {
+export const useAuthenticationStore = defineStore('Authentication', () => {
   const authRole = ref(null)
-  const authToken = ref(null)
+  const authUserName = ref(null)
+  const authUserId = ref(null)
 
-  function getAuthToken() {
-    const match = document.cookie.match(/(?:^|; )auth_token=([^;]*)/)
+  async function checkAspNetCoreCookie() {
+    const match = isUserAuthorized()
     if (match) {
-      return { key: 'auth_token', value: decodeURIComponent(match[1]) }
+      try {
+        // The cookie exists — now verify the authenticated user
+        const user = await authMe()
+
+        if (user) {
+          authRole.value = user.role || user.Role || 'User'
+          authUserName.value = user.userName || user.UserName || 'Unknown'
+          authUserId.value = user.id || user.Id || null
+          return true
+        }
+      } catch (error) {
+        console.error('Failed to validate cookie:', error)
+        return false
+      }
     }
-    return null
+
+    // Cookie not found or user invalid
+    return false
   }
 
-  function getAuthRole() {
-    const match = document.cookie.match(/(?:^|; )auth_role=([^;]*)/)
-    if (match) {
-      return { key: 'auth_role', value: decodeURIComponent(match[1]) }
-    }
-    return null
+  async function logout() {
+    await logoutController()
+    router.go(0)
+    authRole.value = null
+    authUserName.value = null
+    authUserId.value = null
   }
 
-  function checkToken() {
-    const token = getAuthToken()
-    if (!token) return false
-    return true
-  }
-
-  function checkRole() {
-    const role = getAuthRole()
-    if (!role) return false
-    return true
-  }
-
-  function checkAuthToken() {
-    if (!authToken.value) {
-      if (!checkToken()) return false
-      setToken(getAuthToken().value)
-    }
-    return true
-  }
-
-  function checkAuthRole() {
-    if (!authRole.value) {
-      if (!checkRole()) return false
-      setRole(getAuthRole().value)
-    }
-    return true
-  }
-
-  function setToken(token) {
-    authToken.value = token
-    document.cookie = `auth_token=${token}; path=/; max-age=3600; Secure; SameSite=Strict;`
-  }
-
-  function setRole(newRole) {
-    authRole.value = newRole
-    document.cookie = `auth_role=${newRole}; path=/; max-age=3600; Secure; SameSite=Strict;`
-  }
-
-  function logout() {
-    document.cookie = 'auth_role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-  }
-
-  return { checkAuthToken, checkAuthRole, setToken, setRole, authRole, authToken, logout }
+  return { checkAspNetCoreCookie, authRole, authUserName, authUserId, logout }
 })
-
-export default useAuthenticationStore

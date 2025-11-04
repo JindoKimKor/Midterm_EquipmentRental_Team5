@@ -15,14 +15,13 @@
 </template>
 
 <script setup>
-import ViewAvailableEquipments from '@/components/dialog/equipment/ViewAvailableEquipments.vue'
 import CustomerIssueRentalForm from '@/components/forms/CustomerIssueRentalForm.vue'
 import IssueRentalForm from '@/components/forms/IssueRentalForm.vue'
 import AvailableEquipmentTable from '@/components/tables/equipment/AvailableEquipmentTable.vue'
-import { useUserInformationStore } from '@/stores/UserInformation'
+import { useAuthenticationStore } from '@/stores/Authentication'
 import { ref } from 'vue'
 
-const userInfoStore = useUserInformationStore()
+const userInfoStore = useAuthenticationStore()
 
-const role = ref(userInfoStore.role)
+const role = ref(userInfoStore.authRole)
 </script>

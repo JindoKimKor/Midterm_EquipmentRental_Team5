@@ -90,7 +90,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { getActiveRentals } from '@/api/RentalController'
-import useAuthenticationStore from '@/stores/Authentication'
+import { useAuthenticationStore } from '@/stores/Authentication'
 
 const useAuthStore = useAuthenticationStore()
 

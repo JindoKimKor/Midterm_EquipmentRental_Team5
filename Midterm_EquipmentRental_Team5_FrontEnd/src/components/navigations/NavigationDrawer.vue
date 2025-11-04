@@ -36,8 +36,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import useAuthenticationStore from '@/stores/Authentication'
-import { useUserInformationStore } from '@/stores/UserInformation'
+import { useAuthenticationStore } from '@/stores/Authentication'
 import { useTheme } from 'vuetify'
 
 const theme = useTheme()
@@ -45,7 +44,6 @@ const isDarkTheme = ref(theme.name === 'Dark')
 
 const role = ref('Admin')
 const authStore = useAuthenticationStore()
-const userStore = useUserInformationStore()
 
 const navigation = computed(() => {
   return role.value === authStore.authRole ? AdminNavigationItems : UserNavigationItems
@@ -66,7 +64,7 @@ const UserNavigationItems = [
     categoryTitle: 'User Profile',
     items: [
       {
-        url: `/dashboard/customers/${userStore.id}`,
+        url: `/dashboard/customers/${authStore.authUserId}`,
         title: 'My Profile',
         prependIcon: 'mdi-account',
       },
@@ -76,7 +74,7 @@ const UserNavigationItems = [
     categoryTitle: 'Rental Management',
     items: [
       {
-        url: `/dashboard/customers/${userStore.id}/rentals`,
+        url: `/dashboard/customers/${authStore.authUserId}/rentals`,
         title: 'My Rentals',
         prependIcon: 'mdi-history',
       },

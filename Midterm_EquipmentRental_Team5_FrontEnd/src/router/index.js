@@ -1,4 +1,4 @@
-import useAuthenticationStore from '@/stores/Authentication'
+import { useAuthenticationStore } from '@/stores/Authentication'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -102,21 +102,24 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthenticationStore()
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const requiresAdmin = to.matched.some((record) => record.meta.admin)
 
-  const doesRoleExist = authStore.checkAuthRole()
-  const doesTokenExist = authStore.checkAuthToken()
+  const doesAuthCookieExist = await authStore.checkAspNetCoreCookie()
   const userRole = authStore.authRole
 
-  if (requiresAuth && (!doesRoleExist || !doesTokenExist)) {
+  if (requiresAuth && !doesAuthCookieExist) {
     return next({ name: 'LoginView' })
   }
 
   if (requiresAdmin && userRole !== 'Admin') {
+    return next({ name: 'DashboardHomeView' })
+  }
+
+  if (to.name === 'LoginView' && doesAuthCookieExist) {
     return next({ name: 'DashboardHomeView' })
   }
   next()

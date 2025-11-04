@@ -24,7 +24,7 @@
       height="600"
     >
       <!-- Name as link -->
-      <template #item.name="{ item }">
+      <template v-slot:[`item.name`]="{ item }">
         <router-link
           :to="`/dashboard/equipments/${item.id}`"
           class="text-decoration-none font-weight-medium"
@@ -32,7 +32,6 @@
           {{ item.name }}
         </router-link>
       </template>
-
       <!-- Category -->
       <template #item.category="{ item }">
         <v-chip class="ma-0" color="indigo lighten-4" text-color="indigo darken-2" small label>
@@ -134,7 +133,7 @@ import { ref, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 import AddEquipmentDialog from '@/components/dialog/equipment/AddEquipmentDialog.vue'
 import { getAvailableEquipment } from '@/api/EquipmentController'
-import useAuthenticationStore from '@/stores/Authentication'
+import { useAuthenticationStore } from '@/stores/Authentication'
 
 const useAuthStore = useAuthenticationStore()
 

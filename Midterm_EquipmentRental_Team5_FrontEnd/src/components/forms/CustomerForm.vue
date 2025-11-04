@@ -63,7 +63,7 @@
               variant="outlined"
               density="comfortable"
               :rules="[rules.required]"
-              :disabled="userStore.role != 'Admin'"
+              :disabled="useAuthStore.authRole != 'Admin'"
             />
           </v-col>
         </v-row>
@@ -91,7 +91,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { createCustomer, updateCustomer } from '@/api/CustomerController'
-import { useUserInformationStore } from '@/stores/UserInformation'
+import { useAuthenticationStore } from '@/stores/Authentication'
 
 const props = defineProps({
   customer: {
@@ -105,7 +105,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['customer-saved'])
-const userStore = useUserInformationStore()
+const useAuthStore = useAuthenticationStore()
 
 const formRef = ref(null)
 const isFormValid = ref(false)
