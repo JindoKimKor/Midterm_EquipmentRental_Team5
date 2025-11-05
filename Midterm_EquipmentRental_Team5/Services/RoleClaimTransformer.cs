@@ -8,37 +8,48 @@ namespace Midterm_EquipmentRental_Team5.Services
     {
         private readonly IConfiguration _cfg;
         private readonly IAppUserRepository _appUserRepository;
+
         public RoleClaimsTransformer(IConfiguration cfg, IAppUserRepository appUserRepository)
         {
             _cfg = cfg;
             _appUserRepository = appUserRepository;
         }
 
-        public Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
+        public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
         {
             var identity = principal.Identities.FirstOrDefault(i => i.IsAuthenticated);
             if (identity is null)
-                return Task.FromResult(principal);
-
-            if (identity.HasClaim(c => c.Type == ClaimTypes.Role))
-                return Task.FromResult(principal);
+                return principal;
 
             var email = principal.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrWhiteSpace(email))
+                return principal;
 
-            var role = "User";
-            if (!string.IsNullOrWhiteSpace(email))
+            // Get user info from your repository
+            var appUser = await _appUserRepository.GetByEmailAsync(email);
+            if (appUser == null)
+                return principal;
+
+            // --- Modify or Add NameIdentifier ---
+            var existingIdClaim = identity.FindFirst(ClaimTypes.NameIdentifier);
+            if (existingIdClaim != null)
             {
-                var appUser = _appUserRepository.GetByEmailAsync(email).Result;
-                if (appUser != null)
-                {
-                    role = appUser.Role;
-                }
+                // Replace the existing NameIdentifier
+                identity.RemoveClaim(existingIdClaim);
             }
 
-            // Crucial: use ClaimTypes.Role; the API will read this from the JWT
-            identity.AddClaim(new Claim(ClaimTypes.Role, role));
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, appUser.Id.ToString()));
 
-            return Task.FromResult(principal);
+            // --- Modify or Add Role ---
+            var existingRoleClaim = identity.FindFirst(ClaimTypes.Role);
+            if (existingRoleClaim != null)
+            {
+                identity.RemoveClaim(existingRoleClaim);
+            }
+
+            identity.AddClaim(new Claim(ClaimTypes.Role, appUser.Role ?? "User"));
+
+            return principal;
         }
     }
 }
