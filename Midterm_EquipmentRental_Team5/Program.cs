@@ -166,7 +166,6 @@ app.UseAuthorization();
 // MapControllers
 app.MapControllers();
 
-app.MapHub<RoomHub>("/roomhub");
 app.MapHub<ChatHub>("/chathub");
 
 app.Run();
