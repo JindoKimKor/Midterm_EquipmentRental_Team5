@@ -361,3 +361,116 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# ============================================================================
+# Environment & Configuration (SENSITIVE DATA - DO NOT COMMIT)
+# ============================================================================
+.env
+.env.local
+.env.*.local
+appsettings.*.json
+!appsettings.Development.json
+!appsettings.json
+
+# ============================================================================
+# IDE Specific Files
+# ============================================================================
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+*.swp
+*.swo
+*~
+
+# ============================================================================
+# OS Specific Files
+# ============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+*.swo
+*~
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+
+# ============================================================================
+# Frontend (Vue.js/Node.js) - Midterm_EquipmentRental_Team5_FrontEnd
+# ============================================================================
+Midterm_EquipmentRental_Team5_FrontEnd/node_modules/
+Midterm_EquipmentRental_Team5_FrontEnd/dist/
+Midterm_EquipmentRental_Team5_FrontEnd/.env.local
+Midterm_EquipmentRental_Team5_FrontEnd/npm-debug.log*
+Midterm_EquipmentRental_Team5_FrontEnd/yarn-debug.log*
+Midterm_EquipmentRental_Team5_FrontEnd/yarn-error.log*
+Midterm_EquipmentRental_Team5_FrontEnd/pnpm-debug.log*
+Midterm_EquipmentRental_Team5_FrontEnd/.vite-inspect
+Midterm_EquipmentRental_Team5_FrontEnd/.eslintcache
+Midterm_EquipmentRental_Team5_FrontEnd/.prettierignore
+
+# ============================================================================
+# Backend (ASP.NET Core) - Additional Ignores
+# ============================================================================
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+*.ldf
+
+# Diagnostic files
+DiagnosticReport.json
+
+# File-based project format
+*.iws
+
+# IntelliJ
+out/
+
+# ============================================================================
+# Temporary & Generated Files
+# ============================================================================
+temp/
+tmp/
+*.tmp
+.temp/
+*.cache
+*.bak
+*.backup
+*.swp
+*.swo
+*~.nib
+.~*
+
+# ============================================================================
+# Logs
+# ============================================================================
+logs/
+*.log
+*.logs
+
+# ============================================================================
+# Build Artifacts & Dependencies (Optional - uncomment if needed)
+# ============================================================================
+# Uncomment if you want to ignore dist folders in frontend
+# Midterm_EquipmentRental_Team5_FrontEnd/dist/
+
+# Uncomment if you want to ignore all lock files (not recommended)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
