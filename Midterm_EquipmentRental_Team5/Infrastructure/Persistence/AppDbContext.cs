@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Midterm_EquipmentRental_Team5.Domain.Entities;
-using Midterm_EquipmentRental_Team5.Domain.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
 {
@@ -140,7 +139,6 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
                 }
             );
 
-            // Seed Rentals (Active, Completed, Overdue)
             modelBuilder.Entity<Rental>().HasData(
                 // Active rental - John has the drill
                 new Rental
@@ -180,6 +178,111 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
                     IsActive = true, // Active but overdue
                     OverdueFee = null, // Will be calculated when returned
                     ExtensionReason = null
+                }
+            );
+
+            modelBuilder.Entity<Chat>().HasData(
+                new Chat { ChatId = 1, CustomerId = 2 },
+                new Chat { ChatId = 2, CustomerId = 3 },
+                new Chat { ChatId = 3, CustomerId = 4 },
+                new Chat { ChatId = 4, CustomerId = 5 },
+                new Chat { ChatId = 5, CustomerId = 6 }
+            );
+
+            modelBuilder.Entity<Message>().HasData(
+                new Message
+                {
+                    Id = 1,
+                    SenderId = "2",
+                    ReceiverId = "1",
+                    Content = "Hi Admin, I need help with a rental.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 1
+                },
+                new Message
+                {
+                    Id = 2,
+                    SenderId = "1",
+                    ReceiverId = "2",
+                    Content = "Hello John, how can I assist you?",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 1
+                },
+
+                new Message
+                {
+                    Id = 3,
+                    SenderId = "3",
+                    ReceiverId = "1",
+                    Content = "Hello Admin, I have a billing question.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 2
+                },
+                new Message
+                {
+                    Id = 4,
+                    SenderId = "1",
+                    ReceiverId = "3",
+                    Content = "Hi Jane, sure — what's your question?",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 2
+                },
+
+                new Message
+                {
+                    Id = 5,
+                    SenderId = "4",
+                    ReceiverId = "1",
+                    Content = "Hi Admin, is the lawn mower available?",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 3
+                },
+                new Message
+                {
+                    Id = 6,
+                    SenderId = "1",
+                    ReceiverId = "4",
+                    Content = "Yes Bob, it's available for rental.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 3
+                },
+
+                new Message
+                {
+                    Id = 7,
+                    SenderId = "5",
+                    ReceiverId = "1",
+                    Content = "Hello Admin, I want to extend my rental.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 4
+                },
+                new Message
+                {
+                    Id = 8,
+                    SenderId = "1",
+                    ReceiverId = "5",
+                    Content = "Hi Alice, I can process that for you.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 4
+                },
+
+                new Message
+                {
+                    Id = 9,
+                    SenderId = "6",
+                    ReceiverId = "1",
+                    Content = "Admin, I can't log in to my account.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 5
+                },
+                new Message
+                {
+                    Id = 10,
+                    SenderId = "1",
+                    ReceiverId = "6",
+                    Content = "Hey Charlie, let me help you reset your password.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 5
                 }
             );
         }
