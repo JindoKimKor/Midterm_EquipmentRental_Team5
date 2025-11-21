@@ -6,11 +6,10 @@
           <div class="input-wrapper">
             <v-text-field
               v-model="messageText"
-              placeholder="Type a message..."
+              placeholder="Type your message..."
               variant="outlined"
               density="compact"
               clearable
-              :disabled="!isReady"
               @keydown.enter.exact="handleSend"
               hide-details
             >
@@ -19,7 +18,7 @@
                   icon="mdi-send"
                   variant="text"
                   size="small"
-                  :disabled="!messageText.trim() || !isReady"
+                  :disabled="!messageText.trim()"
                   @click="handleSend"
                 />
               </template>
@@ -44,20 +43,24 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useChatStore } from '@/stores/ChatStore'
+import { ref } from 'vue'
 
-const chatStore = useChatStore()
+const props = defineProps({
+  selectedUser: {
+    type: Object,
+    required: true
+  }
+})
+
 const messageText = ref('')
 const error = ref(null)
-
-const isReady = computed(() => chatStore.isReady)
 
 const handleSend = async () => {
   if (!messageText.value.trim()) return
 
   try {
-    await chatStore.sendChatMessage(messageText.value)
+    // TODO: Implement message sending logic for individual user chat
+    console.log(`Message to ${props.selectedUser.name}:`, messageText.value)
     messageText.value = ''
     error.value = null
   } catch (err) {
@@ -72,12 +75,19 @@ const clearError = () => {
 
 <style scoped>
 .message-input-container {
-  padding: 16px;
+  padding: 16px 20px;
   background: transparent;
 }
 
 .message-input-card {
-  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.dark .message-input-card {
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .input-wrapper {

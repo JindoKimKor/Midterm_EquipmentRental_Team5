@@ -1,170 +1,148 @@
 <template>
   <div class="chat-view">
-    <!-- Sidebar with room list -->
-    <v-navigation-drawer
-      permanent
-      width="250"
-      class="chat-sidebar"
-      :rail="false"
-      border
-    >
-      <div class="sidebar-header">
-        <v-btn icon size="small" @click="goBack" class="mb-2">
+    <v-navigation-drawer permanent width="280" class="chat-sidebar" :rail="false" border>
+      <div class="sidebar-title-section d-flex align-center">
+        <v-btn icon size="small" @click="goBack">
           <v-icon>mdi-arrow-left</v-icon>
           <v-tooltip activator="parent" location="right">Go Back</v-tooltip>
         </v-btn>
+        <h2 class="text-h6 font-weight-bold mb-0">Messages</h2>
       </div>
-
-      <v-card flat>
-        <v-card-title class="d-flex align-center gap-2">
-          <v-icon>mdi-chat-multiple</v-icon>
-          <span>Rooms</span>
-        </v-card-title>
-        <v-divider />
-      </v-card>
-
-      <v-list class="rooms-list">
-        <v-list-item
-          v-for="room in availableRooms"
-          :key="room"
-          :active="chatStore.currentRoom === room"
-          @click="handleRoomChange(room)"
-        >
-          <template #prepend>
-            <v-icon>mdi-door-open</v-icon>
-          </template>
-          <v-list-item-title>{{ room }}</v-list-item-title>
-        </v-list-item>
+      <div class="search-section">
+        <v-text-field
+          v-model="searchQuery"
+          placeholder="Search users..."
+          variant="outlined"
+          density="compact"
+          prepend-inner-icon="mdi-magnify"
+          clearable
+          hide-details
+          class="search-input"
+        />
+      </div>
+      <v-list v-if="filteredUsers.length > 0" class="users-list">
+        <template v-for="(user, index) in filteredUsers" :key="user.connectionId">
+          <v-list-item
+            class="user-item"
+            @click="selectUser(user)"
+            :active="selectedUser?.connectionId === user.connectionId"
+          >
+            <template #prepend>
+              <v-avatar size="36" color="primary" class="font-weight-bold">
+                {{ getInitials(user.name) }}
+              </v-avatar>
+            </template>
+            <v-list-item-title class="font-weight-500">{{ user.name }}</v-list-item-title>
+            <template #append>
+              <v-icon
+                v-if="selectedUser?.connectionId === user.connectionId"
+                size="20"
+                color="primary"
+                class="active-indicator"
+              >
+                mdi-check-circle
+              </v-icon>
+            </template>
+          </v-list-item>
+          <v-divider v-if="index < filteredUsers.length - 1" class="my-1" />
+        </template>
       </v-list>
 
-      <v-divider />
-
-      <v-card flat class="user-info-card">
-        <v-card-text class="text-center pa-4">
-          <div class="mb-2">
-            <v-icon size="32" class="text-primary">mdi-account</v-icon>
-          </div>
-          <p class="text-caption font-weight-bold mb-1">{{ chatStore.currentUsername }}</p>
-          <v-chip size="small" label>Online</v-chip>
-        </v-card-text>
-      </v-card>
+      <div v-else class="empty-users-state">
+        <v-icon size="48" color="disabled" class="mb-3">mdi-account-multiple-outline</v-icon>
+        <p class="text-caption text-disabled text-center">
+          {{ searchQuery ? 'No users found' : 'No users available' }}
+        </p>
+      </div>
     </v-navigation-drawer>
-
-    <!-- Main chat area -->
     <div class="chat-main">
-      <v-fade-transition>
-        <div v-if="!chatStore.isReady && !chatStore.isConnecting" class="join-form">
-          <v-card max-width="400" class="mx-auto">
-            <v-card-title>Join Chat</v-card-title>
-            <v-card-text>
-              <v-form @submit.prevent="handleJoinChat">
-                <v-text-field
-                  v-model="joinUsername"
-                  label="Username"
-                  placeholder="Enter your username"
-                  variant="outlined"
-                  class="mb-4"
-                  :rules="[v => !!v || 'Username is required']"
-                  @keydown.enter="handleJoinChat"
-                />
-
-                <v-select
-                  v-model="joinRoom"
-                  label="Select Room"
-                  :items="availableRooms"
-                  variant="outlined"
-                  class="mb-4"
-                />
-
-                <v-btn
-                  type="submit"
-                  color="primary"
-                  block
-                  :loading="isJoining"
-                  :disabled="!joinUsername.trim()"
-                >
-                  Join Chat
-                </v-btn>
-              </v-form>
-
-              <v-alert v-if="joinError" type="error" variant="tonal" class="mt-4" closable>
-                {{ joinError }}
-              </v-alert>
-            </v-card-text>
-          </v-card>
+      <transition name="chat-transition" mode="out-in">
+        <div v-if="selectedUser" key="chat" class="chat-container">
+          <ChatWindow :selectedUser="selectedUser" />
         </div>
 
-        <ChatWindow v-else />
-      </v-fade-transition>
+        <div v-else key="empty" class="empty-state">
+          <v-icon size="96" color="disabled" class="mb-4">mdi-chat-outline</v-icon>
+          <h3 class="text-h6 text-disabled mb-2">Select a user to start chatting</h3>
+          <p class="text-caption text-disabled">Choose a user from the list to view chat history</p>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onBeforeMount, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useChatStore } from '@/stores/ChatStore'
 import ChatWindow from '@/components/chat/ChatWindow.vue'
+import { getAllCustomers } from '@/api/CustomerController'
 
 const router = useRouter()
-const chatStore = useChatStore()
-const joinUsername = ref('')
-const joinRoom = ref('general')
-const availableRooms = ref(['general', 'equipment', 'rentals', 'support'])
-const isJoining = ref(false)
-const joinError = ref(null)
+const users = ref([])
+const selectedUser = ref(null)
+const searchQuery = ref('')
 
-const handleJoinChat = async () => {
-  if (!joinUsername.value.trim()) return
-
+onBeforeMount(async () => {
   try {
-    isJoining.value = true
-    joinError.value = null
-
-    await chatStore.initializeConnection(joinRoom.value, joinUsername.value)
-    // Clear form
-    joinUsername.value = ''
-  } catch (err) {
-    joinError.value = err.message || 'Failed to join chat'
-    console.error('Failed to join chat:', err)
-  } finally {
-    isJoining.value = false
+    users.value = await getAllCustomers()
+  } catch (error) {
+    console.error('Failed to load users:', error)
   }
-}
+})
 
-const handleRoomChange = async (room) => {
-  try {
-    await chatStore.changeRoom(room)
-  } catch (err) {
-    joinError.value = err.message || 'Failed to change room'
-  }
+const filteredUsers = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim()
+  if (!query) return users.value
+  return users.value.filter((user) =>
+    user.name.toLowerCase().includes(query)
+  )
+})
+
+const selectUser = (user) => {
+  selectedUser.value = user
 }
 
 const goBack = () => {
   router.back()
 }
+
+const getInitials = (name) => {
+  if (!name) return '?'
+  return name
+    .split(' ')
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
 </script>
 
 <style scoped>
+/* Main Layout */
 .chat-view {
   display: flex;
-  height: calc(100vh - 64px); /* Account for navbar */
-  background-color: #f5f5f5;
+  height: calc(100vh - 64px);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 .dark .chat-view {
-  background-color: #1e1e1e;
+  background: linear-gradient(135deg, #2a2d31 0%, #1e1f23 100%);
 }
 
+/* Sidebar */
 .chat-sidebar {
-  background-color: background;
-  border-right: 1px solid rgba(0, 0, 0, 0.12);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .dark .chat-sidebar {
-  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(30, 30, 30, 0.95);
 }
 
+/* Main Chat Area */
 .chat-main {
   flex: 1;
   display: flex;
@@ -172,35 +150,166 @@ const goBack = () => {
   min-width: 0;
 }
 
-.join-form {
+.chat-container {
   flex: 1;
   display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 40px;
+  text-align: center;
 }
 
-.sidebar-header {
-  padding: 12px 8px;
-  display: flex;
-  justify-content: flex-start;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+/* Sidebar Header */
+.sidebar-title-section {
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  gap: 12px;
 }
 
-.dark .sidebar-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+.dark .sidebar-title-section {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.rooms-list {
+.sidebar-title-section h2 {
+  flex: 1;
+  white-space: nowrap;
+}
+
+/* Search Section */
+.search-section {
+  padding: 12px 12px;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.02) 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.dark .search-section {
+  background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.02) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.search-input :deep(.v-field) {
+  border-radius: 8px;
+}
+
+/* Users List */
+.users-list {
   padding: 8px 0;
+  max-height: calc(100vh - 360px);
+  overflow-y: auto;
 }
 
-.user-info-card {
-  margin: auto 8px 8px 8px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+/* Custom Scrollbar */
+.users-list::-webkit-scrollbar {
+  width: 6px;
 }
 
-.dark .user-info-card {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.users-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.users-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.users-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark .users-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark .users-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* User List Item */
+.user-item {
+  padding: 12px 16px;
+  border-radius: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  user-select: none;
+}
+
+.user-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.dark .user-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.user-item.v-list-item--active {
+  background-color: rgba(33, 150, 243, 0.08);
+  border-left: 3px solid rgb(33, 150, 243);
+}
+
+.dark .user-item.v-list-item--active {
+  background-color: rgba(33, 150, 243, 0.1);
+  border-left: 3px solid rgb(66, 165, 245);
+}
+
+/* Active Indicator Animation */
+.active-indicator {
+  animation: scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scale-in {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Empty State */
+.empty-users-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  min-height: 250px;
+}
+
+/* Chat Window Transitions */
+.chat-transition-enter-active {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.chat-transition-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.chat-transition-enter-from {
+  opacity: 0;
+  transform: translateX(30px) scale(0.95);
+}
+
+.chat-transition-leave-to {
+  opacity: 0;
+  transform: translateX(-20px) scale(0.95);
+}
+
+.chat-transition-enter-to,
+.chat-transition-leave-from {
+  opacity: 1;
+  transform: translateX(0) scale(1);
 }
 </style>

@@ -49,6 +49,13 @@
 import { useChatStore } from '@/stores/ChatStore'
 import { watch, nextTick } from 'vue'
 
+defineProps({
+  selectedUser: {
+    type: Object,
+    required: true
+  }
+})
+
 const chatStore = useChatStore()
 
 // Auto-scroll to bottom when new messages arrive
@@ -75,11 +82,14 @@ const formatTime = (timestamp) => {
   flex: 1;
   display: flex;
   min-height: 0;
+  overflow: hidden;
 }
 
 .message-list-card {
   width: 100%;
   border-radius: 0;
+  border: none;
+  box-shadow: none;
 }
 
 .messages-content {
@@ -87,7 +97,7 @@ const formatTime = (timestamp) => {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 20px 24px;
 }
 
 .messages-wrapper {
@@ -117,13 +127,23 @@ const formatTime = (timestamp) => {
 
 .message-bubble {
   max-width: 70%;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background-color: rgba(100, 100, 100, 0.1);
+  padding: 10px 14px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.06);
   word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .message-bubble {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .message-current .message-bubble {
+  background-color: rgba(33, 150, 243, 0.15);
+  box-shadow: 0 1px 2px rgba(33, 150, 243, 0.1);
+}
+
+.dark .message-current .message-bubble {
   background-color: rgba(33, 150, 243, 0.2);
 }
 
