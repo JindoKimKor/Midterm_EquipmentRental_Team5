@@ -14,6 +14,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Midterm_EquipmentRental_Team5.Presentation.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -96,6 +97,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -163,5 +165,8 @@ app.UseAuthorization();
 
 // MapControllers
 app.MapControllers();
+
+app.MapHub<RoomHub>("/roomhub");
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();
