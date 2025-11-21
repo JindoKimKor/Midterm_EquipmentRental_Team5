@@ -1,45 +1,39 @@
 <template>
-  <div class="message-input-container">
-    <v-card class="message-input-card">
-      <v-card-text class="pa-4">
-        <v-form @submit.prevent="handleSend">
-          <div class="input-wrapper">
-            <v-text-field
-              v-model="messageText"
-              placeholder="Type your message..."
-              variant="outlined"
-              density="compact"
-              clearable
-              @keydown.enter.exact="handleSend"
-              hide-details
-            >
-              <template #append-inner>
-                <v-btn
-                  icon="mdi-send"
-                  variant="text"
-                  size="small"
-                  :disabled="!messageText.trim()"
-                  @click="handleSend"
-                />
-              </template>
-            </v-text-field>
-          </div>
-          <v-fade-transition>
-            <v-alert
-              v-if="error"
-              type="error"
-              variant="tonal"
-              class="mt-2"
-              closable
-              @click:close="clearError"
-            >
-              {{ error }}
-            </v-alert>
-          </v-fade-transition>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </div>
+  <v-card elevation="3" rounded="lg" class="pa-4">
+    <v-form @submit.prevent="handleSend">
+      <v-text-field
+        v-model="messageText"
+        placeholder="Type your message..."
+        variant="outlined"
+        density="compact"
+        clearable
+        @keydown.enter.exact="handleSend"
+        hide-details
+      >
+        <template #append-inner>
+          <v-btn
+            icon="mdi-send"
+            variant="text"
+            size="small"
+            :disabled="!messageText.trim()"
+            @click="handleSend"
+          />
+        </template>
+      </v-text-field>
+      <v-fade-transition>
+        <v-alert
+          v-if="error"
+          type="error"
+          variant="tonal"
+          class="mt-3"
+          closable
+          @click:close="clearError"
+        >
+          {{ error }}
+        </v-alert>
+      </v-fade-transition>
+    </v-form>
+  </v-card>
 </template>
 
 <script setup>
@@ -72,27 +66,3 @@ const clearError = () => {
   error.value = null
 }
 </script>
-
-<style scoped>
-.message-input-container {
-  padding: 16px 20px;
-  background: transparent;
-}
-
-.message-input-card {
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.dark .message-input-card {
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.input-wrapper {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-</style>

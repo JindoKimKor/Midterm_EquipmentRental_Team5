@@ -1,48 +1,50 @@
 <template>
-  <div class="message-list-container">
-    <v-card class="message-list-card">
-      <v-card-text class="messages-content">
-        <!-- Loading state -->
-        <div v-if="chatStore.isConnecting" class="text-center py-8">
-          <v-progress-circular indeterminate color="primary" class="mb-4" />
-          <p>Connecting to chat...</p>
+  <v-card flat border="none" class="d-flex flex-column h-100 rounded-0">
+    <!-- Loading state -->
+    <div
+      v-if="chatStore.isConnecting"
+      class="d-flex flex-column align-center justify-center flex-grow-1 gap-4"
+    >
+      <v-progress-circular indeterminate color="primary" />
+      <p class="text-body2">Connecting to chat...</p>
+    </div>
+
+    <!-- Empty state -->
+    <div
+      v-else-if="chatStore.messages.length === 0"
+      class="d-flex flex-column align-center justify-center flex-grow-1 gap-4"
+    >
+      <v-icon size="48" color="medium-emphasis">mdi-chat-outline</v-icon>
+      <p class="text-body2 text-medium-emphasis">No messages yet. Say hello!</p>
+    </div>
+
+    <!-- Messages -->
+    <v-card-text v-else class="d-flex flex-column gap-2 overflow-y-auto flex-grow-1 pa-6">
+      <template v-for="msg in chatStore.messages" :key="msg.id">
+        <!-- System message -->
+        <div v-if="msg.isSystem" class="d-flex align-center gap-3 my-2">
+          <v-divider class="flex-grow-1" />
+          <p class="text-caption text-medium-emphasis flex-shrink-0">{{ msg.message }}</p>
+          <v-divider class="flex-grow-1" />
         </div>
 
-        <!-- Empty state -->
-        <div v-else-if="chatStore.messages.length === 0" class="text-center py-8 text-grey">
-          <v-icon size="48" class="mb-4">mdi-chat-outline</v-icon>
-          <p>No messages yet. Say hello!</p>
-        </div>
-
-        <!-- Messages -->
-        <div v-else class="messages-wrapper">
-          <div
-            v-for="msg in chatStore.messages"
-            :key="msg.id"
-            :class="['message-group', { 'system-message': msg.isSystem }]"
+        <!-- User message -->
+        <div v-else :class="['d-flex', msg.isCurrentUser ? 'justify-end' : 'justify-start']">
+          <v-card
+            flat
+            :color="msg.isCurrentUser ? 'primary' : 'surface-variant'"
+            class="pa-3 message-card"
           >
-            <!-- System message -->
-            <div v-if="msg.isSystem" class="system-msg">
-              <v-divider class="my-2" />
-              <p class="text-caption text-grey text-center">{{ msg.message }}</p>
-              <v-divider class="my-2" />
+            <div class="d-flex justify-space-between align-center gap-2 mb-1">
+              <span class="text-subtitle2 font-weight-500">{{ msg.username }}</span>
+              <span class="text-caption text-medium-emphasis">{{ formatTime(msg.timestamp) }}</span>
             </div>
-
-            <!-- User message -->
-            <div v-else :class="['message', { 'message-current': msg.isCurrentUser }]">
-              <div class="message-bubble">
-                <div class="message-header">
-                  <strong class="message-username">{{ msg.username }}</strong>
-                  <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
-                </div>
-                <div class="message-text">{{ msg.message }}</div>
-              </div>
-            </div>
-          </div>
+            <p class="text-body2 mb-0">{{ msg.message }}</p>
+          </v-card>
         </div>
-      </v-card-text>
-    </v-card>
-  </div>
+      </template>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>
@@ -52,13 +54,12 @@ import { watch, nextTick } from 'vue'
 defineProps({
   selectedUser: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
 
 const chatStore = useChatStore()
 
-// Auto-scroll to bottom when new messages arrive
 watch(
   () => chatStore.messages.length,
   async () => {
@@ -67,7 +68,7 @@ watch(
     if (container) {
       container.scrollTop = container.scrollHeight
     }
-  }
+  },
 )
 
 const formatTime = (timestamp) => {
@@ -78,111 +79,14 @@ const formatTime = (timestamp) => {
 </script>
 
 <style scoped>
-.message-list-container {
-  flex: 1;
-  display: flex;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.message-list-card {
-  width: 100%;
-  border-radius: 0;
-  border: none;
-  box-shadow: none;
-}
-
-.messages-content {
-  height: 100%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 24px;
-}
-
-.messages-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.message-group {
-  display: flex;
-  flex-direction: column;
-  margin: 4px 0;
-}
-
-.system-message {
-  text-align: center;
-}
-
-.message {
-  display: flex;
-  margin: 4px 0;
-}
-
-.message-current {
-  justify-content: flex-end;
-}
-
-.message-bubble {
+.message-card {
   max-width: 70%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  background-color: rgba(0, 0, 0, 0.06);
-  word-wrap: break-word;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.dark .message-bubble {
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.message-current .message-bubble {
-  background-color: rgba(33, 150, 243, 0.15);
-  box-shadow: 0 1px 2px rgba(33, 150, 243, 0.1);
-}
-
-.dark .message-current .message-bubble {
-  background-color: rgba(33, 150, 243, 0.2);
-}
-
-.message-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-  font-size: 0.875rem;
-}
-
-.message-username {
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.dark .message-username {
-  color: rgba(255, 255, 255, 0.87);
-}
-
-.message-time {
-  font-size: 0.75rem;
-  color: rgba(0, 0, 0, 0.54);
-}
-
-.dark .message-time {
-  color: rgba(255, 255, 255, 0.54);
-}
-
-.message-text {
   word-break: break-word;
-  line-height: 1.4;
 }
 
-.text-grey {
-  color: rgba(0, 0, 0, 0.54);
-}
-
-.dark .text-grey {
-  color: rgba(255, 255, 255, 0.54);
+@media (max-width: 600px) {
+  .message-card {
+    max-width: 85%;
+  }
 }
 </style>
