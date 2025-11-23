@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Midterm_EquipmentRental_Team5.Application.DTOs;
+using Midterm_EquipmentRental_Team5.Domain.Entities;
 
 namespace Midterm_EquipmentRental_Team5.Application.Services.Interfaces
 {
     public interface IChatService
     {
-        Task<IEnumerable<ChatDto>> GetChatListAsync();
-
-        Task<IEnumerable<MessageDto>> GetMessagesAsync(Guid chatId);
-
-        Task<MessageDto> SendMessageAsync(Guid chatId, SendMessageDto dto);
+        IEnumerable<Chat> GetUserChatList(int userId);
+        IEnumerable<Message> GetChatHistory(int chatId, int userId);
+        IEnumerable<MessageDto> GetMessages(int chatId);
+        MessageDto SendMessage(int chatId, SendMessageDto dto);
     }
 }

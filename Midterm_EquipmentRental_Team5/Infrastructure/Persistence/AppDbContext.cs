@@ -3,14 +3,14 @@ using Midterm_EquipmentRental_Team5.Domain.Entities;
 
 namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
         public DbSet<Equipment> Equipment { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Rental> Rentals { get; set; }
         public DbSet<AppUser> AppUsers { get; set; }
-
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public DbSet<Chat> Chat { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -182,11 +182,11 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
             );
 
             modelBuilder.Entity<Chat>().HasData(
-                new Chat { ChatId = 1, CustomerId = 2 },
-                new Chat { ChatId = 2, CustomerId = 3 },
-                new Chat { ChatId = 3, CustomerId = 4 },
-                new Chat { ChatId = 4, CustomerId = 5 },
-                new Chat { ChatId = 5, CustomerId = 6 }
+                new Chat { ChatId = 1, SenderId = 2, ReceiverId = 1 },
+                new Chat { ChatId = 2, SenderId = 3, ReceiverId = 1 },
+                new Chat { ChatId = 3, SenderId = 4, ReceiverId = 1 },
+                new Chat { ChatId = 4, SenderId = 5, ReceiverId = 1 },
+                new Chat { ChatId = 5, SenderId = 6, ReceiverId = 1 }
             );
 
             modelBuilder.Entity<Message>().HasData(

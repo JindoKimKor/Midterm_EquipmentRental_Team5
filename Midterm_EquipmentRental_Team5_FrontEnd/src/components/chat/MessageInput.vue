@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="3" rounded="lg" class="pa-4">
+  <div class="bg-white pa-8">
     <v-form @submit.prevent="handleSend">
       <v-text-field
         v-model="messageText"
@@ -15,7 +15,8 @@
             icon="mdi-send"
             variant="text"
             size="small"
-            :disabled="!messageText.trim()"
+            :disabled="!messageText.trim() || isSending"
+            :loading="isSending"
             @click="handleSend"
           />
         </template>
@@ -33,32 +34,52 @@
         </v-alert>
       </v-fade-transition>
     </v-form>
-  </v-card>
+  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { sendMessage } from '@/api/ChatController'
+import { useChatStore } from '@/stores/ChatStore'
 
 const props = defineProps({
   selectedUser: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
+  chatId: {
+    type: Number,
+    required: true,
+  },
 })
 
 const messageText = ref('')
 const error = ref(null)
+const isSending = ref(false)
+const chatStore = useChatStore()
 
 const handleSend = async () => {
   if (!messageText.value.trim()) return
 
   try {
-    // TODO: Implement message sending logic for individual user chat
-    console.log(`Message to ${props.selectedUser.name}:`, messageText.value)
+    isSending.value = true
+    const messageContent = messageText.value.trim()
+
+    const response = await sendMessage(props.chatId, {
+      message: messageContent,
+    })
+
+    if (response) {
+      chatStore.addMessage(response)
+    }
+
     messageText.value = ''
     error.value = null
   } catch (err) {
     error.value = err.message || 'Failed to send message'
+    console.error('Message send error:', err)
+  } finally {
+    isSending.value = false
   }
 }
 

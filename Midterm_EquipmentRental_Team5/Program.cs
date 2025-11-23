@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Midterm_EquipmentRental_Team5.Presentation.Hubs;
+using Midterm_EquipmentRental_Team5.Application.Services.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,15 +30,20 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
 builder.Services.AddScoped<IRentalRepository, RentalRepository>();
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
 builder.Services.AddScoped<ICustomerServices, CustomerServices>();
 builder.Services.AddScoped<IEquipmentServices, EquipmentService>();
 builder.Services.AddScoped<IRentalServices, RentalServices>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IClaimsTransformation, RoleClaimsTransformer>();
+
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
 
 // Add CORS policy
 builder.Services.AddCors(options =>
@@ -54,11 +61,11 @@ builder.Services.AddCors(options =>
 // DI injection - Database - InMemory Database - infrastructure layer
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("EquipmentRentalDb"));
 
-// JWT Authentication - Security Layer
-builder.Services.AddAuthentication(opt =>
+// Authentication
+builder.Services.AddAuthentication(options =>
 {
-    opt.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    opt.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
@@ -71,15 +78,34 @@ builder.Services.AddAuthentication(opt =>
         ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
         ClockSkew = TimeSpan.Zero,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSettings.SecretKey)
+        ),
         RoleClaimType = ClaimTypes.Role,
-        NameClaimType = ClaimTypes.Name
+        NameClaimType = ClaimTypes.NameIdentifier
     };
-}
-)
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            // Grab token from query for WebSocket transport
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+
+            if (!string.IsNullOrEmpty(accessToken) &&
+                path.StartsWithSegments("/chatHub")) // must match your hub route
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
+    };
+})
 .AddCookie(options =>
 {
-    options.LoginPath = "/api/auth/google-login"; // endpoint to start login
+    options.LoginPath = "/api/auth/google-login";
     options.LogoutPath = "/api/auth/logout";
     options.AccessDeniedPath = "/api/auth/denied";
 })

@@ -1,43 +1,59 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Midterm_EquipmentRental_Team5.Application.DTOs;
+using Midterm_EquipmentRental_Team5.Application.Services.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ChatController
+    public class ChatController(IChatService chatService) : ControllerBase
     {
-        private readonly IChatService _chatService;
+        private readonly IChatService _chatService = chatService;
 
-        public ChatController(IChatService chatService)
-        {
-            _chatService = chatService;
-        }
-
-        // GET: api/chat
         [HttpGet]
-        public async Task<IActionResult> GetChats()
+        public ActionResult GetUserChats()
         {
-            var chats = await _chatService.GetChatListAsync();
+            var userIdClaim = (User.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new UnauthorizedAccessException("The user does not have a NameIdentifier claim.");
+
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                throw new FormatException("NameIdentifier claim is not a valid integer.");
+            }
+
+            var chats = _chatService.GetUserChatList(userId);
             return Ok(chats);
         }
 
-        // GET: api/chat/{chatId}/messages
-        [HttpGet("{chatId}/messages")]
-        public async Task<IActionResult> GetMessages(Guid chatId)
+        [HttpGet("{chatId}")]
+        public ActionResult GetChatHistory(int chatId)
         {
-            var messages = await _chatService.GetMessagesAsync(chatId);
-            return Ok(messages);
+            var userIdClaim = (User.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new UnauthorizedAccessException("The user does not have a NameIdentifier claim.");
+
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                throw new FormatException("NameIdentifier claim is not a valid integer.");
+            }
+
+            var chats = _chatService.GetChatHistory(chatId, userId);
+            return Ok(chats);
         }
 
-        // POST: api/chat/{chatId}/message
-        [HttpPost("{chatId}/message")]
-        public async Task<IActionResult> SendMessage(Guid chatId, [FromBody] SendMessageDto dto)
-        {
-            var message = await _chatService.SendMessageAsync(chatId, dto);
-            return Ok(message);
-        }
+        // [HttpGet("{chatId}/messages")]
+        // public async Task<IActionResult> GetMessages(Guid chatId)
+        // {
+        //     var messages = await _chatService.GetMessagesAsync(chatId);
+        //     return Ok(messages);
+        // }
+
+        // [HttpPost("{chatId}/message")]
+        // public async Task<IActionResult> SendMessage(Guid chatId, [FromBody] SendMessageDto dto)
+        // {
+        //     var message = await _chatService.SendMessageAsync(chatId, dto);
+        //     return Ok(message);
+        // }
 
     }
 }

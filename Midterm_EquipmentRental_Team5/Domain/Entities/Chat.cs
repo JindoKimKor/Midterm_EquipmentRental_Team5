@@ -9,10 +9,15 @@ namespace Midterm_EquipmentRental_Team5.Domain.Entities
         public int ChatId { get; set; }
 
         [Required]
-        public int CustomerId { get; set; }
+        public int SenderId { get; set; }
 
-        [ForeignKey(nameof(CustomerId))]
-        public Customer Customer { get; set; } = new();
+        [ForeignKey(nameof(SenderId))]
+        public Customer? Sender { get; set; }
 
+        [Required]
+        public int ReceiverId { get; set; }
+
+        [ForeignKey(nameof(ReceiverId))]
+        public Customer? Receiver { get; set; }
     }
 }

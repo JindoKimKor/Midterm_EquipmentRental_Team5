@@ -14,10 +14,10 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<AppUser?> GetByEmailAsync(string email)
+        public AppUser? GetByEmailAsync(string email)
         {
-            return await _context.Set<AppUser>()
-                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+            return _context.Set<AppUser>()
+                .FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
         }
     }
 }

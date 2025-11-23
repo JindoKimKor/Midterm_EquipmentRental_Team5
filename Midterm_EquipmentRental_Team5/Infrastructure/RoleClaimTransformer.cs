@@ -26,7 +26,7 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure
                 return principal;
 
             // Get user info from your repository
-            var appUser = await _appUserRepository.GetByEmailAsync(email);
+            var appUser = _appUserRepository.GetByEmailAsync(email);
             if (appUser == null)
                 return principal;
 
