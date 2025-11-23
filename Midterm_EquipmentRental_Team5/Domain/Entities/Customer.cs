@@ -12,5 +12,7 @@ namespace Midterm_EquipmentRental_Team5.Domain.Entities
         public string? UserName { get; set; }
         public string? Password { get; set; }
         public string? Role { get; set; }
+        public string? ExternalProvider { get; set; } // OAuth provider (e.g., "Google")
+        public string? ExternalId { get; set; } // External user ID from OAuth provider
     }
 }

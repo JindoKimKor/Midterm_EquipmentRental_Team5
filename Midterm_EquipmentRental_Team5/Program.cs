@@ -29,7 +29,6 @@ builder.Services.AddSingleton(jwtSettings);
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
 builder.Services.AddScoped<IRentalRepository, RentalRepository>();
-builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
 builder.Services.AddScoped<ICustomerServices, CustomerServices>();

@@ -14,5 +14,6 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories.Interfaces
         IEnumerable<ICustomer> ListAllCustomers();
         void UpdateCustomer(ICustomer customer);
         ICustomer? GetCustomerByPasswordAndUsername(ILoginRequest loginRequest);
+        ICustomer? GetCustomerByEmailAsync(string email);
     }
 }

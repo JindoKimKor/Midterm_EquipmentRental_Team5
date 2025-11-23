@@ -1,18 +1,19 @@
 using Microsoft.AspNetCore.Authentication;
 using Midterm_EquipmentRental_Team5.Infrastructure.Repositories.Interfaces;
 using System.Security.Claims;
+using Midterm_EquipmentRental_Team5.Infrastructure.Repositories;
 
 namespace Midterm_EquipmentRental_Team5.Infrastructure
 {
     public class RoleClaimsTransformer : IClaimsTransformation
     {
         private readonly IConfiguration _cfg;
-        private readonly IAppUserRepository _appUserRepository;
+        private readonly ICustomerRepository _customerRepository;
 
-        public RoleClaimsTransformer(IConfiguration cfg, IAppUserRepository appUserRepository)
+        public RoleClaimsTransformer(IConfiguration cfg, ICustomerRepository customerRepository)
         {
             _cfg = cfg;
-            _appUserRepository = appUserRepository;
+            _customerRepository = customerRepository;
         }
 
         public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
@@ -26,8 +27,8 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure
                 return principal;
 
             // Get user info from your repository
-            var appUser = _appUserRepository.GetByEmailAsync(email);
-            if (appUser == null)
+            var customer = _customerRepository.GetCustomerByEmailAsync(email);
+            if (customer == null)
                 return principal;
 
             // --- Modify or Add NameIdentifier ---
@@ -38,7 +39,7 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure
                 identity.RemoveClaim(existingIdClaim);
             }
 
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, appUser.Id.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, customer.Id.ToString()));
 
             // --- Modify or Add Role ---
             var existingRoleClaim = identity.FindFirst(ClaimTypes.Role);
@@ -47,7 +48,7 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure
                 identity.RemoveClaim(existingRoleClaim);
             }
 
-            identity.AddClaim(new Claim(ClaimTypes.Role, appUser.Role ?? "User"));
+            identity.AddClaim(new Claim(ClaimTypes.Role, customer.Role ?? "User"));
 
             return principal;
         }

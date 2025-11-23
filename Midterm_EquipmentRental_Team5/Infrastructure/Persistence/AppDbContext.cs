@@ -8,7 +8,6 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
         public DbSet<Equipment> Equipment { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Rental> Rentals { get; set; }
-        public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Chat> Chat { get; set; }
         public DbSet<Message> Messages { get; set; }
 
@@ -16,49 +15,24 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<AppUser>().HasData(
-                new AppUser
-                {
-                    Id = 1,
-                    Email = "chrisy.dinh03@gmail.com",
-                    Role = "Admin",
-                    ExternalProvider = "Google",
-                    ExternalId = null
-                },
-                new AppUser
-                {
-                    Id = 2,
-                    Email = "n.dinh72943@gmail.com,",
-                    Role = "User",
-                    ExternalProvider = "Google",
-                    ExternalId = null
-                },
-                new AppUser
-                {
-                    Id = 3,
-                    Email = "user2@example.com",
-                    Role = "User",
-                    ExternalProvider = "Google",
-                    ExternalId = null
-                }
-            );
-
             // Seed Customers (1 Admin + 5 Users)
             modelBuilder.Entity<Customer>().HasData(
                 new Customer
                 {
                     Id = 1,
                     Name = "Admin User",
-                    Email = "admin@rental.com",
+                    Email = "chrisy.dinh03@gmail.com",
                     UserName = "admin",
                     Password = "admin123",
-                    Role = "Admin"
+                    Role = "Admin",
+                    ExternalProvider = null,
+                    ExternalId = null
                 },
-                new Customer { Id = 2, Name = "John Doe", Email = "john@example.com", UserName = "user1", Password = "user1", Role = "User" },
-                new Customer { Id = 3, Name = "Jane Smith", Email = "jane@example.com", UserName = "user2", Password = "user2", Role = "User" },
-                new Customer { Id = 4, Name = "Bob Johnson", Email = "bob@example.com", UserName = "user3", Password = "user3", Role = "User" },
-                new Customer { Id = 5, Name = "Alice Williams", Email = "alice@example.com", UserName = "user4", Password = "user4", Role = "User" },
-                new Customer { Id = 6, Name = "Charlie Brown", Email = "charlie@example.com", UserName = "user5", Password = "user5", Role = "User" }
+                new Customer { Id = 2, Name = "John Doe", Email = "john@example.com", UserName = "user1", Password = "user1", Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 3, Name = "Jane Smith", Email = "jane@example.com", UserName = "user2", Password = "user2", Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 4, Name = "Bob Johnson", Email = "bob@example.com", UserName = "user3", Password = "user3", Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 5, Name = "Alice Williams", Email = "alice@example.com", UserName = "user4", Password = "user4", Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 6, Name = "Charlie Brown", Email = "charlie@example.com", UserName = "user5", Password = "user5", Role = "User", ExternalProvider = null, ExternalId = null }
             );
 
             // Seed Equipment (5+ items - different categories)
