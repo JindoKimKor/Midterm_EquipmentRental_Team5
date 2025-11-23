@@ -78,12 +78,15 @@
 import { ref, onBeforeMount, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserChats } from '@/api/ChatController'
+import { useAuthenticationStore } from '@/stores/Authentication'
 import ChatWindow from '@/components/chat/ChatWindow.vue'
+import { getInitials } from '@/utils/StringUtils'
 
 const router = useRouter()
 const chats = ref([])
 const selectedChat = ref(null)
 const searchQuery = ref('')
+const authStore = useAuthenticationStore()
 
 onBeforeMount(async () => {
   try {
@@ -108,32 +111,21 @@ const goBack = () => {
   router.back()
 }
 
-/**
- * Gets the display name for a chat
- * Shows the sender or receiver name depending on the context
- */
-const getChatName = (chat) => {
-  if (!chat) return '?'
-  // Show sender name if receiver is Admin, otherwise show receiver name
-  return chat.sender?.name || chat.receiver?.name || 'Unknown Chat'
-}
-
-/**
- * Gets the user object for the ChatWindow
- * Returns the sender or receiver object
- */
-const getChatUser = (chat) => {
+const getOtherUser = (chat) => {
   if (!chat) return null
-  return chat.sender || chat.receiver
+  if (Number(authStore.authUserId) === Number(chat.senderId)) {
+    return chat.receiver
+  } else {
+    return chat.sender
+  }
 }
 
-const getInitials = (name) => {
-  if (!name) return '?'
-  return name
-    .split(' ')
-    .map((word) => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+const getChatName = (chat) => {
+  const otherUser = getOtherUser(chat)
+  return otherUser?.name ?? '?'
+}
+
+const getChatUser = (chat) => {
+  return getOtherUser(chat)
 }
 </script>

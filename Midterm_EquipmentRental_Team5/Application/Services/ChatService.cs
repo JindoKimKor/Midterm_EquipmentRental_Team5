@@ -30,7 +30,7 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
             return [];
         }
 
-        public MessageDto SendMessage(int chatId, SendMessageDto dto)
+        public MessageDto AddMessage(int chatId, SendMessageDto dto)
         {
             throw new NotImplementedException();
         }

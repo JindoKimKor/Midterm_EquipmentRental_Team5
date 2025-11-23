@@ -4,7 +4,7 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories.Interfaces
 {
     public interface IChatRepository
     {
-        List<Message> GetMessagesAsync(string userA, string userB);
+        List<Message> GetMessagesAsync(int userA, int userB);
 
         Message AddMessageAsync(Message message);
 
@@ -12,11 +12,11 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories.Interfaces
 
         bool DeleteMessageAsync(int id);
 
-        void MarkMessagesAsReadAsync(string senderId, string receiverId);
+        void MarkMessagesAsReadAsync(int senderId, int receiverId);
 
         List<Chat> GetChatsForUser(int userId);
 
         List<Message> GetChatHistory(int chatId, int userId);
-        void EnsureChatExistsAsync(string userA, string userB);
+        void EnsureChatExistsAsync(int userA, int userB);
     }
 }

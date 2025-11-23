@@ -23,9 +23,11 @@ import MessageList from './MessageList.vue'
 import MessageInput from './MessageInput.vue'
 import { useChatStore } from '@/stores/ChatStore'
 import { getChatHistory } from '@/api/ChatController'
-import { onBeforeMount } from 'vue'
+import { createConnection, getConnection } from '@/services/signalr.ChatHub'
+import { onBeforeMount, onBeforeUnmount } from 'vue'
 
 const chatStore = useChatStore()
+let messageListener = null
 
 const props = defineProps({
   selectedUser: {
@@ -39,9 +41,45 @@ const props = defineProps({
   },
 })
 
-onBeforeMount(() => {
-  loadChatHistory()
+onBeforeMount(async () => {
+  await initializeSignalR()
+  await loadChatHistory()
 })
+
+onBeforeUnmount(() => {
+  // Remove the message listener to prevent duplicates
+  const connection = getConnection()
+  if (connection && messageListener) {
+    connection.off('ReceiveMessage', messageListener)
+  }
+})
+
+const initializeSignalR = async () => {
+  try {
+    const connection = createConnection()
+
+    if (connection.state === 'Disconnected') await connection.start()
+
+    if (messageListener) {
+      connection.off('ReceiveMessage', messageListener)
+    }
+
+    messageListener = (senderId, chatId, messageContent, timestamp) => {
+      chatStore.addMessage({
+        senderId: senderId,
+        content: messageContent,
+        chatId: chatId,
+        timestamp: timestamp || new Date().toISOString(),
+        isRead: false,
+      })
+    }
+
+    connection.on('ReceiveMessage', messageListener)
+  } catch (error) {
+    console.error('Failed to initialize SignalR:', error)
+    chatStore.setError('Failed to connect to chat server')
+  }
+}
 
 const getInitials = (name) => {
   if (!name) return '?'

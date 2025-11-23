@@ -85,15 +85,17 @@ export function isConnected() {
 /**
  * Sends a message through SignalR
  * @param {string} room - The chat room
- * @param {string} username - The sender's username
+ * @param {string} receiverId - The sender's username
  * @param {string} message - The message content
  * @returns {Promise<void>}
  */
-export async function sendMessage(room, username, message) {
-  if (!connection) {
-    throw new Error('SignalR connection not initialized')
+export async function sendMessage(receiverId, chatId, message) {
+  try {
+    if (!connection) throw new Error('SignalR connection not initialized')
+    return await connection.invoke('SendMessage', receiverId, chatId, message)
+  } catch (error) {
+    console.error(error)
   }
-  return await connection.invoke('SendMessage', room, username, message)
 }
 
 /**

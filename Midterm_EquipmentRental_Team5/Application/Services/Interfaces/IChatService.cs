@@ -8,6 +8,6 @@ namespace Midterm_EquipmentRental_Team5.Application.Services.Interfaces
         IEnumerable<Chat> GetUserChatList(int userId);
         IEnumerable<Message> GetChatHistory(int chatId, int userId);
         IEnumerable<MessageDto> GetMessages(int chatId);
-        MessageDto SendMessage(int chatId, SendMessageDto dto);
+        MessageDto AddMessage(int chatId, SendMessageDto dto);
     }
 }

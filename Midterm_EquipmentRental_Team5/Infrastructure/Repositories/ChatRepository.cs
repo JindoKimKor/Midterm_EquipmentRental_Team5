@@ -9,7 +9,7 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
     {
         private readonly AppDbContext _context = context;
 
-        public List<Message> GetMessagesAsync(string userA, string userB)
+        public List<Message> GetMessagesAsync(int userA, int userB)
         {
             return _context.Messages
                 .Where(m => (m.SenderId == userA && m.ReceiverId == userB) ||
@@ -43,7 +43,7 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
             return true;
         }
 
-        public void MarkMessagesAsReadAsync(string senderId, string receiverId)
+        public void MarkMessagesAsReadAsync(int senderId, int receiverId)
         {
             var unreadMessages = _context.Messages
                 .Where(m => m.SenderId == senderId &&
@@ -74,7 +74,7 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
                 .ToList();
         }
 
-        public void EnsureChatExistsAsync(string userA, string userB)
+        public void EnsureChatExistsAsync(int userA, int userB)
         {
             bool hasAnyMessages = _context.Messages
                 .Any(m =>

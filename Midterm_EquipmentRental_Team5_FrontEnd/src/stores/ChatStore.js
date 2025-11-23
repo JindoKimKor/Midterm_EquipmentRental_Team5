@@ -14,8 +14,11 @@ export const useChatStore = defineStore('chat', () => {
    */
   const addMessage = (message) => {
     messages.value.push({
-      id: message.id || Date.now(),
-      ...message,
+      chatId: message.chatId || null,
+      content: message.content || null,
+      receiverId: message.receiverId || null,
+      senderId: message.senderId || null,
+      isRead: false,
       timestamp: message.timestamp || new Date().toISOString(),
     })
   }
@@ -57,15 +60,12 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   return {
-    // State
     messages,
     isConnecting,
     error,
 
-    // Computed
     messageCount,
 
-    // Actions
     addMessage,
     loadMessages,
     clearMessages,

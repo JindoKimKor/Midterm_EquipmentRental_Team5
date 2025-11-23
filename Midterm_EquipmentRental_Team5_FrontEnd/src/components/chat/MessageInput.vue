@@ -7,7 +7,6 @@
         variant="outlined"
         density="compact"
         clearable
-        @keydown.enter.exact="handleSend"
         hide-details
       >
         <template #append-inner>
@@ -39,8 +38,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import { sendMessage } from '@/api/ChatController'
-import { useChatStore } from '@/stores/ChatStore'
+import { sendMessage, isConnected as isSignalRConnected } from '@/services/signalr.ChatHub'
+import { useAuthenticationStore } from '@/stores/Authentication'
 
 const props = defineProps({
   selectedUser: {
@@ -56,23 +55,27 @@ const props = defineProps({
 const messageText = ref('')
 const error = ref(null)
 const isSending = ref(false)
-const chatStore = useChatStore()
+const authStore = useAuthenticationStore()
 
 const handleSend = async () => {
   if (!messageText.value.trim()) return
 
+  if (!isSignalRConnected()) {
+    error.value = 'Not connected to chat server. Please refresh the page.'
+    console.error('SignalR not connected')
+    return
+  }
+
+  if (!authStore.authUserId || !props.selectedUser?.id) {
+    error.value = 'User information is missing'
+    console.error('Missing userId or selectedUser.id')
+    return
+  }
+
   try {
     isSending.value = true
     const messageContent = messageText.value.trim()
-
-    const response = await sendMessage(props.chatId, {
-      message: messageContent,
-    })
-
-    if (response) {
-      chatStore.addMessage(response)
-    }
-
+    await sendMessage(props.selectedUser.id, props.chatId, messageContent)
     messageText.value = ''
     error.value = null
   } catch (err) {
