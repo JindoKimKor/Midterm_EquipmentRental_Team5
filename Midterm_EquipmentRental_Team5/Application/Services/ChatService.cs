@@ -8,35 +8,35 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
     {
         private readonly IChatRepository _chatRepo = chatRepo;
 
-        private bool CheckIfUserIsPartOfChat(int chatId, int userId)
+        private async Task<bool> CheckIfUserIsPartOfChat(int chatId, int userId)
         {
-            var chats = _chatRepo.GetChatsForUser(userId);
+            var chats = await _chatRepo.GetChatsForUser(userId);
             return chats.Any(c => c.ChatId == chatId);
         }
 
-        public IEnumerable<Chat> GetUserChatList(int userId)
+        public async Task<IEnumerable<Chat>> GetUserChatList(int userId)
         {
-            var chats = _chatRepo.GetChatsForUser(userId);
+            var chats = await _chatRepo.GetChatsForUser(userId);
             return chats;
         }
-        public IEnumerable<Message> GetChatHistory(int chatId, int userId)
+        public async Task<IEnumerable<Message>> GetChatHistory(int chatId, int userId)
         {
-            if (CheckIfUserIsPartOfChat(chatId, userId))
+            if (await CheckIfUserIsPartOfChat(chatId, userId))
             {
-                var message = _chatRepo.GetChatHistory(chatId, userId);
+                var message = await _chatRepo.GetChatHistory(chatId, userId);
                 return message;
             }
             return [];
         }
 
-        public void ClearMessageFromDb()
+        public async Task ClearMessageFromDb()
         {
-            _chatRepo.ClearAllMessages();
+            await _chatRepo.ClearAllMessages();
         }
 
-        public void AddMessage(Message message)
+        public async Task AddMessage(Message message)
         {
-            _chatRepo.SaveMessage(message);
+            await _chatRepo.SaveMessage(message);
         }
     }
 }

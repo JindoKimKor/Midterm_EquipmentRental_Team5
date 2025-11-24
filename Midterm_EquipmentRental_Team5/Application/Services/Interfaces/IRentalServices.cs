@@ -4,19 +4,19 @@ namespace Midterm_EquipmentRental_Team5.Application.Interfaces
 {
     public interface IRentalServices
     {
-        IEnumerable<IRental>? GetAllRentals(int page = 1);
-        IRental? GetRentalById(int id);
+        Task<IEnumerable<IRental>?> GetAllRentals(int page = 1);
+        Task<IRental?> GetRentalById(int id);
 
-        void IssueEquipment(IIssueRequest request);
-        void ReturnEquipment(IReturnRequest request);
+        Task IssueEquipment(IIssueRequest request);
+        Task ReturnEquipment(IReturnRequest request);
 
-        IEnumerable<IRental>? GetActiveRentals();
-        IEnumerable<IRental>? GetCompletedRentals();
-        IEnumerable<IRental>? GetOverdueRentals();
+        Task<IEnumerable<IRental>?> GetActiveRentals();
+        Task<IEnumerable<IRental>?> GetCompletedRentals();
+        Task<IEnumerable<IRental>?> GetOverdueRentals();
 
-        IEnumerable<IRental>? GetRentalHistoryByEquipment(int equipmentId);
+        Task<IEnumerable<IRental>?> GetRentalHistoryByEquipment(int equipmentId);
 
-        void ExtendRental(int rentalId, IExtensionRequest request);
-        void CancelRental(int rentalId);
+        Task ExtendRental(int rentalId, IExtensionRequest request);
+        Task CancelRental(int rentalId);
     }
 }

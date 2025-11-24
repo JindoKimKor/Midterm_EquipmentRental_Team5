@@ -17,9 +17,9 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<IRental>? GetAllRentals(int page = 1)
+        public async Task<IEnumerable<IRental>?> GetAllRentals(int page = 1)
         {
-            var allRentals = _unitOfWork.Rentals.GetAllRentals();
+            var allRentals = await _unitOfWork.Rentals.GetAllRentals();
             if (allRentals.Any())
             {
                 int skip = (page - 1) * PageSize;
@@ -28,22 +28,22 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
             return allRentals.Any() ? allRentals : null;
         }
 
-        public IRental? GetRentalById(int id)
+        public async Task<IRental?> GetRentalById(int id)
         {
-            var rental = _unitOfWork.Rentals.GetRentalDetails(id);
+            var rental = await _unitOfWork.Rentals.GetRentalDetails(id);
             return rental ?? null;
         }
 
-        public void IssueEquipment(IIssueRequest request)
+        public async Task IssueEquipment(IIssueRequest request)
         {
-            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(request.EquipmentId) ?? throw new KeyNotFoundException($"Equipment with ID {request.EquipmentId} not found.");
+            var equipment = await _unitOfWork.Equipments.GetSpecificEquipment(request.EquipmentId) ?? throw new KeyNotFoundException($"Equipment with ID {request.EquipmentId} not found.");
             if (!equipment.IsAvailable)
             {
                 throw new InvalidOperationException($"Equipment '{equipment.Name}' is not available.");
             }
 
-            var customer = _unitOfWork.Customers.GetCustomerDetails(request.CustomerId) ?? throw new KeyNotFoundException($"Customer with ID {request.CustomerId} not found.");
-            var activeRental = _unitOfWork.Customers.GetCustomerActiveRental(request.CustomerId);
+            var customer = await _unitOfWork.Customers.GetCustomerDetails(request.CustomerId) ?? throw new KeyNotFoundException($"Customer with ID {request.CustomerId} not found.");
+            var activeRental = await _unitOfWork.Customers.GetCustomerActiveRental(request.CustomerId);
             if (activeRental != null)
             {
                 throw new InvalidOperationException($"Customer '{customer.Name}' already has an active rental.");
@@ -61,13 +61,13 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
 
             _unitOfWork.Rentals.IssueEquipment(newRental, newRental.DueDate);
             equipment.IsAvailable = false;
-            _unitOfWork.Equipments.UpdateEquipment(equipment);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.Equipments.UpdateEquipment(equipment);
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public void ReturnEquipment(IReturnRequest request)
+        public async Task ReturnEquipment(IReturnRequest request)
         {
-            var rental = _unitOfWork.Rentals.GetRentalDetails(request.RentalId) ?? throw new KeyNotFoundException($"Rental with ID {request.RentalId} not found.");
+            var rental = await _unitOfWork.Rentals.GetRentalDetails(request.RentalId) ?? throw new KeyNotFoundException($"Rental with ID {request.RentalId} not found.");
             if (rental.ReturnedAt.HasValue)
             {
                 throw new InvalidOperationException("This rental has already been returned.");
@@ -84,44 +84,44 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
 
             _unitOfWork.Rentals.UpdateRental(rental);
 
-            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(rental.EquipmentId);
+            var equipment = await _unitOfWork.Equipments.GetSpecificEquipment(rental.EquipmentId);
             if (equipment != null)
             {
                 equipment.IsAvailable = true;
                 equipment.Condition = request.Condition;
-                _unitOfWork.Equipments.UpdateEquipment(equipment);
+                await _unitOfWork.Equipments.UpdateEquipment(equipment);
             }
 
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public IEnumerable<IRental>? GetActiveRentals()
+        public async Task<IEnumerable<IRental>?> GetActiveRentals()
         {
-            var activeRentals = _unitOfWork.Rentals.GetActiveRentals();
+            var activeRentals = await _unitOfWork.Rentals.GetActiveRentals();
             return activeRentals.Any() ? activeRentals : null;
         }
 
-        public IEnumerable<IRental>? GetCompletedRentals()
+        public async Task<IEnumerable<IRental>?> GetCompletedRentals()
         {
-            var completedRentals = _unitOfWork.Rentals.GetCompletedRentals();
+            var completedRentals = await _unitOfWork.Rentals.GetCompletedRentals();
             return completedRentals.Any() ? completedRentals : null;
         }
 
-        public IEnumerable<IRental>? GetOverdueRentals()
+        public async Task<IEnumerable<IRental>?> GetOverdueRentals()
         {
-            var overdueRentals = _unitOfWork.Rentals.GetOverdueRentals();
+            var overdueRentals = await _unitOfWork.Rentals.GetOverdueRentals();
             return overdueRentals.Any() ? overdueRentals : null;
         }
 
-        public IEnumerable<IRental>? GetRentalHistoryByEquipment(int equipmentId)
+        public async Task<IEnumerable<IRental>?> GetRentalHistoryByEquipment(int equipmentId)
         {
-            var rentalHistory = _unitOfWork.Rentals.GetEquipmentRentalHistory(equipmentId);
+            var rentalHistory = await _unitOfWork.Rentals.GetEquipmentRentalHistory(equipmentId);
             return rentalHistory.Any() ? rentalHistory : null;
         }
 
-        public void ExtendRental(int rentalId, IExtensionRequest request)
+        public async Task ExtendRental(int rentalId, IExtensionRequest request)
         {
-            var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId) ?? throw new KeyNotFoundException($"Rental with ID {rentalId} not found.");
+            var rental = await _unitOfWork.Rentals.GetRentalDetails(rentalId) ?? throw new KeyNotFoundException($"Rental with ID {rentalId} not found.");
             if (rental.ReturnedAt.HasValue)
             {
                 throw new InvalidOperationException("Cannot extend a completed rental.");
@@ -130,12 +130,12 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
             rental.DueDate = request.NewDueDate;
             rental.ExtensionReason = request.Reason;
             _unitOfWork.Rentals.UpdateRental(rental);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public void CancelRental(int rentalId)
+        public async Task CancelRental(int rentalId)
         {
-            var rental = _unitOfWork.Rentals.GetRentalDetails(rentalId) ?? throw new KeyNotFoundException($"Rental with ID {rentalId} not found.");
+            var rental = await _unitOfWork.Rentals.GetRentalDetails(rentalId) ?? throw new KeyNotFoundException($"Rental with ID {rentalId} not found.");
             rental.ReturnedAt = DateTime.Now;
             rental.IsActive = false;
 
@@ -147,14 +147,14 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
 
             _unitOfWork.Rentals.UpdateRental(rental);
 
-            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(rental.EquipmentId);
+            var equipment = await _unitOfWork.Equipments.GetSpecificEquipment(rental.EquipmentId);
             if (equipment != null)
             {
                 equipment.IsAvailable = true;
-                _unitOfWork.Equipments.UpdateEquipment(equipment);
+                await _unitOfWork.Equipments.UpdateEquipment(equipment);
             }
 
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

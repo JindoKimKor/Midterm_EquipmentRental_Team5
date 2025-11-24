@@ -22,11 +22,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             try
             {
-                var user = _authService.ValidateLogin(request) ?? throw new KeyNotFoundException("User not found");
+                var user = await _authService.ValidateLogin(request) ?? throw new KeyNotFoundException("User not found");
 
                 var claims = new List<Claim>
                 {
@@ -45,10 +45,10 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 };
 
                 // This generates the cookie and sets it in the response cookie header
-                HttpContext.SignInAsync(
+                await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity),
-                    authProperties).Wait();
+                    authProperties);
 
                 var token = _authService.GenerateJwtToken(user);
 

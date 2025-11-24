@@ -7,6 +7,6 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.UnitOfWork
         IEquipmentRepository Equipments { get; }
         ICustomerRepository Customers { get; }
         IRentalRepository Rentals { get; }
-        int SaveChanges();
+        Task<int> SaveChangesAsync();
     }
 }

@@ -6,11 +6,11 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories.Interfaces
     public interface IEquipmentRepository
     {
         void AddNewEquipment(IEquipment equipment);
-        void DeleteEquipment(int id);
-        IEnumerable<IEquipment> GetAllEquipment();
-        IEnumerable<IEquipment> GetRentedEquipment();
-        IEquipment? GetSpecificEquipment(int id);
-        IEnumerable<IEquipment> ListAvailableEquipment();
-        void UpdateEquipment(IEquipment equipment);
+        Task DeleteEquipment(int id);
+        Task<IEnumerable<IEquipment>> GetAllEquipment();
+        Task<IEnumerable<IEquipment>> GetRentedEquipment();
+        Task<IEquipment?> GetSpecificEquipment(int id);
+        Task<IEnumerable<IEquipment>> ListAvailableEquipment();
+        Task UpdateEquipment(IEquipment equipment);
     }
 }

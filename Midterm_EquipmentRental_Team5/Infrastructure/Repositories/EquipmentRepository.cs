@@ -15,36 +15,36 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
             _context.Equipment.Add((Equipment)equipment);
         }
 
-        public void DeleteEquipment(int id)
+        public async Task DeleteEquipment(int id)
         {
-            var equipment = _context.Equipment.Find(id);
+            var equipment = await _context.Equipment.FindAsync(id);
             if (equipment != null) _context.Equipment.Remove(equipment);
         }
 
-        public IEnumerable<IEquipment> GetAllEquipment()
+        public async Task<IEnumerable<IEquipment>> GetAllEquipment()
         {
-            return _context.Equipment.ToList();
+            return await _context.Equipment.ToListAsync();
         }
 
-        public IEnumerable<IEquipment> GetRentedEquipment()
+        public async Task<IEnumerable<IEquipment>> GetRentedEquipment()
         {
-            return _context.Equipment.Where(e => !e.IsAvailable).ToList();
+            return await _context.Equipment.Where(e => !e.IsAvailable).ToListAsync();
         }
 
-        public IEquipment? GetSpecificEquipment(int id)
+        public async Task<IEquipment?> GetSpecificEquipment(int id)
         {
-            var equipment = _context.Equipment.FirstOrDefault(e => e.Id == id);
+            var equipment = await _context.Equipment.FirstOrDefaultAsync(e => e.Id == id);
             return equipment ?? null;
         }
 
-        public IEnumerable<IEquipment> ListAvailableEquipment()
+        public async Task<IEnumerable<IEquipment>> ListAvailableEquipment()
         {
-            return _context.Equipment.Where(e => e.IsAvailable).ToList();
+            return await _context.Equipment.Where(e => e.IsAvailable).ToListAsync();
         }
 
-        public void UpdateEquipment(IEquipment equipment)
+        public async Task UpdateEquipment(IEquipment equipment)
         {
-            var existingEquipment = _context.Equipment.Find(equipment.Id);
+            var existingEquipment = await _context.Equipment.FindAsync(equipment.Id);
             if (existingEquipment != null) _context.Entry(existingEquipment).CurrentValues.SetValues(equipment);
         }
     }

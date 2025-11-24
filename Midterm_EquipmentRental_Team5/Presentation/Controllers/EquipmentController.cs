@@ -17,11 +17,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/equipment - Get all equipment with pagination
         [HttpGet]
-        public ActionResult<IEnumerable<EquipmentListDto>> GetAllEquipment(int page = 1)
+        public async Task<ActionResult<IEnumerable<EquipmentListDto>>> GetAllEquipment(int page = 1)
         {
             try
             {
-                var equipment = _equipmentService.GetAllEquipment(page) ?? throw new KeyNotFoundException();
+                var equipment = await _equipmentService.GetAllEquipment(page) ?? throw new KeyNotFoundException();
                 var dtos = equipment.Select(e => new EquipmentListDto
                 {
                     Id = e.Id.Value,
@@ -46,19 +46,19 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // Get rental history for specific equipment
         [HttpGet("{id}/rental-history")]
-        public ActionResult<IEnumerable<RentalHistoryDto>> GetEquipmentRentalHistory(int id)
+        public async Task<ActionResult<IEnumerable<RentalHistoryDto>>> GetEquipmentRentalHistory(int id)
         {
             try
             {
                 // First check if equipment exists
-                var equipment = _equipmentService.GetEquipmentById(id);
+                var equipment = await _equipmentService.GetEquipmentById(id);
                 if (equipment == null)
                 {
                     return NotFound($"Equipment with ID {id} not found.");
                 }
 
                 // Get rental history for this equipment
-                var rentalHistory = _rentalService.GetRentalHistoryByEquipment(id);
+                var rentalHistory = await _rentalService.GetRentalHistoryByEquipment(id);
                 var dtos = rentalHistory.Select(r => new RentalHistoryDto
                 {
                     Id = r.Id,
@@ -88,11 +88,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/equipment/{id} - Get specific equipment details
         [HttpGet("{id}")]
-        public ActionResult<EquipmentDetailDto> GetEquipment(int id)
+        public async Task<ActionResult<EquipmentDetailDto>> GetEquipment(int id)
         {
             try
             {
-                var equipment = _equipmentService.GetEquipmentById(id) ?? throw new KeyNotFoundException();
+                var equipment = await _equipmentService.GetEquipmentById(id) ?? throw new KeyNotFoundException();
                 var dto = new EquipmentDetailDto
                 {
                     Id = equipment.Id.Value,
@@ -120,7 +120,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // POST /api/equipment - Add new equipment (Admin only)
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public ActionResult AddEquipment([FromBody] CreateEquipmentRequest request)
+        public async Task<ActionResult> AddEquipment([FromBody] CreateEquipmentRequest request)
         {
             try
             {
@@ -135,7 +135,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                     IsAvailable = true,
                     CreatedAt = DateTime.UtcNow
                 };
-                _equipmentService.AddEquipment(equipment);
+                await _equipmentService.AddEquipment(equipment);
                 return NoContent();
             }
             catch (Exception ex)
@@ -147,7 +147,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // PUT /api/equipment/{id} - Update equipment (Admin only)
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult UpdateEquipment(int id, [FromBody] UpdateEquipmentRequest request)
+        public async Task<ActionResult> UpdateEquipment(int id, [FromBody] UpdateEquipmentRequest request)
         {
             try
             {
@@ -162,7 +162,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                     ImageUrl = request.ImageUrl,
                     IsAvailable = request.IsAvailable
                 };
-                _equipmentService.UpdateEquipment(id, equipment);
+                await _equipmentService.UpdateEquipment(id, equipment);
                 return NoContent();
             }
             catch (Exception ex)
@@ -174,11 +174,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // DELETE /api/equipment/{id} - Delete equipment (Admin only)
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult DeleteEquipment(int id)
+        public async Task<ActionResult> DeleteEquipment(int id)
         {
             try
             {
-                _equipmentService.DeleteEquipment(id);
+                await _equipmentService.DeleteEquipment(id);
                 return NoContent();
             }
             catch (Exception ex)
@@ -189,11 +189,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/equipment/available - Get list of available equipment
         [HttpGet("available")]
-        public ActionResult<IEnumerable<EquipmentListDto>> GetAvailableEquipment()
+        public async Task<ActionResult<IEnumerable<EquipmentListDto>>> GetAvailableEquipment()
         {
             try
             {
-                var availableEquipment = _equipmentService.GetAvailableEquipment() ?? throw new KeyNotFoundException();
+                var availableEquipment = await _equipmentService.GetAvailableEquipment() ?? throw new KeyNotFoundException();
                 var dtos = availableEquipment.Select(e => new EquipmentListDto
                 {
                     Id = e.Id.Value,
@@ -218,11 +218,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // GET /api/equipment/rented - Get rented equipment summary (Admin only)
         [HttpGet("rented")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<IEnumerable<EquipmentListDto>> GetRentedEquipmentSummary()
+        public async Task<ActionResult<IEnumerable<EquipmentListDto>>> GetRentedEquipmentSummary()
         {
             try
             {
-                var rentedEquipment = _equipmentService.GetRentedEquipment() ?? throw new KeyNotFoundException();
+                var rentedEquipment = await _equipmentService.GetRentedEquipment() ?? throw new KeyNotFoundException();
                 var dtos = rentedEquipment.Select(e => new EquipmentListDto
                 {
                     Id = e.Id.Value,

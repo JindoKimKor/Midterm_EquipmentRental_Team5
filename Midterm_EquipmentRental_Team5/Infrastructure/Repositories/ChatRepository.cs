@@ -9,80 +9,82 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
     {
         private readonly AppDbContext _context = context;
 
-        public List<Message> GetMessages(int userA, int userB)
+        public async Task<List<Message>> GetMessages(int userA, int userB)
         {
-            return [.. _context.Messages
+            return await _context.Messages
                 .Where(m => (m.SenderId == userA && m.ReceiverId == userB) ||
                             (m.SenderId == userB && m.ReceiverId == userA))
-                .OrderBy(m => m.Timestamp)];
+                .OrderBy(m => m.Timestamp)
+                .ToListAsync();
         }
 
-        public Message SaveMessage(Message message)
+        public async Task<Message> SaveMessage(Message message)
         {
             _context.Messages.Add(message);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return message;
         }
 
-        public Message? GetMessageById(int id)
+        public async Task<Message?> GetMessageById(int id)
         {
-            return _context.Messages.Find(id);
+            return await _context.Messages.FindAsync(id);
         }
 
-        public bool DeleteMessage(int id)
+        public async Task<bool> DeleteMessage(int id)
         {
-            var message = _context.Messages.Find(id);
+            var message = await _context.Messages.FindAsync(id);
 
             if (message == null)
                 return false;
 
             _context.Messages.Remove(message);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }
 
-        public void ClearAllMessages()
+        public async Task ClearAllMessages()
         {
-            var messages = _context.Messages
-                .ToList();
+            var messages = await _context.Messages.ToListAsync();
             _context.Messages.RemoveRange(messages);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void MarkMessagesAsRead(int senderId, int receiverId)
+        public async Task MarkMessagesAsRead(int senderId, int receiverId)
         {
-            var unreadMessages = _context.Messages
+            var unreadMessages = await _context.Messages
                 .Where(m => m.SenderId == senderId &&
                             m.ReceiverId == receiverId &&
                             !m.IsRead)
-                .ToList();
+                .ToListAsync();
 
             foreach (var msg in unreadMessages)
                 msg.IsRead = true;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public List<Chat> GetChatsForUser(int userId)
+        public async Task<List<Chat>> GetChatsForUser(int userId)
         {
-            return [.. _context.Chat
+            return await _context.Chat
                 .Where(c => c.SenderId == userId || c.ReceiverId == userId)
                 .Include(c => c.Sender)
-                .Include(c => c.Receiver)];
+                .Include(c => c.Receiver)
+                .ToListAsync();
         }
 
-        public List<Message> GetChatHistory(int chatId, int userId)
+        public async Task<List<Message>> GetChatHistory(int chatId, int userId)
         {
-            return [.. _context.Messages
+            return await _context.Messages
                 .Where(m => m.ChatId == chatId)
-                .OrderBy(m => m.Timestamp)];
+                .OrderBy(m => m.Timestamp)
+                .ToListAsync();
         }
 
-        public void EnsureChatExists(int userA, int userB)
+        public async Task EnsureChatExists(int userA, int userB)
         {
-            bool hasAnyMessages = _context.Messages
-                .Any(m =>
+            bool hasAnyMessages = await _context.Messages
+                .AnyAsync(m =>
                     (m.SenderId == userA && m.ReceiverId == userB) ||
                     (m.SenderId == userB && m.ReceiverId == userA)
                 );
@@ -98,7 +100,7 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
                     IsRead = true
                 });
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

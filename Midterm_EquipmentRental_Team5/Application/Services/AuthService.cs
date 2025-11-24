@@ -20,9 +20,9 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
             _jwtSettings = jwtSettings;
         }
 
-        public ICustomer? ValidateLogin(ILoginRequest loginRequest)
+        public async Task<ICustomer?> ValidateLogin(ILoginRequest loginRequest)
         {
-            var user = _unitOfWork.Customers.GetCustomerByPasswordAndUsername(loginRequest) ?? null;
+            var user = await _unitOfWork.Customers.GetCustomerByPasswordAndUsername(loginRequest) ?? null;
             return user;
         }
 

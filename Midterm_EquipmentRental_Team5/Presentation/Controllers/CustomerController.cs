@@ -19,11 +19,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public ActionResult<IEnumerable<CustomerListDto>> GetAllCustomers(int page = 1)
+        public async Task<ActionResult<IEnumerable<CustomerListDto>>> GetAllCustomers(int page = 1)
         {
             try
             {
-                var customers = _customerService.GetAllCustomers(page) ?? throw new KeyNotFoundException();
+                var customers = await _customerService.GetAllCustomers(page) ?? throw new KeyNotFoundException();
                 var dtos = customers.Select(c => new CustomerListDto
                 {
                     Id = c.Id,
@@ -47,11 +47,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         [HttpGet("unactive-customer")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<IEnumerable<CustomerListDto>> GetUnactiveCustomers(int page = 1)
+        public async Task<ActionResult<IEnumerable<CustomerListDto>>> GetUnactiveCustomers(int page = 1)
         {
             try
             {
-                var customers = _customerService.GetUnactiveCustomers() ?? throw new KeyNotFoundException();
+                var customers = await _customerService.GetUnactiveCustomers() ?? throw new KeyNotFoundException();
                 var dtos = customers.Select(c => new CustomerListDto
                 {
                     Id = c.Id,
@@ -76,7 +76,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/customers/{id} - Get customer details
         [HttpGet("{id}")]
-        public ActionResult<CustomerDetailDto> GetCustomer(int id)
+        public async Task<ActionResult<CustomerDetailDto>> GetCustomer(int id)
         {
             try
             {
@@ -87,7 +87,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 // Return 403 if user tries to access another user's data
                 if (userRole != "Admin" && currentUserId != id) return Forbid();
 
-                var customer = _customerService.GetCustomerById(id) ?? throw new KeyNotFoundException();
+                var customer = await _customerService.GetCustomerById(id) ?? throw new KeyNotFoundException();
 
                 var dto = new CustomerDetailDto
                 {
@@ -119,7 +119,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // POST /api/customers - Create new customer (Admin only)
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public ActionResult CreateCustomer([FromBody] CreateCustomerRequest request)
+        public async Task<ActionResult> CreateCustomer([FromBody] CreateCustomerRequest request)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                     Active = true,
                     CreatedAt = DateTime.UtcNow
                 };
-                _customerService.AddCustomer(customer);
+                await _customerService.AddCustomer(customer);
                 return Ok();
             }
             catch (Exception ex)
@@ -148,7 +148,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // PUT /api/customers/{id} - Update customer
         [HttpPut("{id}")]
-        public ActionResult UpdateCustomer(int id, [FromBody] UpdateCustomerRequest request)
+        public async Task<ActionResult> UpdateCustomer(int id, [FromBody] UpdateCustomerRequest request)
         {
             try
             {
@@ -159,7 +159,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 // Users can only update their own data (except role), admins can update all
                 if (userRole != "Admin" && currentUserId != id) return Forbid();
 
-                var customer = _customerService.GetCustomerById(id) ?? throw new KeyNotFoundException();
+                var customer = await _customerService.GetCustomerById(id) ?? throw new KeyNotFoundException();
 
                 // If user is not admin, prevent role and active status change
                 if (userRole != "Admin")
@@ -184,7 +184,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                     CreatedAt = customer.CreatedAt
                 };
 
-                _customerService.UpdateCustomer(id, updatedCustomer);
+                await _customerService.UpdateCustomer(id, updatedCustomer);
 
                 return NoContent();
             }
@@ -197,11 +197,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // DELETE /api/customers/{id} - Delete customer and rental history (Admin only)
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult DeleteCustomer(int id)
+        public async Task<ActionResult> DeleteCustomer(int id)
         {
             try
             {
-                _customerService.DeleteCustomer(id);
+                await _customerService.DeleteCustomer(id);
                 return NoContent();
             }
             catch (Exception ex)
@@ -212,7 +212,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/customers/{id}/rentals - Get customer rental history
         [HttpGet("{id}/rentals")]
-        public ActionResult<IEnumerable<RentalHistoryDto>> GetCustomerRentalHistory(int id)
+        public async Task<ActionResult<IEnumerable<RentalHistoryDto>>> GetCustomerRentalHistory(int id)
         {
             try
             {
@@ -222,7 +222,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 // Users can only view their own rental history
                 if (userRole != "Admin" && currentUserId != id) return Forbid();
 
-                var rentalHistory = _customerService.GetCustomerRentalHistory(id) ?? throw new KeyNotFoundException();
+                var rentalHistory = await _customerService.GetCustomerRentalHistory(id) ?? throw new KeyNotFoundException();
                 var dtos = rentalHistory.Select(r => new RentalHistoryDto
                 {
                     Id = r.Id,
@@ -250,7 +250,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/customers/{id}/active-rental - Get customer's active rental
         [HttpGet("{id}/active-rental")]
-        public ActionResult<IEnumerable<RentalDetailDto>> GetCustomerActiveRentals(int id)
+        public async Task<ActionResult<IEnumerable<RentalDetailDto>>> GetCustomerActiveRentals(int id)
         {
             try
             {
@@ -260,7 +260,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 // Users can only view their own active rental
                 if (userRole != "Admin" && currentUserId != id) return Forbid();
 
-                var activeRental = _customerService.GetCustomerActiveRental(id) ?? throw new KeyNotFoundException();
+                var activeRental = await _customerService.GetCustomerActiveRental(id) ?? throw new KeyNotFoundException();
                 var dtos = activeRental.Select(r => new RentalDetailDto
                 {
                     Id = r.Id,

@@ -20,72 +20,72 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
             _context.Customers.Add((Customer)customer);
         }
 
-        public void DeleteCustomer(int id)
+        public async Task DeleteCustomer(int id)
         {
-            var customer = _context.Customers.Find(id);
+            var customer = await _context.Customers.FindAsync(id);
             if (customer != null)
             {
                 _context.Customers.Remove(customer);
             }
         }
 
-        public IRental? GetCustomerActiveRental(int id)
+        public async Task<IRental?> GetCustomerActiveRental(int id)
         {
-            var customers = _context.Rentals
+            var customers = await _context.Rentals
                 .Include(r => r.Equipment)
                 .Include(r => r.Customer)
-                .FirstOrDefault(r => r.CustomerId == id && r.IsActive);
+                .FirstOrDefaultAsync(r => r.CustomerId == id && r.IsActive);
 
             return customers ?? null;
         }
-        public IEnumerable<ICustomer> GetCustomersUnactiveRental()
+        public async Task<IEnumerable<ICustomer>> GetCustomersUnactiveRental()
         {
-            return _context.Customers
+            return await _context.Customers
                 .Where(c => !_context.Rentals.Any(r => r.CustomerId == c.Id && r.IsActive))
-                .ToList();
+                .ToListAsync();
         }
 
 
-        public ICustomer? GetCustomerDetails(int id)
+        public async Task<ICustomer?> GetCustomerDetails(int id)
         {
-            var customers = _context.Customers
-                .FirstOrDefault(c => c.Id == id);
+            var customers = await _context.Customers
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             return customers ?? null;
         }
 
-        public IEnumerable<IRental> GetCustomerRentalHistory(int id)
+        public async Task<IEnumerable<IRental>> GetCustomerRentalHistory(int id)
         {
-            return _context.Rentals
+            return await _context.Rentals
                 .Include(r => r.Equipment)
                 .Where(r => r.CustomerId == id)
-                .ToList();
+                .ToListAsync();
         }
 
-        public IEnumerable<ICustomer> ListAllCustomers()
+        public async Task<IEnumerable<ICustomer>> ListAllCustomers()
         {
-            return _context.Customers.ToList();
+            return await _context.Customers.ToListAsync();
         }
 
-        public void UpdateCustomer(ICustomer customer)
+        public async Task UpdateCustomer(ICustomer customer)
         {
-            var existingCustomer = _context.Customers.Find(customer.Id);
+            var existingCustomer = await _context.Customers.FindAsync(customer.Id);
             if (existingCustomer != null)
             {
                 _context.Entry(existingCustomer).CurrentValues.SetValues(customer);
             }
         }
 
-        public ICustomer? GetCustomerByPasswordAndUsername(ILoginRequest loginRequest)
+        public async Task<ICustomer?> GetCustomerByPasswordAndUsername(ILoginRequest loginRequest)
         {
-            var customer = _context.Customers.FirstOrDefault(c => loginRequest.Password == c.Password && loginRequest.Username == c.UserName);
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => loginRequest.Password == c.Password && loginRequest.Username == c.UserName);
 
             return customer ?? null;
         }
 
-        public ICustomer? GetCustomerByEmail(string email)
+        public async Task<ICustomer?> GetCustomerByEmail(string email)
         {
-            var customer = _context.Customers.FirstOrDefault(c => c.Email != null && c.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Email != null && c.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
             return customer ?? null;
         }
     }

@@ -4,20 +4,20 @@ namespace Midterm_EquipmentRental_Team5.Application.Interfaces
 {
     public interface ICustomerServices
     {
-        IEnumerable<ICustomer>? GetAllCustomers(int page = 1);
+        Task<IEnumerable<ICustomer>?> GetAllCustomers(int page = 1);
 
-        IEnumerable<ICustomer>? GetUnactiveCustomers();
+        Task<IEnumerable<ICustomer>?> GetUnactiveCustomers();
 
-        ICustomer? GetCustomerById(int id);
+        Task<ICustomer?> GetCustomerById(int id);
 
-        void AddCustomer(ICustomer newCustomer);
+        Task AddCustomer(ICustomer newCustomer);
 
-        void UpdateCustomer(int id, ICustomer updatedCustomer);
+        Task UpdateCustomer(int id, ICustomer updatedCustomer);
 
-        void DeleteCustomer(int id);
+        Task DeleteCustomer(int id);
 
-        IEnumerable<IRental>? GetCustomerRentalHistory(int customerId);
+        Task<IEnumerable<IRental>?> GetCustomerRentalHistory(int customerId);
 
-        IRental? GetCustomerActiveRental(int customerId);
+        Task<IRental?> GetCustomerActiveRental(int customerId);
     }
 }

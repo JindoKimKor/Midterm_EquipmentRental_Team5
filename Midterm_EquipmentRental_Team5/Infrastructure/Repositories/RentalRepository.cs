@@ -25,21 +25,20 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
             _context.Rentals.Update((Rental)rental);
         }
 
-        public IEnumerable<IRental> GetAllRentals()
+        public async Task<IEnumerable<IRental>> GetAllRentals()
         {
-            return _context.Rentals
+            return await _context.Rentals
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
-                .ToList();
-
+                .ToListAsync();
         }
 
-        public IRental? GetRentalDetails(int id)
+        public async Task<IRental?> GetRentalDetails(int id)
         {
-            return _context.Rentals
+            return await _context.Rentals
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
-                .FirstOrDefault(r => r.Id == id);
+                .FirstOrDefaultAsync(r => r.Id == id);
         }
 
         public void IssueEquipment(IRental rental, DateTime dueDate)
@@ -50,66 +49,64 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
             _context.Rentals.Add((Rental)rental);
         }
 
-        public void ReturnEquipment(int id)
+        public async Task ReturnEquipment(int id)
         {
-            var rental = _context.Rentals.Find(id) ?? throw new KeyNotFoundException();
+            var rental = await _context.Rentals.FindAsync(id) ?? throw new KeyNotFoundException();
             rental.ReturnedAt = DateTime.UtcNow;
             rental.IsActive = false;
             _context.Rentals.Update(rental);
         }
 
-        public void CancelRental(int id)
+        public async Task CancelRental(int id)
         {
-            var rental = _context.Rentals.Find(id) ?? throw new KeyNotFoundException();
+            var rental = await _context.Rentals.FindAsync(id) ?? throw new KeyNotFoundException();
             _context.Rentals.Remove(rental);
         }
 
-        public void ExtendRental(int id)
+        public async Task ExtendRental(int id)
         {
-            var rental = _context.Rentals.Find(id) ?? throw new KeyNotFoundException();
+            var rental = await _context.Rentals.FindAsync(id) ?? throw new KeyNotFoundException();
             rental.DueDate = rental.DueDate.AddDays(7);
             _context.Rentals.Update(rental);
         }
 
-        public IEnumerable<IRental> GetActiveRentals()
+        public async Task<IEnumerable<IRental>> GetActiveRentals()
         {
-            return _context.Rentals
+            return await _context.Rentals
                 .Where(r => r.IsActive)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
-                .ToList();
-
+                .ToListAsync();
         }
 
-        public IEnumerable<IRental> GetCompletedRentals()
+        public async Task<IEnumerable<IRental>> GetCompletedRentals()
         {
             // Completed: EndDate not null and not cancelled
-            return _context.Rentals
+            return await _context.Rentals
                 .Where(r => !r.IsActive && r.ReturnedAt != null)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
-                .ToList();
+                .ToListAsync();
         }
 
-        public IEnumerable<IRental> GetEquipmentRentalHistory(int equipmentId)
+        public async Task<IEnumerable<IRental>> GetEquipmentRentalHistory(int equipmentId)
         {
-            return _context.Rentals
+            return await _context.Rentals
                 .Where(r => r.EquipmentId == equipmentId)
                 .Include(r => r.Customer)
                 .Include(r => r.Equipment)
-                .ToList();
-
+                .ToListAsync();
         }
 
-        public IEnumerable<IRental> GetOverdueRentals()
+        public async Task<IEnumerable<IRental>> GetOverdueRentals()
         {
             // Active rentals where DueDate < Now and not yet returned
-            return _context.Rentals
+            return await _context.Rentals
                  .Where(r => r.IsActive && r.DueDate < DateTime.UtcNow && r.ReturnedAt == null)
                  .Include(r => r.Customer)
                  .Include(r => r.Equipment)
                  .OrderBy(r => r.DueDate)
-                 .ToList();
+                 .ToListAsync();
         }
     }
 }

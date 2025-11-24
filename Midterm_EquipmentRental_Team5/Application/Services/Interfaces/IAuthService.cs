@@ -5,7 +5,7 @@ namespace Midterm_EquipmentRental_Team5.Application.Interfaces
 {
     public interface IAuthService
     {
-        ICustomer? ValidateLogin(ILoginRequest loginRequest);
+        Task<ICustomer?> ValidateLogin(ILoginRequest loginRequest);
         object GenerateJwtToken(ICustomer user);
     }
 }

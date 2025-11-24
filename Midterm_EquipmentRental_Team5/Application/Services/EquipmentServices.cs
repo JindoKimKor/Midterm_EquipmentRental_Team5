@@ -15,9 +15,9 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<IEquipment>? GetAllEquipment(int page = 1)
+        public async Task<IEnumerable<IEquipment>?> GetAllEquipment(int page = 1)
         {
-            var allEquipment = _unitOfWork.Equipments.GetAllEquipment();
+            var allEquipment = await _unitOfWork.Equipments.GetAllEquipment();
             if (allEquipment.Any())
             {
                 // pagnation
@@ -27,13 +27,13 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
             return allEquipment ?? null;
         }
 
-        public IEquipment GetEquipmentById(int id)
+        public async Task<IEquipment?> GetEquipmentById(int id)
         {
-            var equipment = _unitOfWork.Equipments.GetSpecificEquipment(id);
+            var equipment = await _unitOfWork.Equipments.GetSpecificEquipment(id);
             return equipment;
         }
 
-        public void AddEquipment(IEquipment newEquipment)
+        public async Task AddEquipment(IEquipment newEquipment)
         {
             _unitOfWork.Equipments.AddNewEquipment(new Equipment()
             {
@@ -45,12 +45,12 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
                 RentalPrice = newEquipment.RentalPrice,
                 CreatedAt = newEquipment.CreatedAt
             });
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public void UpdateEquipment(int id, IEquipment updatedEquipment)
+        public async Task UpdateEquipment(int id, IEquipment updatedEquipment)
         {
-            var existingEquipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException();
+            var existingEquipment = await _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException();
             if (existingEquipment != null)
             {
                 existingEquipment.Name = updatedEquipment.Name;
@@ -59,30 +59,30 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
                 existingEquipment.Condition = updatedEquipment.Condition;
                 existingEquipment.RentalPrice = updatedEquipment.RentalPrice;
                 existingEquipment.IsAvailable = updatedEquipment.IsAvailable;
-                _unitOfWork.Equipments.UpdateEquipment(existingEquipment);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.Equipments.UpdateEquipment(existingEquipment);
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
-        public void DeleteEquipment(int id)
+        public async Task DeleteEquipment(int id)
         {
-            var existingEquipment = _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException();
+            var existingEquipment = await _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException();
             if (existingEquipment != null)
             {
-                _unitOfWork.Equipments.DeleteEquipment((int)existingEquipment.Id);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.Equipments.DeleteEquipment((int)existingEquipment.Id);
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
-        public IEnumerable<IEquipment>? GetAvailableEquipment()
+        public async Task<IEnumerable<IEquipment>?> GetAvailableEquipment()
         {
-            var equipments = _unitOfWork.Equipments.ListAvailableEquipment();
+            var equipments = await _unitOfWork.Equipments.ListAvailableEquipment();
             return equipments.Any() ? equipments : null;
         }
 
-        public IEnumerable<IEquipment>? GetRentedEquipment()
+        public async Task<IEnumerable<IEquipment>?> GetRentedEquipment()
         {
-            var equipments = _unitOfWork.Equipments.GetRentedEquipment();
+            var equipments = await _unitOfWork.Equipments.GetRentedEquipment();
             return equipments.Any() ? equipments : null;
         }
     }

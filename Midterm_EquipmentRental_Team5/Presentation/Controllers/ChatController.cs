@@ -14,7 +14,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         private readonly IChatService _chatService = chatService;
 
         [HttpGet]
-        public ActionResult<IEnumerable<ChatListDto>> GetUserChats()
+        public async Task<ActionResult<IEnumerable<ChatListDto>>> GetUserChats()
         {
             var userIdClaim = (User.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new UnauthorizedAccessException("The user does not have a NameIdentifier claim.");
 
@@ -23,7 +23,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 throw new FormatException("NameIdentifier claim is not a valid integer.");
             }
 
-            var chats = _chatService.GetUserChatList(userId);
+            var chats = await _chatService.GetUserChatList(userId);
             var dtos = chats.Select(c => new ChatListDto
             {
                 ChatId = c.ChatId,
@@ -39,7 +39,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         }
 
         [HttpGet("{chatId}")]
-        public ActionResult<ChatDetailDto> GetChatHistory(int chatId)
+        public async Task<ActionResult<ChatDetailDto>> GetChatHistory(int chatId)
         {
             var userIdClaim = (User.FindFirst(ClaimTypes.NameIdentifier)?.Value) ?? throw new UnauthorizedAccessException("The user does not have a NameIdentifier claim.");
 
@@ -48,7 +48,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 throw new FormatException("NameIdentifier claim is not a valid integer.");
             }
 
-            var messages = _chatService.GetChatHistory(chatId, userId);
+            var messages = await _chatService.GetChatHistory(chatId, userId);
 
             // Get chat info (assuming first message has sender and receiver info)
             var firstMessage = messages.FirstOrDefault();

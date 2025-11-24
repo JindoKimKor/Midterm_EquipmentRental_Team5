@@ -20,8 +20,8 @@ public class UnitOfWork : IUnitOfWork
         Rentals = rentalRepository;
     }
 
-    public int SaveChanges()
+    public async Task<int> SaveChangesAsync()
     {
-        return _context.SaveChanges();
+        return await _context.SaveChangesAsync();
     }
 }

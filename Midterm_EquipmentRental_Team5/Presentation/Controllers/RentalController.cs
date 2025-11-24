@@ -21,11 +21,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/rentals - Get all rentals (Admin sees all, User sees own)
         [HttpGet]
-        public ActionResult<IEnumerable<RentalListDto>> GetAllRentals(int page = 1)
+        public async Task<ActionResult<IEnumerable<RentalListDto>>> GetAllRentals(int page = 1)
         {
             try
             {
-                var rentals = _rentalService.GetAllRentals(page) ?? throw new KeyNotFoundException();
+                var rentals = await _rentalService.GetAllRentals(page) ?? throw new KeyNotFoundException();
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -65,11 +65,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/rentals/{id} - Get rental details
         [HttpGet("{id}")]
-        public ActionResult<RentalDetailDto> GetRentalDetails(int id)
+        public async Task<ActionResult<RentalDetailDto>> GetRentalDetails(int id)
         {
             try
             {
-                var rental = _rentalService.GetRentalById(id) ?? throw new KeyNotFoundException();
+                var rental = await _rentalService.GetRentalById(id) ?? throw new KeyNotFoundException();
 
                 if (rental == null)
                 {
@@ -118,7 +118,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // POST /api/rentals/issue - Issue equipment (Admin can assign to any customer, User can only issue to themselves)
         [HttpPost("issue")]
-        public ActionResult IssueEquipment([FromBody] IssueRequest issueRequest)
+        public async Task<ActionResult> IssueEquipment([FromBody] IssueRequest issueRequest)
         {
             try
             {
@@ -133,7 +133,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                     issueRequest.CustomerId = currentUserId;
                 }
 
-                _rentalService.IssueEquipment(issueRequest);
+                await _rentalService.IssueEquipment(issueRequest);
                 return Ok();
             }
             catch (KeyNotFoundException ex)
@@ -152,12 +152,12 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // POST /api/rentals/return - Return equipment
         [HttpPost("return")]
-        public ActionResult ReturnEquipment([FromBody] ReturnRequest returnRequest)
+        public async Task<ActionResult> ReturnEquipment([FromBody] ReturnRequest returnRequest)
         {
             try
             {
                 // Get rental to check ownership
-                var rental = _rentalService.GetRentalById(returnRequest.RentalId) ?? throw new KeyNotFoundException();
+                var rental = await _rentalService.GetRentalById(returnRequest.RentalId) ?? throw new KeyNotFoundException();
 
                 if (rental == null)
                 {
@@ -174,7 +174,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                     return Forbid();
                 }
 
-                _rentalService.ReturnEquipment(returnRequest);
+                await _rentalService.ReturnEquipment(returnRequest);
                 return Ok();
             }
             catch (KeyNotFoundException ex)
@@ -193,11 +193,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/rentals/active - Get active rentals
         [HttpGet("active")]
-        public ActionResult<IEnumerable<RentalListDto>> GetActiveRentals()
+        public async Task<ActionResult<IEnumerable<RentalListDto>>> GetActiveRentals()
         {
             try
             {
-                var activeRentals = _rentalService.GetActiveRentals() ?? throw new KeyNotFoundException();
+                var activeRentals = await _rentalService.GetActiveRentals() ?? throw new KeyNotFoundException();
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -237,11 +237,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/rentals/completed - Get completed rentals
         [HttpGet("completed")]
-        public ActionResult<IEnumerable<RentalHistoryDto>> GetCompletedRentals()
+        public async Task<ActionResult<IEnumerable<RentalHistoryDto>>> GetCompletedRentals()
         {
             try
             {
-                var completedRentals = _rentalService.GetCompletedRentals() ?? throw new KeyNotFoundException();
+                var completedRentals = await _rentalService.GetCompletedRentals() ?? throw new KeyNotFoundException();
 
                 // Get current user's ID and role from JWT token
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -282,11 +282,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // GET /api/rentals/overdue - Get overdue rentals (Admin only)
         [HttpGet("overdue")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<IEnumerable<RentalListDto>> GetOverdueRentals()
+        public async Task<ActionResult<IEnumerable<RentalListDto>>> GetOverdueRentals()
         {
             try
             {
-                var overdueRentals = _rentalService.GetOverdueRentals() ?? throw new KeyNotFoundException();
+                var overdueRentals = await _rentalService.GetOverdueRentals() ?? throw new KeyNotFoundException();
                 var dtos = overdueRentals.Select(r => new RentalListDto
                 {
                     Id = r.Id,
@@ -314,11 +314,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/rentals/equipment/{equipmentId} - Get equipment rental history
         [HttpGet("equipment/{equipmentId}")]
-        public ActionResult<IEnumerable<RentalHistoryDto>> GetEquipmentRentalHistory(int equipmentId)
+        public async Task<ActionResult<IEnumerable<RentalHistoryDto>>> GetEquipmentRentalHistory(int equipmentId)
         {
             try
             {
-                var rentalHistory = _rentalService.GetRentalHistoryByEquipment(equipmentId) ?? throw new KeyNotFoundException();
+                var rentalHistory = await _rentalService.GetRentalHistoryByEquipment(equipmentId) ?? throw new KeyNotFoundException();
                 var dtos = rentalHistory.Select(r => new RentalHistoryDto
                 {
                     Id = r.Id,
@@ -347,11 +347,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // PUT /api/rentals/{id} - Extend rental (Admin only)
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult ExtendRental(int id, [FromBody] ExtensionRequest extensionRequest)
+        public async Task<ActionResult> ExtendRental(int id, [FromBody] ExtensionRequest extensionRequest)
         {
             try
             {
-                _rentalService.ExtendRental(id, extensionRequest);
+                await _rentalService.ExtendRental(id, extensionRequest);
                 return Ok();
             }
             catch (KeyNotFoundException ex)
@@ -371,11 +371,11 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // DELETE /api/rentals/{id} - Cancel/Force return rental (Admin only)
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult CancelRental(int id)
+        public async Task<ActionResult> CancelRental(int id)
         {
             try
             {
-                _rentalService.CancelRental(id);
+                await _rentalService.CancelRental(id);
                 return Ok();
             }
             catch (KeyNotFoundException ex)
