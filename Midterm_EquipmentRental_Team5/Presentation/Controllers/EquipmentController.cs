@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Domain.Entities;
 using Midterm_EquipmentRental_Team5.Domain.Interfaces;
 using Midterm_EquipmentRental_Team5.Application.Interfaces;
+using Midterm_EquipmentRental_Team5.Application.DTOs;
 
 namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 {
@@ -16,12 +17,22 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/equipment - Get all equipment with pagination
         [HttpGet]
-        public ActionResult<IEnumerable<IEquipment>> GetAllEquipment(int page = 1)
+        public ActionResult<IEnumerable<EquipmentListDto>> GetAllEquipment(int page = 1)
         {
             try
             {
                 var equipment = _equipmentService.GetAllEquipment(page) ?? throw new KeyNotFoundException();
-                return Ok(equipment);
+                var dtos = equipment.Select(e => new EquipmentListDto
+                {
+                    Id = e.Id.Value,
+                    Name = e.Name,
+                    Category = e.Category,
+                    Condition = e.Condition,
+                    RentalPrice = e.RentalPrice,
+                    IsAvailable = e.IsAvailable,
+                    ImageUrl = e.ImageUrl
+                });
+                return Ok(dtos);
             }
             catch (KeyNotFoundException)
             {
@@ -35,7 +46,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // Get rental history for specific equipment
         [HttpGet("{id}/rental-history")]
-        public ActionResult<IEnumerable<IRental>> GetEquipmentRentalHistory(int id)
+        public ActionResult<IEnumerable<RentalHistoryDto>> GetEquipmentRentalHistory(int id)
         {
             try
             {
@@ -48,7 +59,20 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
                 // Get rental history for this equipment
                 var rentalHistory = _rentalService.GetRentalHistoryByEquipment(id);
-                return Ok(rentalHistory);
+                var dtos = rentalHistory.Select(r => new RentalHistoryDto
+                {
+                    Id = r.Id,
+                    CustomerId = r.CustomerId,
+                    CustomerName = r.Customer?.UserName ?? "Unknown",
+                    EquipmentId = r.EquipmentId,
+                    EquipmentName = r.Equipment?.Name ?? "Unknown",
+                    IssuedAt = r.IssuedAt,
+                    DueDate = r.DueDate,
+                    ReturnedAt = r.ReturnedAt,
+                    OverdueFee = r.OverdueFee,
+                    DaysRented = r.ReturnedAt.HasValue ? (int)(r.ReturnedAt.Value - r.IssuedAt).TotalDays : (int)(DateTime.UtcNow - r.IssuedAt).TotalDays
+                });
+                return Ok(dtos);
             }
             catch (KeyNotFoundException ex)
             {
@@ -64,12 +88,24 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/equipment/{id} - Get specific equipment details
         [HttpGet("{id}")]
-        public ActionResult<IEquipment> GetEquipment(int id)
+        public ActionResult<EquipmentDetailDto> GetEquipment(int id)
         {
             try
             {
                 var equipment = _equipmentService.GetEquipmentById(id) ?? throw new KeyNotFoundException();
-                return Ok(equipment);
+                var dto = new EquipmentDetailDto
+                {
+                    Id = equipment.Id.Value,
+                    Name = equipment.Name,
+                    Description = equipment.Description,
+                    Category = equipment.Category,
+                    Condition = equipment.Condition,
+                    RentalPrice = equipment.RentalPrice,
+                    IsAvailable = equipment.IsAvailable,
+                    ImageUrl = equipment.ImageUrl,
+                    CreatedAt = equipment.CreatedAt
+                };
+                return Ok(dto);
             }
             catch (KeyNotFoundException)
             {
@@ -84,11 +120,22 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // POST /api/equipment - Add new equipment (Admin only)
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public ActionResult AddEquipment([FromBody] Equipment newEquipment)
+        public ActionResult AddEquipment([FromBody] CreateEquipmentRequest request)
         {
             try
             {
-                _equipmentService.AddEquipment(newEquipment);
+                var equipment = new Equipment
+                {
+                    Name = request.Name,
+                    Description = request.Description,
+                    Category = request.Category,
+                    Condition = request.Condition,
+                    RentalPrice = request.RentalPrice,
+                    ImageUrl = request.ImageUrl,
+                    IsAvailable = true,
+                    CreatedAt = DateTime.UtcNow
+                };
+                _equipmentService.AddEquipment(equipment);
                 return NoContent();
             }
             catch (Exception ex)
@@ -100,11 +147,22 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // PUT /api/equipment/{id} - Update equipment (Admin only)
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult UpdateEquipment(int id, [FromBody] Equipment updatedEquipment)
+        public ActionResult UpdateEquipment(int id, [FromBody] UpdateEquipmentRequest request)
         {
             try
             {
-                _equipmentService.UpdateEquipment(id, updatedEquipment);
+                var equipment = new Equipment
+                {
+                    Id = id,
+                    Name = request.Name,
+                    Description = request.Description,
+                    Category = request.Category,
+                    Condition = request.Condition,
+                    RentalPrice = request.RentalPrice,
+                    ImageUrl = request.ImageUrl,
+                    IsAvailable = request.IsAvailable
+                };
+                _equipmentService.UpdateEquipment(id, equipment);
                 return NoContent();
             }
             catch (Exception ex)
@@ -131,12 +189,22 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
         // GET /api/equipment/available - Get list of available equipment
         [HttpGet("available")]
-        public ActionResult<IEnumerable<IEquipment>> GetAvailableEquipment()
+        public ActionResult<IEnumerable<EquipmentListDto>> GetAvailableEquipment()
         {
             try
             {
                 var availableEquipment = _equipmentService.GetAvailableEquipment() ?? throw new KeyNotFoundException();
-                return Ok(availableEquipment);
+                var dtos = availableEquipment.Select(e => new EquipmentListDto
+                {
+                    Id = e.Id.Value,
+                    Name = e.Name,
+                    Category = e.Category,
+                    Condition = e.Condition,
+                    RentalPrice = e.RentalPrice,
+                    IsAvailable = e.IsAvailable,
+                    ImageUrl = e.ImageUrl
+                });
+                return Ok(dtos);
             }
             catch (KeyNotFoundException)
             {
@@ -150,12 +218,22 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // GET /api/equipment/rented - Get rented equipment summary (Admin only)
         [HttpGet("rented")]
         [Authorize(Roles = "Admin")]
-        public ActionResult<IEquipment> GetRentedEquipmentSummary()
+        public ActionResult<IEnumerable<EquipmentListDto>> GetRentedEquipmentSummary()
         {
             try
             {
                 var rentedEquipment = _equipmentService.GetRentedEquipment() ?? throw new KeyNotFoundException();
-                return Ok(rentedEquipment);
+                var dtos = rentedEquipment.Select(e => new EquipmentListDto
+                {
+                    Id = e.Id.Value,
+                    Name = e.Name,
+                    Category = e.Category,
+                    Condition = e.Condition,
+                    RentalPrice = e.RentalPrice,
+                    IsAvailable = e.IsAvailable,
+                    ImageUrl = e.ImageUrl
+                });
+                return Ok(dtos);
             }
             catch (KeyNotFoundException)
             {

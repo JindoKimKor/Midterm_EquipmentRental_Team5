@@ -52,7 +52,20 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 
                 var token = _authService.GenerateJwtToken(user);
 
-                return Ok(new { message = "Login successful", user, token });
+                var response = new LoginResponseDto
+                {
+                    Message = "Login successful",
+                    User = new UserBasicDto
+                    {
+                        Id = user.Id,
+                        UserName = user.UserName,
+                        Email = user.Email,
+                        Role = user.Role
+                    },
+                    Token = token
+                };
+
+                return Ok(response);
             }
             catch (KeyNotFoundException)
             {
