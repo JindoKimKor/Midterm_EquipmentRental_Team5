@@ -42,7 +42,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Hubs
                 await Clients.User(senderId.ToString()).SendAsync("ReceiveMessage", senderId, chatId, message, DateTime.UtcNow);
 
                 // Always save to DB
-                _chatService.AddMessage(msg);
+                await _chatService.AddMessage(msg);
             }
             catch (Exception ex)
             {
@@ -50,19 +50,19 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Hubs
             }
         }
 
-        public async void ClearMessages()
+        public async Task ClearMessages()
         {
             try
             {
-                _chatService.ClearMessageFromDb();
+                await _chatService.ClearMessageFromDb();
 
-                foreach (var user in _onlineUsers)
+                foreach (var user in _onlineUsers.Keys)
                 {
-                    bool userOnline = IsUserOnline(user.ToString());
+                    bool userOnline = IsUserOnline(user);
 
                     if (userOnline)
                     {
-                        await Clients.User(user.ToString()).SendAsync("ClearMessage");
+                        await Clients.User(user).SendAsync("ClearMessage");
                     }
                 }
             }

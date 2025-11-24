@@ -47,13 +47,16 @@ builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 builder.Services.AddHostedService<ClearMessage>();
 
 
-// Add CORS policy
+// Add CORS policy - configured from appsettings.json
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[] { "http://localhost:5115", "https://localhost:5115", "http://localhost:5173" };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend",
         policy =>
         {
-            policy.WithOrigins(["http://localhost:5115", "https://localhost:5115", "http://localhost:5173"])
+            policy.WithOrigins(allowedOrigins)
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -61,6 +64,8 @@ builder.Services.AddCors(options =>
 });
 
 // DI injection - Database - InMemory Database - infrastructure layer
+// WARNING: In-memory database is for development/testing only. All data is lost on app restart.
+// For production, switch to: options.UseSqlServer() or options.UseNpgsql()
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("EquipmentRentalDb"));
 
 // Authentication
@@ -76,8 +81,8 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         ValidateLifetime = true,
-        ValidateIssuer = false,
-        ValidateAudience = false,
+        ValidateIssuer = true,
+        ValidateAudience = true,
         ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
         ClockSkew = TimeSpan.Zero,

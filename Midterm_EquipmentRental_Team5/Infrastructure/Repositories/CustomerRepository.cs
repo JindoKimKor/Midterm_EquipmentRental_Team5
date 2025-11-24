@@ -17,7 +17,8 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
 
         public void CreateCustomer(ICustomer customer)
         {
-            _context.Customers.Add((Customer)customer);
+            var customerEntity = customer as Customer ?? throw new InvalidCastException("customer must be of type Customer");
+            _context.Customers.Add(customerEntity);
         }
 
         public async Task DeleteCustomer(int id)

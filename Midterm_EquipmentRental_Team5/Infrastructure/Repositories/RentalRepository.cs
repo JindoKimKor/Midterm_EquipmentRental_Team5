@@ -17,12 +17,14 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
 
         public void CreateRental(IRental rental)
         {
-            _context.Rentals.Add((Rental)rental);
+            var rentalEntity = rental as Rental ?? throw new InvalidCastException("rental must be of type Rental");
+            _context.Rentals.Add(rentalEntity);
         }
 
         public void UpdateRental(IRental rental)
         {
-            _context.Rentals.Update((Rental)rental);
+            var rentalEntity = rental as Rental ?? throw new InvalidCastException("rental must be of type Rental");
+            _context.Rentals.Update(rentalEntity);
         }
 
         public async Task<IEnumerable<IRental>> GetAllRentals()
@@ -46,7 +48,8 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
             rental.IssuedAt = DateTime.UtcNow;
             rental.DueDate = dueDate;
             rental.IsActive = true;
-            _context.Rentals.Add((Rental)rental);
+            var rentalEntity = rental as Rental ?? throw new InvalidCastException("rental must be of type Rental");
+            _context.Rentals.Add(rentalEntity);
         }
 
         public async Task ReturnEquipment(int id)

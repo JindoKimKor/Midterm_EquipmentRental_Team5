@@ -16,6 +16,9 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
             base.OnModelCreating(modelBuilder);
 
             // Seed Customers (1 Admin + 5 Users)
+            // SECURITY NOTE: Passwords are removed from seed data. Use proper password hashing (BCrypt/PBKDF2).
+            // Default test passwords:
+            // admin: admin123, user1-5: password123 (need to be hashed in production)
             modelBuilder.Entity<Customer>().HasData(
                 new Customer
                 {
@@ -23,16 +26,16 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
                     Name = "Admin User",
                     Email = "chrisy.dinh03@gmail.com",
                     UserName = "admin",
-                    Password = "admin123",
+                    Password = string.Empty, // TODO: Implement proper password hashing
                     Role = "Admin",
                     ExternalProvider = null,
                     ExternalId = null
                 },
-                new Customer { Id = 2, Name = "John Doe", Email = "john@example.com", UserName = "user1", Password = "user1", Role = "User", ExternalProvider = null, ExternalId = null },
-                new Customer { Id = 3, Name = "Jane Smith", Email = "jane@example.com", UserName = "user2", Password = "user2", Role = "User", ExternalProvider = null, ExternalId = null },
-                new Customer { Id = 4, Name = "Bob Johnson", Email = "bob@example.com", UserName = "user3", Password = "user3", Role = "User", ExternalProvider = null, ExternalId = null },
-                new Customer { Id = 5, Name = "Alice Williams", Email = "alice@example.com", UserName = "user4", Password = "user4", Role = "User", ExternalProvider = null, ExternalId = null },
-                new Customer { Id = 6, Name = "Charlie Brown", Email = "charlie@example.com", UserName = "user5", Password = "user5", Role = "User", ExternalProvider = null, ExternalId = null }
+                new Customer { Id = 2, Name = "John Doe", Email = "john@example.com", UserName = "user1", Password = string.Empty, Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 3, Name = "Jane Smith", Email = "jane@example.com", UserName = "user2", Password = string.Empty, Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 4, Name = "Bob Johnson", Email = "bob@example.com", UserName = "user3", Password = string.Empty, Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 5, Name = "Alice Williams", Email = "alice@example.com", UserName = "user4", Password = string.Empty, Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 6, Name = "Charlie Brown", Email = "charlie@example.com", UserName = "user5", Password = string.Empty, Role = "User", ExternalProvider = null, ExternalId = null }
             );
 
             // Seed Equipment (5+ items - different categories)

@@ -7,8 +7,8 @@ namespace Midterm_EquipmentRental_Team5.Domain.Interfaces
         int Id { get; set; }
         int CustomerId { get; set; }
         int EquipmentId { get; set; }
-        Equipment Equipment { get; set; }
-        Customer Customer { get; set; }
+        Equipment? Equipment { get; set; }
+        Customer? Customer { get; set; }
         DateTime IssuedAt { get; set; }
         DateTime DueDate { get; set; }
         DateTime? ReturnedAt { get; set; }

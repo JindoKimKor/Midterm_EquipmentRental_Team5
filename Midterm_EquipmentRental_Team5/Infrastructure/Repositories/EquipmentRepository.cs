@@ -12,7 +12,8 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
 
         public void AddNewEquipment(IEquipment equipment)
         {
-            _context.Equipment.Add((Equipment)equipment);
+            var equipmentEntity = equipment as Equipment ?? throw new InvalidCastException("equipment must be of type Equipment");
+            _context.Equipment.Add(equipmentEntity);
         }
 
         public async Task DeleteEquipment(int id)

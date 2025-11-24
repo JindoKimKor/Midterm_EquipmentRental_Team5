@@ -27,7 +27,7 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure
                 return principal;
 
             // Get user info from your repository
-            var customer = _customerRepository.GetCustomerByEmail(email);
+            var customer = await _customerRepository.GetCustomerByEmail(email);
             if (customer == null)
                 return principal;
 

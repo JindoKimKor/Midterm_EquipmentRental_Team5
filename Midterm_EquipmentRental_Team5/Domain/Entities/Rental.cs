@@ -14,10 +14,10 @@ namespace Midterm_EquipmentRental_Team5.Domain.Entities
         public int EquipmentId { get; set; }
 
         [ForeignKey(nameof(EquipmentId))]
-        public Equipment Equipment { get; set; }
+        public Equipment? Equipment { get; set; }
 
         [ForeignKey(nameof(CustomerId))]
-        public Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
         public DateTime IssuedAt { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime? ReturnedAt { get; set; }
