@@ -1,4 +1,3 @@
-using Midterm_EquipmentRental_Team5.Application.DTOs;
 using Midterm_EquipmentRental_Team5.Application.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.Domain.Entities;
 using Midterm_EquipmentRental_Team5.Infrastructure.Repositories.Interfaces;
@@ -38,11 +37,6 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
         public void AddMessage(Message message)
         {
             _chatRepo.SaveMessage(message);
-        }
-
-        public IEnumerable<MessageDto> GetMessages(int chatId)
-        {
-            throw new NotImplementedException();
         }
     }
 }

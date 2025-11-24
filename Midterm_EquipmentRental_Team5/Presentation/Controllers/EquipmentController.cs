@@ -20,7 +20,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         {
             try
             {
-                var equipment = equipmentService.GetAllEquipment(page) ?? throw new KeyNotFoundException();
+                var equipment = _equipmentService.GetAllEquipment(page) ?? throw new KeyNotFoundException();
                 return Ok(equipment);
             }
             catch (KeyNotFoundException)

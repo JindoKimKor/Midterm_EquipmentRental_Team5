@@ -16,7 +16,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
     {
         private readonly IAuthService _authService;
 
-        public AuthController(IAuthService authService, JwtSettings jwtSettings)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
