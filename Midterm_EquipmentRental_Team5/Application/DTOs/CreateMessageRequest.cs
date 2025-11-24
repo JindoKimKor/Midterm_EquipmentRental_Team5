@@ -11,7 +11,7 @@ namespace Midterm_EquipmentRental_Team5.Application.DTOs
         public int ReceiverId { get; set; }
 
         [Required]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         [Required]
         public int ChatId { get; set; }

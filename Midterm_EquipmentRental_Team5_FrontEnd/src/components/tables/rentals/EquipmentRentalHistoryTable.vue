@@ -34,8 +34,8 @@ import axios from 'axios'
 
 // Table headers
 const headers = [
-  { title: 'Equipment', value: 'equipment.name' },
-  { title: 'Customer', value: 'customer.fullName' },
+  { title: 'Equipment', value: 'equipmentName' },
+  { title: 'Customer', value: 'customerName' },
   { title: 'Return Date', value: 'returnedAt' },
   { title: 'Duration', value: 'duration' },
   { title: 'Status', value: 'status', sortable: false },

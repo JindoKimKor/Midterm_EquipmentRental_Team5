@@ -69,7 +69,7 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
             var existingEquipment = await _unitOfWork.Equipments.GetSpecificEquipment(id) ?? throw new KeyNotFoundException();
             if (existingEquipment != null)
             {
-                await _unitOfWork.Equipments.DeleteEquipment((int)existingEquipment.Id);
+                await _unitOfWork.Equipments.DeleteEquipment((int)(existingEquipment.Id ?? 0));
                 await _unitOfWork.SaveChangesAsync();
             }
         }

@@ -99,7 +99,8 @@ const getSenderName = (msg) => {
   if (isCurrentUserMessage(msg)) {
     return 'You'
   }
-  return props.selectedUser?.name || 'Unknown'
+  // Use the senderName from the API response, fall back to selectedUser name
+  return msg.senderName || props.selectedUser?.name || 'Unknown'
 }
 
 watch(

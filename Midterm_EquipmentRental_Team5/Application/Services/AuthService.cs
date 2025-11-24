@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.IdentityModel.Tokens;
@@ -26,11 +26,11 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
             return user;
         }
 
-        public object GenerateJwtToken(ICustomer customer)
+        public string GenerateJwtToken(ICustomer customer)
         {
             var claims = new[]{
-                new Claim(ClaimTypes.Name, customer.UserName),
-                new Claim(ClaimTypes.Role, customer.Role),
+                new Claim(ClaimTypes.Name, customer.UserName ?? string.Empty),
+                new Claim(ClaimTypes.Role, customer.Role ?? string.Empty),
                 new Claim(ClaimTypes.NameIdentifier, customer.Id.ToString())
             };
 

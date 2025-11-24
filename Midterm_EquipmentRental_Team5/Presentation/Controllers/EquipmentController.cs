@@ -24,7 +24,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 var equipment = await _equipmentService.GetAllEquipment(page) ?? throw new KeyNotFoundException();
                 var dtos = equipment.Select(e => new EquipmentListDto
                 {
-                    Id = e.Id.Value,
+                    Id = e.Id ?? 0,
                     Name = e.Name,
                     Category = e.Category,
                     Condition = e.Condition,
@@ -58,7 +58,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 }
 
                 // Get rental history for this equipment
-                var rentalHistory = await _rentalService.GetRentalHistoryByEquipment(id);
+                var rentalHistory = await _rentalService.GetRentalHistoryByEquipment(id) ?? new List<IRental>();
                 var dtos = rentalHistory.Select(r => new RentalHistoryDto
                 {
                     Id = r.Id,
@@ -95,7 +95,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 var equipment = await _equipmentService.GetEquipmentById(id) ?? throw new KeyNotFoundException();
                 var dto = new EquipmentDetailDto
                 {
-                    Id = equipment.Id.Value,
+                    Id = equipment.Id ?? 0,
                     Name = equipment.Name,
                     Description = equipment.Description,
                     Category = equipment.Category,
@@ -196,7 +196,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 var availableEquipment = await _equipmentService.GetAvailableEquipment() ?? throw new KeyNotFoundException();
                 var dtos = availableEquipment.Select(e => new EquipmentListDto
                 {
-                    Id = e.Id.Value,
+                    Id = e.Id ?? 0,
                     Name = e.Name,
                     Category = e.Category,
                     Condition = e.Condition,
@@ -225,7 +225,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 var rentedEquipment = await _equipmentService.GetRentedEquipment() ?? throw new KeyNotFoundException();
                 var dtos = rentedEquipment.Select(e => new EquipmentListDto
                 {
-                    Id = e.Id.Value,
+                    Id = e.Id ?? 0,
                     Name = e.Name,
                     Category = e.Category,
                     Condition = e.Condition,

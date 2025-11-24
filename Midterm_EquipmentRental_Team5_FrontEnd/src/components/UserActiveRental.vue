@@ -17,7 +17,7 @@
             </div>
 
             <div v-else>
-              <h3 class="text-h6 font-weight-medium mb-3">{{ rental.equipment.name }}</h3>
+              <h3 class="text-h6 font-weight-medium mb-3">{{ rental.equipmentName }}</h3>
 
               <v-row>
                 <v-col cols="12" md="6">

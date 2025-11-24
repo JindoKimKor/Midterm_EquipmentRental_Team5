@@ -77,6 +77,8 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
         {
             return await _context.Messages
                 .Where(m => m.ChatId == chatId)
+                .Include(m => m.Sender)
+                .Include(m => m.Receiver)
                 .OrderBy(m => m.Timestamp)
                 .ToListAsync();
         }

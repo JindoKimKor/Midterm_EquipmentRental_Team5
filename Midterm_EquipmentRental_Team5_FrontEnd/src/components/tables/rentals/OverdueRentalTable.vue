@@ -18,12 +18,12 @@
       loading-text="Loading overdue rentals..."
       no-data-text="No overdue rentals found"
     >
-      <template #item.equipment.name="{ item }">
+      <template #item.equipmentName="{ item }">
         <router-link
-          :to="`equipments/${item.equipment.id}`"
+          :to="`equipments/${item.equipmentId}`"
           class="text-decoration-none font-weight-medium"
         >
-          {{ item.equipment.name }}
+          {{ item.equipmentName }}
         </router-link>
       </template>
       <!-- Due Date -->
@@ -90,8 +90,8 @@ import { ref, onMounted } from 'vue'
 import { getOverdueRentals, returnEquipment } from '@/api/RentalController'
 
 const headers = [
-  { title: 'Equipment', value: 'equipment.name' },
-  { title: 'Customer', value: 'customer.name' },
+  { title: 'Equipment', value: 'equipmentName' },
+  { title: 'Customer', value: 'customerName' },
   { title: 'Due Date', value: 'dueDate' },
   { title: 'Days Overdue', value: 'daysOverdue' },
   { title: 'Actions', value: 'actions', sortable: false },

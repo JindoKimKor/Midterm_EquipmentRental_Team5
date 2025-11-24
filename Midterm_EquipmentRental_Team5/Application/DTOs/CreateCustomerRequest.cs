@@ -8,14 +8,14 @@ namespace Midterm_EquipmentRental_Team5.Application.DTOs
     public class CreateCustomerRequest
     {
         [Required]
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [Required]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         public string? Phone { get; set; }
 
@@ -27,6 +27,6 @@ namespace Midterm_EquipmentRental_Team5.Application.DTOs
 
         public string? State { get; set; }
 
-        public string Role { get; set; } = "User";
+        public string? Role { get; set; } = "User";
     }
 }

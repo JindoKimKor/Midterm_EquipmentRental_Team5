@@ -14,11 +14,13 @@ export const useChatStore = defineStore('chat', () => {
    */
   const addMessage = (message) => {
     messages.value.push({
+      id: message.id || Date.now(),
       chatId: message.chatId || null,
       content: message.content || null,
       receiverId: message.receiverId || null,
       senderId: message.senderId || null,
-      isRead: false,
+      senderName: message.senderName || null,
+      isRead: message.isRead || false,
       timestamp: message.timestamp || new Date().toISOString(),
     })
   }

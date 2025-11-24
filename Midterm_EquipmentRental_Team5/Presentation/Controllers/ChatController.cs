@@ -57,14 +57,14 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
             {
                 ChatId = chatId,
                 SenderId = firstMessage?.SenderId ?? userId,
-                SenderName = "", // Would need to fetch from Customer table
+                SenderName = firstMessage?.Sender?.UserName ?? "Unknown",
                 ReceiverId = firstMessage?.ReceiverId ?? 0,
-                ReceiverName = "", // Would need to fetch from Customer table
+                ReceiverName = firstMessage?.Receiver?.UserName ?? "Unknown",
                 Messages = messages.Select(m => new MessageDto
                 {
                     Id = m.Id,
                     SenderId = m.SenderId,
-                    SenderName = "", // Would need to fetch from Customer table
+                    SenderName = m.Sender?.UserName ?? "Unknown",
                     ReceiverId = m.ReceiverId,
                     Content = m.Content,
                     Timestamp = m.Timestamp,

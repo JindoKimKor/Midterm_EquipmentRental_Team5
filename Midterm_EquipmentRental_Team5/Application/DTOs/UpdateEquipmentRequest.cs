@@ -8,16 +8,16 @@ namespace Midterm_EquipmentRental_Team5.Application.DTOs
     public class UpdateEquipmentRequest
     {
         [Required]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Required]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Required]
-        public string Category { get; set; }
+        public string? Category { get; set; }
 
         [Required]
-        public string Condition { get; set; }
+        public string? Condition { get; set; }
 
         [Required]
         public decimal RentalPrice { get; set; }
@@ -25,6 +25,6 @@ namespace Midterm_EquipmentRental_Team5.Application.DTOs
         [Required]
         public bool IsAvailable { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

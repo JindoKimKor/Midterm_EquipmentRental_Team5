@@ -1,16 +1,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Midterm_EquipmentRental_Team5.Application.Services.Interfaces;
 using Midterm_EquipmentRental_Team5.Domain.Entities;
+using Midterm_EquipmentRental_Team5.Infrastructure.Persistence;
 using System.Collections.Concurrent;
 
 namespace Midterm_EquipmentRental_Team5.Presentation.Hubs
 {
     [Authorize]
-    public class ChatHub(IChatService chatService) : Hub
+    public class ChatHub(IChatService chatService, AppDbContext context) : Hub
     {
         private static readonly ConcurrentDictionary<string, HashSet<string>> _onlineUsers = new();
         private readonly IChatService _chatService = chatService;
+        private readonly AppDbContext _context = context;
 
         public async Task SendMessage(int receiverId, int chatId, string message)
         {
@@ -33,13 +36,17 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Hubs
                     IsRead = userOnline
                 };
 
+                // Get sender name for broadcast
+                var sender = await _context.Customers.FirstOrDefaultAsync(c => c.Id == senderId);
+                var senderName = sender?.UserName ?? "Unknown";
+
                 // Deliver via SignalR only if receiver is online
                 if (userOnline)
                 {
-                    await Clients.User(receiverId.ToString()).SendAsync("ReceiveMessage", senderId, chatId, message, DateTime.UtcNow);
+                    await Clients.User(receiverId.ToString()).SendAsync("ReceiveMessage", senderId, chatId, message, DateTime.UtcNow, senderName);
                 }
 
-                await Clients.User(senderId.ToString()).SendAsync("ReceiveMessage", senderId, chatId, message, DateTime.UtcNow);
+                await Clients.User(senderId.ToString()).SendAsync("ReceiveMessage", senderId, chatId, message, DateTime.UtcNow, senderName);
 
                 // Always save to DB
                 await _chatService.AddMessage(msg);

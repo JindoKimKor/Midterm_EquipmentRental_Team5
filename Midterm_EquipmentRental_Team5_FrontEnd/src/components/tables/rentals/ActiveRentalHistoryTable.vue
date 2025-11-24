@@ -15,18 +15,18 @@
       <template #item.equipmentImage="{ item }">
         <v-avatar size="64" tile>
           <v-img
-            :src="item.equipment.imageUrl || 'https://via.placeholder.com/64'"
+            :src="'https://via.placeholder.com/64'"
             alt="Equipment Image"
           />
         </v-avatar>
       </template>
 
-      <template #item.equipment.name="{ item }">
+      <template #item.equipmentName="{ item }">
         <router-link
-          :to="`equipments/${item.equipment.id}`"
+          :to="`equipments/${item.equipmentId}`"
           class="text-decoration-none font-weight-medium"
         >
-          {{ item.equipment.name }}
+          {{ item.equipmentName }}
         </router-link>
       </template>
 
@@ -98,8 +98,8 @@ const isAdmin = ref(useAuthStore.authRole)
 
 const tableHeaders = computed(() => {
   const baseHeaders = [
-    { title: 'Equipment Name', value: 'equipment.name' },
-    { title: 'Customer', value: 'customer.name' },
+    { title: 'Equipment Name', value: 'equipmentName' },
+    { title: 'Customer', value: 'customerName' },
     { title: 'Days Rented', value: 'daysRented', sortable: false },
   ]
 

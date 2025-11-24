@@ -85,9 +85,10 @@ const initializeSignalR = async () => {
       connection.off('ReceiveMessage', messageListener)
     }
 
-    messageListener = (senderId, chatId, messageContent, timestamp) => {
+    messageListener = (senderId, chatId, messageContent, timestamp, senderName) => {
       chatStore.addMessage({
         senderId: senderId,
+        senderName: senderName || 'Unknown',
         content: messageContent,
         chatId: chatId,
         timestamp: timestamp || new Date().toISOString(),

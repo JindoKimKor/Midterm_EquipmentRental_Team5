@@ -12,12 +12,12 @@
       hover
       item-key="id"
     >
-      <template #item.equipment.name="{ item }">
+      <template #item.equipmentName="{ item }">
         <router-link
-          :to="`equipments/${item.equipment.id}`"
+          :to="`equipments/${item.equipmentId}`"
           class="text-decoration-none font-weight-medium"
         >
-          {{ item.equipment.name }}
+          {{ item.equipmentName }}
         </router-link>
       </template>
       <!-- Return Date -->
@@ -74,8 +74,8 @@ import { ref, onMounted } from 'vue'
 import { getCompletedRentals } from '@/api/RentalController'
 
 const headers = [
-  { title: 'Equipment', value: 'equipment.name' },
-  { title: 'Customer', value: 'customer.name' },
+  { title: 'Equipment', value: 'equipmentName' },
+  { title: 'Customer', value: 'customerName' },
   { title: 'Return Date', value: 'returnedAt' },
   { title: 'Duration', value: 'duration', sortable: false, width: '110' },
   { title: 'Status', value: 'status', sortable: false, width: '100' },

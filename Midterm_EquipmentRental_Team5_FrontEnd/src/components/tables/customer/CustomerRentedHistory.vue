@@ -1,8 +1,8 @@
 <template>
   <v-data-table :headers="headers" :items="rentals" class="elevation-1">
     <!-- Custom rendering for equipment name -->
-    <template #item.equipment="{ item }">
-      {{ item.equipment?.name || 'Unknown' }}
+    <template #item.equipmentName="{ item }">
+      {{ item.equipmentName || 'Unknown' }}
     </template>
 
     <template #item.issuedAt="{ item }">
@@ -38,7 +38,7 @@ const props = defineProps({
 })
 
 const headers = [
-  { title: 'Equipment', value: 'equipment' },
+  { title: 'Equipment', value: 'equipmentName' },
   { title: 'Issued At', value: 'issuedAt' },
   { title: 'Due Date', value: 'dueDate' },
   { title: 'Returned At', value: 'returnedAt' },

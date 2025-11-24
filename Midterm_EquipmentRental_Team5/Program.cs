@@ -21,7 +21,7 @@ using Midterm_EquipmentRental_Team5.Application.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Jwt setting binding and Singleton lifecycle injection - Externalized Configuration 
+// Jwt setting binding and Singleton lifecycle injection - Externalized Configuration
 var jwtSettings = new JwtSettings();
 
 builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);
@@ -48,8 +48,14 @@ builder.Services.AddHostedService<ClearMessage>();
 
 
 // Add CORS policy - configured from appsettings.json
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-    ?? new[] { "http://localhost:5115", "https://localhost:5115", "http://localhost:5173" };
+string[] DefaultOrigins =
+{
+    "http://localhost:5115",
+    "https://localhost:5115",
+    "http://localhost:5173"
+};
+
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? DefaultOrigins;
 
 builder.Services.AddCors(options =>
 {
@@ -146,7 +152,8 @@ builder.Services.AddSwaggerGen(options =>
                     Id = JwtBearerDefaults.AuthenticationScheme
                 }
             },
-            new string[] {}        }
+            Array.Empty<string>()
+        }
     });
 });
 

@@ -5,7 +5,7 @@ namespace Midterm_EquipmentRental_Team5.Application.DTOs
 {
     public class LoginRequest : ILoginRequest
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string? Username { get; set; }
+        public string? Password { get; set; }
     }
 }

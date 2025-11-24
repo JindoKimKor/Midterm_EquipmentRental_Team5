@@ -16,25 +16,25 @@
       height="600"
     >
       <!-- Equipment Name with link -->
-      <template #item.equipment.name="{ item }">
+      <template #item.equipmentName="{ item }">
         <router-link
-          :to="`equipments/${item.equipment.id}`"
+          :to="`equipments/${item.equipmentId}`"
           class="text-decoration-none font-weight-medium"
         >
-          {{ item.equipment.name }}
+          {{ item.equipmentName }}
         </router-link>
       </template>
 
       <!-- Category -->
-      <template #item.equipment.category="{ item }">
+      <template #item.equipmentCategory="{ item }">
         <v-chip color="blue lighten-4" text-color="blue darken-3" label small class="ma-0">
-          {{ item.equipment.category }}
+          {{ item.equipmentCategory }}
         </v-chip>
       </template>
 
       <!-- Customer Name -->
-      <template #item.customer.name="{ item }">
-        {{ item.customer.name }}
+      <template #item.customerName="{ item }">
+        {{ item.customerName }}
       </template>
 
       <!-- Issued At -->
@@ -123,9 +123,9 @@ import { ref, onBeforeMount } from 'vue'
 import { getAllRentals, returnEquipment } from '@/api/RentalController'
 
 const headers = [
-  { title: 'Equipment', value: 'equipment.name' },
-  { title: 'Category', value: 'equipment.category' },
-  { title: 'Customer', value: 'customer.name' },
+  { title: 'Equipment', value: 'equipmentName' },
+  { title: 'Category', value: 'equipmentCategory' },
+  { title: 'Customer', value: 'customerName' },
   { title: 'Issued At', value: 'issuedAt' },
   { title: 'Due Date', value: 'dueDate' },
   { title: 'Returned At', value: 'returnedAt' },

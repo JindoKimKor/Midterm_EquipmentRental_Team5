@@ -8,11 +8,11 @@ namespace Midterm_EquipmentRental_Team5.Application.DTOs
     public class UpdateCustomerRequest
     {
         [Required]
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         public string? Phone { get; set; }
 
@@ -27,7 +27,7 @@ namespace Midterm_EquipmentRental_Team5.Application.DTOs
         /// <summary>
         /// Only Admins can change this field
         /// </summary>
-        public string Role { get; set; }
+        public string? Role { get; set; }
 
         /// <summary>
         /// Only Admins can change this field

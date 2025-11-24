@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Domain.Entities;
@@ -261,7 +261,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                 if (userRole != "Admin" && currentUserId != id) return Forbid();
 
                 var activeRental = await _customerService.GetCustomerActiveRental(id) ?? throw new KeyNotFoundException();
-                var dtos = activeRental.Select(r => new RentalDetailDto
+                var dtos = new[] { activeRental }.Select(r => new RentalDetailDto
                 {
                     Id = r.Id,
                     CustomerId = r.CustomerId,
