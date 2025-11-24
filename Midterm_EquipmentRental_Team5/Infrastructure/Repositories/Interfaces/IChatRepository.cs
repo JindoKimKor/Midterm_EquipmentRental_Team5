@@ -4,19 +4,20 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories.Interfaces
 {
     public interface IChatRepository
     {
-        List<Message> GetMessagesAsync(int userA, int userB);
+        List<Message> GetMessages(int userA, int userB);
 
-        Message AddMessageAsync(Message message);
+        Message SaveMessage(Message message);
 
-        Message? GetMessageByIdAsync(int id);
+        Message? GetMessageById(int id);
 
-        bool DeleteMessageAsync(int id);
+        bool DeleteMessage(int id);
 
-        void MarkMessagesAsReadAsync(int senderId, int receiverId);
+        void MarkMessagesAsRead(int senderId, int receiverId);
 
         List<Chat> GetChatsForUser(int userId);
 
         List<Message> GetChatHistory(int chatId, int userId);
-        void EnsureChatExistsAsync(int userA, int userB);
+        void EnsureChatExists(int userA, int userB);
+        void ClearAllMessages();
     }
 }

@@ -30,9 +30,14 @@ namespace Midterm_EquipmentRental_Team5.Application.Services
             return [];
         }
 
-        public MessageDto AddMessage(int chatId, SendMessageDto dto)
+        public void ClearMessageFromDb()
         {
-            throw new NotImplementedException();
+            _chatRepo.ClearAllMessages();
+        }
+
+        public void AddMessage(Message message)
+        {
+            _chatRepo.SaveMessage(message);
         }
 
         public IEnumerable<MessageDto> GetMessages(int chatId)

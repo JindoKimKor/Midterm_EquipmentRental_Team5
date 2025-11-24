@@ -42,11 +42,33 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Hubs
                 await Clients.User(senderId.ToString()).SendAsync("ReceiveMessage", senderId, chatId, message, DateTime.UtcNow);
 
                 // Always save to DB
-                // await _chatService.AddMessage(msg);
+                _chatService.AddMessage(msg);
             }
             catch (Exception ex)
             {
                 throw new HubException($"Error sending message: {ex.Message}", ex);
+            }
+        }
+
+        public async void ClearMessages()
+        {
+            try
+            {
+                _chatService.ClearMessageFromDb();
+
+                foreach (var user in _onlineUsers)
+                {
+                    bool userOnline = IsUserOnline(user.ToString());
+
+                    if (userOnline)
+                    {
+                        await Clients.User(user.ToString()).SendAsync("ClearMessage");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HubException($"Error clearing messages: {ex.Message}", ex);
             }
         }
 

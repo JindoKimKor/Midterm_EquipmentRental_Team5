@@ -1,4 +1,7 @@
 import * as signalR from '@microsoft/signalr'
+import { useChatStore } from '@/stores/ChatStore'
+
+const chatStore = useChatStore()
 
 const HUB_URL = 'http://localhost:5115/chathub'
 const RECONNECT_DELAYS = [0, 0, 1000, 3000, 5000, 10000]
@@ -22,6 +25,7 @@ export function createConnection() {
     .build()
 
   setupConnectionHandlers()
+  onClearMessages()
 
   return connection
 }
@@ -50,17 +54,10 @@ function setupConnectionHandlers() {
   })
 }
 
-/**
- * Gets the current SignalR connection
- * @returns {signalR.HubConnection|null} The connection or null if not initialized
- */
 export function getConnection() {
   return connection
 }
 
-/**
- * Closes the SignalR connection
- */
 export async function closeConnection() {
   if (connection) {
     try {
@@ -74,21 +71,10 @@ export async function closeConnection() {
   }
 }
 
-/**
- * Checks if the SignalR connection is active
- * @returns {boolean} True if connected, false otherwise
- */
 export function isConnected() {
   return connection?.state === signalR.HubConnectionState.Connected
 }
 
-/**
- * Sends a message through SignalR
- * @param {string} room - The chat room
- * @param {string} receiverId - The sender's username
- * @param {string} message - The message content
- * @returns {Promise<void>}
- */
 export async function sendMessage(receiverId, chatId, message) {
   try {
     if (!connection) throw new Error('SignalR connection not initialized')
@@ -98,13 +84,18 @@ export async function sendMessage(receiverId, chatId, message) {
   }
 }
 
-/**
- * Registers a callback for receiving messages
- * @param {Function} callback - Function to call when a message is received
- */
 export function onReceiveMessage(callback) {
   if (!connection) {
     throw new Error('SignalR connection not initialized')
   }
   connection.on('ReceiveMessage', callback)
+}
+
+export function onClearMessages() {
+  if (!connection) {
+    throw new Error('SignalR connection not initialized')
+  }
+  connection.on('ClearAllMessages', () => {
+    chatStore.messages = []
+  })
 }

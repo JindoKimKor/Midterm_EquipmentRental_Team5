@@ -24,7 +24,7 @@ import MessageInput from './MessageInput.vue'
 import { useChatStore } from '@/stores/ChatStore'
 import { getChatHistory } from '@/api/ChatController'
 import { createConnection, getConnection } from '@/services/signalr.ChatHub'
-import { onBeforeMount, onBeforeUnmount } from 'vue'
+import { onBeforeMount, onBeforeUnmount, watch } from 'vue'
 
 const chatStore = useChatStore()
 let messageListener = null
@@ -41,13 +41,34 @@ const props = defineProps({
   },
 })
 
+const loadChatHistory = async () => {
+  try {
+    chatStore.setConnecting(true)
+    const response = await getChatHistory(props.chatId)
+    chatStore.loadMessages(response || [])
+    chatStore.setConnecting(false)
+  } catch (error) {
+    console.error('Failed to load chat history:', error)
+    chatStore.setError('Failed to load chat history')
+    chatStore.loadMessages([])
+    chatStore.setConnecting(false)
+  }
+}
+
+watch(
+  () => props.chatId,
+  async () => {
+    console.log('Trigger')
+    await loadChatHistory()
+  },
+  { immediate: true },
+)
+
 onBeforeMount(async () => {
   await initializeSignalR()
-  await loadChatHistory()
 })
 
 onBeforeUnmount(() => {
-  // Remove the message listener to prevent duplicates
   const connection = getConnection()
   if (connection && messageListener) {
     connection.off('ReceiveMessage', messageListener)
@@ -89,19 +110,5 @@ const getInitials = (name) => {
     .join('')
     .toUpperCase()
     .slice(0, 2)
-}
-
-const loadChatHistory = async () => {
-  try {
-    chatStore.setConnecting(true)
-    const response = await getChatHistory(props.chatId)
-    chatStore.loadMessages(response || [])
-    chatStore.setConnecting(false)
-  } catch (error) {
-    console.error('Failed to load chat history:', error)
-    chatStore.setError('Failed to load chat history')
-    chatStore.loadMessages([])
-    chatStore.setConnecting(false)
-  }
 }
 </script>

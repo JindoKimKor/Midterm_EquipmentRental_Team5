@@ -44,14 +44,14 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
         // [HttpGet("{chatId}/messages")]
         // public async Task<IActionResult> GetMessages(Guid chatId)
         // {
-        //     var messages = await _chatService.GetMessagesAsync(chatId);
+        //     var messages = await _chatService.GetMessages(chatId);
         //     return Ok(messages);
         // }
 
         // [HttpPost("{chatId}/message")]
         // public async Task<IActionResult> SendMessage(Guid chatId, [FromBody] SendMessageDto dto)
         // {
-        //     var message = await _chatService.SendMessageAsync(chatId, dto);
+        //     var message = await _chatService.SendMessage(chatId, dto);
         //     return Ok(message);
         // }
 

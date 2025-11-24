@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Midterm_EquipmentRental_Team5.Presentation.Hubs;
 using Midterm_EquipmentRental_Team5.Application.Services.Interfaces;
 using Microsoft.AspNetCore.SignalR;
+using Midterm_EquipmentRental_Team5.Application.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +43,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IClaimsTransformation, RoleClaimsTransformer>();
 
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
+builder.Services.AddHostedService<ClearMessage>();
 
 
 // Add CORS policy
