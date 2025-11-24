@@ -4,20 +4,17 @@ using Microsoft.AspNetCore.Mvc;
 using Midterm_EquipmentRental_Team5.Domain.Entities;
 using Midterm_EquipmentRental_Team5.Domain.Interfaces;
 using Midterm_EquipmentRental_Team5.Application.Interfaces;
+using Microsoft.AspNetCore.SignalR;
+using Midterm_EquipmentRental_Team5.Presentation.Hubs;
 
 namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class CustomerController : ControllerBase
+    public class CustomerController(ICustomerServices customerServices) : ControllerBase
     {
-        private readonly ICustomerServices _customerService;
-
-        public CustomerController(ICustomerServices customerServices)
-        {
-            _customerService = customerServices;
-        }
+        private readonly ICustomerServices _customerService = customerServices;
 
         [HttpGet]
         [Authorize(Roles = "Admin")]

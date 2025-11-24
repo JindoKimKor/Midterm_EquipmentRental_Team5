@@ -91,6 +91,16 @@ const UserNavigationItems = [
     ],
   },
   {
+    categoryTitle: 'Communication',
+    items: [
+      {
+        url: '/chat',
+        title: 'Chat',
+        prependIcon: 'mdi-chat-multiple',
+      },
+    ],
+  },
+  {
     categoryTitle: '',
     items: [
       {
@@ -161,6 +171,16 @@ const AdminNavigationItems = [
         url: '/dashboard/rentals/cancel',
         title: 'Cancel Rental',
         prependIcon: 'mdi-cancel',
+      },
+    ],
+  },
+  {
+    categoryTitle: 'Communication',
+    items: [
+      {
+        url: '/chat',
+        title: 'Chat',
+        prependIcon: 'mdi-chat-multiple',
       },
     ],
   },

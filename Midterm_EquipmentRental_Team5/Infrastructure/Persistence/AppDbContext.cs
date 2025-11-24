@@ -1,48 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Midterm_EquipmentRental_Team5.Domain.Entities;
-using Midterm_EquipmentRental_Team5.Domain.Interfaces;
 
 namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
         public DbSet<Equipment> Equipment { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Rental> Rentals { get; set; }
-        public DbSet<AppUser> AppUsers { get; set; }
-
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        public DbSet<Chat> Chat { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<AppUser>().HasData(
-                new AppUser
-                {
-                    Id = 1,
-                    Email = "chrisy.dinh03@gmail.com",
-                    Role = "Admin",
-                    ExternalProvider = "Google",
-                    ExternalId = null
-                },
-                new AppUser
-                {
-                    Id = 2,
-                    Email = "n.dinh72943@gmail.com,",
-                    Role = "User",
-                    ExternalProvider = "Google",
-                    ExternalId = null
-                },
-                new AppUser
-                {
-                    Id = 3,
-                    Email = "user2@example.com",
-                    Role = "User",
-                    ExternalProvider = "Google",
-                    ExternalId = null
-                }
-            );
 
             // Seed Customers (1 Admin + 5 Users)
             modelBuilder.Entity<Customer>().HasData(
@@ -50,16 +21,18 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
                 {
                     Id = 1,
                     Name = "Admin User",
-                    Email = "admin@rental.com",
+                    Email = "chrisy.dinh03@gmail.com",
                     UserName = "admin",
                     Password = "admin123",
-                    Role = "Admin"
+                    Role = "Admin",
+                    ExternalProvider = null,
+                    ExternalId = null
                 },
-                new Customer { Id = 2, Name = "John Doe", Email = "john@example.com", UserName = "user1", Password = "user1", Role = "User" },
-                new Customer { Id = 3, Name = "Jane Smith", Email = "jane@example.com", UserName = "user2", Password = "user2", Role = "User" },
-                new Customer { Id = 4, Name = "Bob Johnson", Email = "bob@example.com", UserName = "user3", Password = "user3", Role = "User" },
-                new Customer { Id = 5, Name = "Alice Williams", Email = "alice@example.com", UserName = "user4", Password = "user4", Role = "User" },
-                new Customer { Id = 6, Name = "Charlie Brown", Email = "charlie@example.com", UserName = "user5", Password = "user5", Role = "User" }
+                new Customer { Id = 2, Name = "John Doe", Email = "john@example.com", UserName = "user1", Password = "user1", Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 3, Name = "Jane Smith", Email = "jane@example.com", UserName = "user2", Password = "user2", Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 4, Name = "Bob Johnson", Email = "bob@example.com", UserName = "user3", Password = "user3", Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 5, Name = "Alice Williams", Email = "alice@example.com", UserName = "user4", Password = "user4", Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 6, Name = "Charlie Brown", Email = "charlie@example.com", UserName = "user5", Password = "user5", Role = "User", ExternalProvider = null, ExternalId = null }
             );
 
             // Seed Equipment (5+ items - different categories)
@@ -140,7 +113,6 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
                 }
             );
 
-            // Seed Rentals (Active, Completed, Overdue)
             modelBuilder.Entity<Rental>().HasData(
                 // Active rental - John has the drill
                 new Rental
@@ -180,6 +152,111 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
                     IsActive = true, // Active but overdue
                     OverdueFee = null, // Will be calculated when returned
                     ExtensionReason = null
+                }
+            );
+
+            modelBuilder.Entity<Chat>().HasData(
+                new Chat { ChatId = 1, SenderId = 2, ReceiverId = 1 },
+                new Chat { ChatId = 2, SenderId = 3, ReceiverId = 1 },
+                new Chat { ChatId = 3, SenderId = 4, ReceiverId = 1 },
+                new Chat { ChatId = 4, SenderId = 5, ReceiverId = 1 },
+                new Chat { ChatId = 5, SenderId = 6, ReceiverId = 1 }
+            );
+
+            modelBuilder.Entity<Message>().HasData(
+                new Message
+                {
+                    Id = 1,
+                    SenderId = 2,
+                    ReceiverId = 1,
+                    Content = "Hi Admin, I need help with a rental.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 1
+                },
+                new Message
+                {
+                    Id = 2,
+                    SenderId = 1,
+                    ReceiverId = 2,
+                    Content = "Hello John, how can I assist you?",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 1
+                },
+
+                new Message
+                {
+                    Id = 3,
+                    SenderId = 3,
+                    ReceiverId = 1,
+                    Content = "Hello Admin, I have a billing question.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 2
+                },
+                new Message
+                {
+                    Id = 4,
+                    SenderId = 1,
+                    ReceiverId = 3,
+                    Content = "Hi Jane, sure — what's your question?",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 2
+                },
+
+                new Message
+                {
+                    Id = 5,
+                    SenderId = 4,
+                    ReceiverId = 1,
+                    Content = "Hi Admin, is the lawn mower available?",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 3
+                },
+                new Message
+                {
+                    Id = 6,
+                    SenderId = 1,
+                    ReceiverId = 4,
+                    Content = "Yes Bob, it's available for rental.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 3
+                },
+
+                new Message
+                {
+                    Id = 7,
+                    SenderId = 5,
+                    ReceiverId = 1,
+                    Content = "Hello Admin, I want to extend my rental.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 4
+                },
+                new Message
+                {
+                    Id = 8,
+                    SenderId = 1,
+                    ReceiverId = 5,
+                    Content = "Hi Alice, I can process that for you.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 4
+                },
+
+                new Message
+                {
+                    Id = 9,
+                    SenderId = 6,
+                    ReceiverId = 1,
+                    Content = "Admin, I can't log in to my account.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 5
+                },
+                new Message
+                {
+                    Id = 10,
+                    SenderId = 1,
+                    ReceiverId = 6,
+                    Content = "Hey Charlie, let me help you reset your password.",
+                    Timestamp = DateTime.UtcNow,
+                    ChatId = 5
                 }
             );
         }

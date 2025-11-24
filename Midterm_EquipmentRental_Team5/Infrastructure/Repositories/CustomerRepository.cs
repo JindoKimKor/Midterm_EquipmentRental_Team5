@@ -82,5 +82,11 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Repositories
 
             return customer ?? null;
         }
+
+        public ICustomer? GetCustomerByEmail(string email)
+        {
+            var customer = _context.Customers.FirstOrDefault(c => c.Email != null && c.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            return customer ?? null;
+        }
     }
 }

@@ -8,5 +8,7 @@ namespace Midterm_EquipmentRental_Team5.Domain.Interfaces
         string? UserName { get; set; }
         string? Password { get; set; }
         string? Role { get; set; }
+        string? ExternalProvider { get; set; }
+        string? ExternalId { get; set; }
     }
 }
