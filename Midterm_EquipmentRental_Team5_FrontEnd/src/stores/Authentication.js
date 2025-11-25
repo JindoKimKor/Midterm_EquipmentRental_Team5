@@ -9,22 +9,28 @@ export const useAuthenticationStore = defineStore('Authentication', () => {
   const authUserId = ref(null)
 
   async function checkAspNetCoreCookie() {
-    const match = isUserAuthorized()
-    if (match) {
-      try {
-        // The cookie exists — now verify the authenticated user
-        const user = await authMe()
+    try {
+      // First check if user is authorized
+      const match = await isUserAuthorized()
+      if (match) {
+        try {
+          // The cookie exists — now verify the authenticated user
+          const user = await authMe()
 
-        if (user) {
-          authRole.value = user.role || user.Role || 'User'
-          authUserName.value = user.userName || user.UserName || 'Unknown'
-          authUserId.value = user.id || user.Id || null
-          return true
+          if (user) {
+            authRole.value = user.role || user.Role || 'User'
+            authUserName.value = user.userName || user.UserName || 'Unknown'
+            authUserId.value = user.id || user.Id || null
+            return true
+          }
+        } catch (error) {
+          // Silent fail - user is not properly authenticated
+          return false
         }
-      } catch (error) {
-        console.error('Failed to validate cookie:', error)
-        return false
       }
+    } catch (error) {
+      // Silent fail - user is not authenticated (this is expected on first load)
+      return false
     }
 
     // Cookie not found or user invalid

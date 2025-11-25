@@ -9,6 +9,7 @@ export async function login(request) {
     return res
   } catch (error) {
     console.error(error)
+    throw error
   }
 }
 
@@ -20,12 +21,13 @@ export function googleAuthentication() {
   }
 }
 
-export function authMe() {
+export async function authMe() {
   try {
-    const res = RequestHandler.get('/auth/me')
+    const res = await RequestHandler.get('/auth/me')
     return res
   } catch (error) {
-    console.error(error)
+    // Silent fail - user is not authenticated
+    return null
   }
 }
 
@@ -34,7 +36,7 @@ export async function logout() {
     const res = await RequestHandler.post('/auth/logout')
     return res
   } catch (error) {
-    console.error(error)
+    console.error('Logout failed:', error)
   }
 }
 
@@ -42,6 +44,7 @@ export async function isUserAuthorized() {
   try {
     return (await RequestHandler.get('/auth/authorized')) && true
   } catch (error) {
-    console.error(error)
+    // Silent fail - expected when user is not authenticated
+    return false
   }
 }

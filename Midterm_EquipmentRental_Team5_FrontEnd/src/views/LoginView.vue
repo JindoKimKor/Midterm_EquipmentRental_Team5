@@ -33,6 +33,14 @@
         </v-form>
       </v-card-text>
     </v-card>
+
+    <!-- Error Snackbar -->
+    <v-snackbar v-model="showSnackbar" color="error" timeout="5000" location="top">
+      {{ snackbarMessage }}
+      <template #actions>
+        <v-btn icon="mdi-close" @click="showSnackbar = false"></v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -44,6 +52,8 @@ import router from '@/router'
 const userName = ref('')
 const password = ref('')
 const valid = ref(false)
+const showSnackbar = ref(false)
+const snackbarMessage = ref('')
 
 const rules = {
   required: (value) => !!value || 'Required.',
@@ -58,7 +68,17 @@ async function loginHandler() {
     router.push('/dashboard')
   } catch (error) {
     console.error('Login failed:', error)
-    alert('Login failed. Please check your credentials and try again.')
+
+    // Extract error message from API response or use default
+    let errorMessage = 'Login failed. Please check your credentials and try again.'
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message
+    } else if (error.response?.status === 401) {
+      errorMessage = 'Invalid username or password'
+    }
+
+    snackbarMessage.value = errorMessage
+    showSnackbar.value = true
   }
 }
 
