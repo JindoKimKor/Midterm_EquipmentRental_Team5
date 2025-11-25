@@ -3,21 +3,23 @@
     <v-row justify="center">
       <v-col cols="12" md="8">
         <v-card class="pa-4" elevation="3">
-          <v-card-title class="text-h5 font-weight-bold"> Your Rental </v-card-title>
+          <v-card-title class="text-h5 font-weight-bold">Your Rental</v-card-title>
 
           <v-divider class="my-2" />
 
           <v-card-text>
             <div v-if="loading">
-              <v-alert type="info" variant="tonal">Loading your rental...</v-alert>
+              <v-alert type="info" variant="tonal"> Loading your rental... </v-alert>
             </div>
 
             <div v-else-if="!rental">
-              <v-alert type="warning" variant="tonal">You have no active rental.</v-alert>
+              <v-alert type="warning" variant="tonal"> You have no active rental. </v-alert>
             </div>
 
             <div v-else>
               <h3 class="text-h6 font-weight-medium mb-3">{{ rental.equipmentName }}</h3>
+              <p><strong>🛠 Category:</strong> {{ rental.equipmentCategory }}</p>
+              <p><strong>💵 Rental Price:</strong> {{ formatCurrency(rental.rentalPrice) }}</p>
 
               <v-row>
                 <v-col cols="12" md="6">
@@ -45,7 +47,7 @@
               </v-row>
 
               <v-row v-if="rental.overdueFee || rental.extensionReason" class="mt-4">
-                <v-col cols="12" md="6" v-if="rental.overdueFee">
+                <v-col cols="12" md="6" v-if="rental.overdueFee !== null">
                   <p>
                     <strong>💸 Overdue Fee:</strong>
                     {{ formatCurrency(rental.overdueFee) }}
@@ -72,23 +74,32 @@ const emit = defineEmits(['rental-loaded'])
 
 const rental = ref(null)
 const loading = ref(true)
-
-const authicationStore = useAuthenticationStore()
+const authStore = useAuthenticationStore()
 
 function formatDate(date) {
-  return new Date(date).toLocaleDateString()
+  if (!date) return '—'
+  return new Date(date).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+function formatCurrency(value) {
+  if (value === null || value === undefined) return '$0.00'
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(value)
 }
 
 async function fetchRental() {
   try {
-    const response = await getCustomerActiveRental(authicationStore.authUserId)
+    const response = await getCustomerActiveRental(authStore.authUserId)
+    // Handle API returning an object directly or nested in data
+    rental.value = response[0] || response
 
-    // Adjust depending on your API response structure
-    rental.value = response?.data || response
-
-    if (rental.value) {
-      emit('rental-loaded', rental.value)
-    }
+    if (rental.value) emit('rental-loaded', rental.value)
   } catch (error) {
     console.error('Failed to load rental:', error)
   } finally {
@@ -103,13 +114,5 @@ onMounted(fetchRental)
 .rental-list {
   max-width: 600px;
   margin: auto;
-}
-
-.rental-card {
-  border: 1px solid #ccc;
-  padding: 16px;
-  margin-top: 16px;
-  border-radius: 6px;
-  background: #f9f9f9;
 }
 </style>

@@ -44,6 +44,7 @@
 import { ref } from 'vue'
 import UserActiveRental from '../UserActiveRental.vue'
 import { returnEquipment } from '@/api/RentalController'
+import router from '@/router'
 
 // Form state
 const form = ref({
@@ -71,6 +72,7 @@ async function submitForm() {
     await returnEquipment({ ...form.value })
     alert('Equipment return submitted successfully!')
     resetForm()
+    router.push('/dashboard/customers/2/rentals')
   } catch (error) {
     console.error('Return submission failed:', error)
     alert('Failed to submit return. Please try again.')

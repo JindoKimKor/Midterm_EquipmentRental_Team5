@@ -79,8 +79,10 @@ async function checkCustomerRental() {
   loadingRental.value = true
   try {
     const rental = await getCustomerActiveRental(useAuthStore.authUserId)
+    console.log(rental)
     hasActiveRental.value = !!rental
   } catch (error) {
+    console.log(error)
     hasActiveRental.value = false
   } finally {
     loadingRental.value = false
