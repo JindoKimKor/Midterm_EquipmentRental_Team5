@@ -31,7 +31,7 @@ namespace Midterm_EquipmentRental_Team5.Infrastructure.Persistence
                     ExternalProvider = null,
                     ExternalId = null
                 },
-                new Customer { Id = 2, Name = "John Doe", Email = "john@example.com", UserName = "user1", Password = string.Empty, Role = "User", ExternalProvider = null, ExternalId = null },
+                new Customer { Id = 2, Name = "John Doe", Email = "john@example.com", UserName = "user1", Password = "user1", Role = "User", ExternalProvider = null, ExternalId = null },
                 new Customer { Id = 3, Name = "Jane Smith", Email = "jane@example.com", UserName = "user2", Password = string.Empty, Role = "User", ExternalProvider = null, ExternalId = null },
                 new Customer { Id = 4, Name = "Bob Johnson", Email = "bob@example.com", UserName = "user3", Password = string.Empty, Role = "User", ExternalProvider = null, ExternalId = null },
                 new Customer { Id = 5, Name = "Alice Williams", Email = "alice@example.com", UserName = "user4", Password = string.Empty, Role = "User", ExternalProvider = null, ExternalId = null },

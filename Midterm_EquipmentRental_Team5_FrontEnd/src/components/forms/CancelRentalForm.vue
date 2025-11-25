@@ -38,7 +38,7 @@ async function loadOptions() {
       console.log(rentals)
       rentalOptions.value = rentals.map((r) => ({
         id: r.id,
-        title: `${r.customer.name} - ${r.equipment.name}`,
+        title: `${r.customerName} - ${r.equipmentName}`,
       }))
     }
   } catch (err) {

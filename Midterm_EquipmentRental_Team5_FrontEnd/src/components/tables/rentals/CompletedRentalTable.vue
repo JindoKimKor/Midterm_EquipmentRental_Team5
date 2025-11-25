@@ -86,7 +86,8 @@ const completedRentals = ref([])
 
 onMounted(async () => {
   try {
-    completedRentals.value = await getCompletedRentals()
+    const response = await getCompletedRentals()
+    completedRentals.value = response || []
   } catch (error) {
     console.error('Failed to fetch completed rentals:', error)
   }

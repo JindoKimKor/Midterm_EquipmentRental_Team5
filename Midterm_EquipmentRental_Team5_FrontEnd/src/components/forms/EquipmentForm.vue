@@ -1,54 +1,52 @@
 <template>
   <v-container class="pa-4">
     <v-card>
-      <v-card-title>Equipment Form</v-card-title>
+      <v-card-title>{{ isEdit ? 'Edit Equipment' : 'Add Equipment' }}</v-card-title>
+
       <v-card-text>
-        <v-form ref="form" v-model="valid" @submit.prevent="submitForm">
-          <v-text-field v-model="equipment.Name" label="Name" :rules="[rules.required]" required />
+        <v-form ref="formRef" v-model="valid" @submit.prevent="submitForm">
+          <v-text-field v-model="form.Name" label="Name" :rules="[rules.required]" />
 
           <v-textarea
-            v-model="equipment.Description"
+            v-model="form.Description"
             label="Description"
             rows="3"
             :rules="[rules.required]"
-            required
           />
 
           <v-select
-            v-model="equipment.Category"
+            v-model="form.Category"
             label="Category"
             :items="categoryOptions"
             :rules="[rules.required]"
-            required
           />
 
           <v-select
-            v-model="equipment.Condition"
+            v-model="form.Condition"
             label="Condition"
             :items="conditionOptions"
             :rules="[rules.required]"
-            required
           />
 
           <v-text-field
-            v-model.number="equipment.RentalPrice"
+            v-model.number="form.RentalPrice"
             label="Rental Price"
             type="number"
             :rules="[rules.required, rules.positive]"
-            required
           />
 
-          <v-switch v-model="equipment.IsAvailable" label="Is Available" inset />
+          <v-switch v-model="form.IsAvailable" label="Is Available" inset />
 
           <v-text-field
-            v-model="equipment.CreatedAt"
+            v-model="form.CreatedAt"
             label="Created At"
             type="date"
             :rules="[rules.required]"
-            required
           />
 
-          <v-btn type="submit" color="primary" class="mt-4" :disabled="!valid"> Submit </v-btn>
+          <v-btn type="submit" color="primary" class="mt-4" :disabled="!valid">
+            {{ isEdit ? 'Update Equipment' : 'Add Equipment' }}
+          </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
@@ -56,82 +54,108 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from 'vue'
-import { addEquipment, updateEquipment } from '@/api/EquipmentController'
+import { ref, computed, onBeforeMount } from 'vue'
+import { addEquipment, updateEquipment, getEquipment } from '@/api/EquipmentController'
 
-const valid = ref(false)
-
+/* ------------------------------
+   Props / Emits
+------------------------------ */
 const props = defineProps({
-  equipment: Object,
+  equipment: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['customerSaved'])
 
-const equipment = ref({})
+/* ------------------------------
+   Form & Validation
+------------------------------ */
+const valid = ref(false)
+const formRef = ref(null)
 
-const categoryOptions = [
-  'Heavy Machinery',
-  'Power Tools',
-  'Vehicles',
-  'Safety',
-  'Surveying'
-]
+const form = ref({
+  Id: null,
+  Name: '',
+  Description: '',
+  Category: '',
+  Condition: '',
+  RentalPrice: 0,
+  IsAvailable: true,
+  CreatedAt: new Date().toISOString().slice(0, 10),
+})
 
-const conditionOptions = [
-  'New',
-  'Excellent',
-  'Good',
-  'Fair',
-  'Poor'
-]
+/* Edit mode detection */
+const isEdit = computed(() => !!form.value.Id)
 
-onBeforeMount(() => {
-  equipment.value = {
-    Id: props.equipment?.id ?? null,
-    Name: props.equipment?.name ?? '',
-    Description: props.equipment?.description ?? '',
-    Category: props.equipment?.category ?? '',
-    Condition: props.equipment?.condition ?? '',
-    RentalPrice: props.equipment?.rentalPrice ?? 0,
-    IsAvailable: props.equipment?.isAvailable ?? true,
-    CreatedAt: props.equipment?.createdAt.slice(0, 10) ?? new Date().toISOString().slice(0, 10),
+/* Options */
+const categoryOptions = ['Heavy Machinery', 'Power Tools', 'Vehicles', 'Safety', 'Surveying']
+const conditionOptions = ['New', 'Excellent', 'Good', 'Fair', 'Poor']
+
+/* ------------------------------
+   Load Data (Only in Edit Mode)
+------------------------------ */
+onBeforeMount(async () => {
+  if (props.equipment?.id) {
+    const e = await getEquipment(props.equipment.id)
+
+    form.value = {
+      Id: e.id,
+      Name: e.name,
+      Description: e.description,
+      Category: e.category,
+      Condition: e.condition,
+      RentalPrice: e.rentalPrice,
+      IsAvailable: e.isAvailable,
+      CreatedAt: e.createdAt?.slice(0, 10),
+    }
   }
 })
 
+/* ------------------------------
+   Validation Rules
+------------------------------ */
 const rules = {
   required: (v) => !!v || 'This field is required',
   positive: (v) => v >= 0 || 'Must be a positive number',
 }
 
+/* ------------------------------
+   Submit Handler
+------------------------------ */
 const submitForm = async () => {
   if (!valid.value) return
 
   try {
-    const payload = { ...equipment.value }
-    if (payload.Id) {
+    const payload = { ...form.value }
+
+    if (isEdit.value) {
       await updateEquipment(payload.Id, payload)
+      alert('Equipment updated successfully!')
     } else {
       await addEquipment(payload)
+      alert('Equipment added successfully!')
     }
 
-    alert('Equipment successfully submitted!')
     emit('customerSaved')
     resetForm()
   } catch (error) {
+    console.error(error)
     alert('Submission failed. Please try again.')
   }
 }
 
+/* ------------------------------
+   Reset Form
+------------------------------ */
 function resetForm() {
-  equipment.value = {
-    id: 0,
-    name: '',
-    description: '',
-    category: '',
-    condition: '',
-    rentalPrice: 0,
-    isAvailable: true,
-    createdAt: new Date().toISOString().slice(0, 10),
+  form.value = {
+    Id: null,
+    Name: '',
+    Description: '',
+    Category: '',
+    Condition: '',
+    RentalPrice: 0,
+    IsAvailable: true,
+    CreatedAt: new Date().toISOString().slice(0, 10),
   }
 }
 </script>

@@ -59,9 +59,10 @@ onMounted(async () => {
     const response = await getActiveRentals()
     if (response)
       rentalOptions.value = response.map((r) => {
+        console.log(r)
         return {
           id: r.id,
-          title: r.customer.name + ' - ' + r.equipment.name,
+          title: r.customerName + ' - ' + r.equipmentName,
         }
       })
   } catch (error) {

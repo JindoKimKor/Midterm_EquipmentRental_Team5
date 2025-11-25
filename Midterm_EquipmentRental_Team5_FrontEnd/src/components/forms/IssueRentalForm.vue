@@ -23,7 +23,7 @@
           <v-select
             v-model="form.customerId"
             :items="customerOptions"
-            item-title="name"
+            item-title="userName"
             item-value="id"
             label="Select Customer"
             :rules="[required]"
@@ -102,7 +102,7 @@ async function submitForm() {
       customerId: form.value.customerId,
     }
 
-    const response = await issueEquipment(payload)
+    await issueEquipment(payload)
 
     alert('Equipment issued successfully!')
 

@@ -25,19 +25,6 @@
         <span class="font-weight-medium">{{ item.userName }}</span>
       </template>
 
-      <template #item.password="{ item }">
-        <v-icon
-          class="mr-2"
-          small
-          style="cursor: pointer"
-          @click="togglePasswordVisibility(item.id)"
-          :title="showPasswords[item.id] ? 'Hide Password' : 'Show Password'"
-        >
-          {{ showPasswords[item.id] ? 'mdi-eye-off' : 'mdi-eye' }}
-        </v-icon>
-        <span>{{ showPasswords[item.id] ? item.password : maskedPassword(item.password) }}</span>
-      </template>
-
       <template #item.details="{ item }">
         <v-tooltip text="View customer details" location="top">
           <template #activator="{ props }">
@@ -101,13 +88,10 @@ const isAddCustomerDialogOpen = ref(false)
 const selectedCustomer = ref(null)
 const customersArr = ref([])
 
-// Track password visibility per customer id
 const showPasswords = ref({})
 
 const headers = [
   { title: 'Username', value: 'userName' },
-  { title: 'Password', value: 'password' },
-  { title: 'Name', value: 'name' },
   { title: 'Email', value: 'email' },
   { title: 'Details', value: 'details', sortable: false },
   { title: 'Role', value: 'role' },
@@ -149,15 +133,6 @@ const deleteCustomerHandler = async (id) => {
 
 const refreshCustomers = () => {
   loadCustomers()
-}
-
-const togglePasswordVisibility = (id) => {
-  showPasswords.value[id] = !showPasswords.value[id]
-}
-
-const maskedPassword = (password) => {
-  if (!password) return ''
-  return '•'.repeat(password.length)
 }
 </script>
 

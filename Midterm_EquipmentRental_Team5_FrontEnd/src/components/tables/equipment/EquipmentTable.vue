@@ -162,7 +162,7 @@ onBeforeMount(loadEquipment)
 const viewPastRentals = (item) => {
   router.push({
     name: 'EquipmentRentalHistory',
-    params: { id: item.id }
+    params: { id: item.id },
   })
 }
 

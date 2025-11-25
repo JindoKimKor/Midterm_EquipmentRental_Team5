@@ -114,15 +114,15 @@ const goBack = () => {
 const getOtherUser = (chat) => {
   if (!chat) return null
   if (Number(authStore.authUserId) === Number(chat.senderId)) {
-    return chat.receiver
+    return { id: chat.receiverId, name: chat.receiverName }
   } else {
-    return chat.sender
+    return { id: chat.senderId, name: chat.senderName }
   }
 }
 
 const getChatName = (chat) => {
   const otherUser = getOtherUser(chat)
-  return otherUser?.name ?? '?'
+  return otherUser.name ?? '?'
 }
 
 const getChatUser = (chat) => {

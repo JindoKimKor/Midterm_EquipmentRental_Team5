@@ -15,10 +15,10 @@
       fixed-header
       height="600"
     >
-      <!-- Equipment Name with link -->
+      <!-- Equipment Name -->
       <template #item.equipmentName="{ item }">
         <router-link
-          :to="`equipments/${item.equipmentId}`"
+          :to="`/equipments/${item.equipmentId}`"
           class="text-decoration-none font-weight-medium"
         >
           {{ item.equipmentName }}
@@ -27,8 +27,8 @@
 
       <!-- Category -->
       <template #item.equipmentCategory="{ item }">
-        <v-chip color="blue lighten-4" text-color="blue darken-3" label small class="ma-0">
-          {{ item.equipmentCategory }}
+        <v-chip color="blue-lighten-4" text-color="blue-darken-3" label small class="ma-0">
+          {{ item.equipmentCategory ?? '—' }}
         </v-chip>
       </template>
 
@@ -55,11 +55,10 @@
       <!-- Active Status -->
       <template #item.isActive="{ item }">
         <v-chip
-          :color="item.isActive ? 'green lighten-4' : 'red lighten-4'"
-          :text-color="item.isActive ? 'green darken-2' : 'red darken-2'"
+          :color="item.isActive ? 'green-lighten-4' : 'red-lighten-4'"
+          :text-color="item.isActive ? 'green-darken-2' : 'red-darken-2'"
           label
           small
-          class="ma-0"
         >
           {{ item.isActive ? 'Active' : 'Completed' }}
         </v-chip>
@@ -77,9 +76,10 @@
         <span>{{ item.extensionReason || '—' }}</span>
       </template>
 
+      <!-- Actions -->
       <template #item.actions="{ item }">
         <div class="d-flex align-center ga-2">
-          <!-- View Details Button -->
+          <!-- Details Button -->
           <v-tooltip text="View rental details" location="top">
             <template #activator="{ props }">
               <v-btn
@@ -91,22 +91,22 @@
                 class="text-capitalize"
                 aria-label="View rental details"
               >
-                <v-icon start size="18" class="mr-1">mdi-eye</v-icon>
+                <v-icon start size="18">mdi-eye</v-icon>
                 Details
               </v-btn>
             </template>
           </v-tooltip>
 
-          <v-tooltip text="Mark as returned" location="top">
+          <!-- Mark as Returned -->
+          <v-tooltip text="Cancel Rental" location="top">
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
                 icon
-                color="red darken-2"
+                color="red-darken-2"
                 size="small"
                 :disabled="!item.isActive"
-                aria-label="Mark as returned"
-                :to="`rentals/return`"
+                @click="markReturned(item.id)"
               >
                 <v-icon>mdi-logout</v-icon>
               </v-btn>
@@ -120,11 +120,10 @@
 
 <script setup>
 import { ref, onBeforeMount } from 'vue'
-import { getAllRentals, returnEquipment } from '@/api/RentalController'
+import { getAllRentals, cancelRental } from '@/api/RentalController'
 
 const headers = [
   { title: 'Equipment', value: 'equipmentName' },
-  { title: 'Category', value: 'equipmentCategory' },
   { title: 'Customer', value: 'customerName' },
   { title: 'Issued At', value: 'issuedAt' },
   { title: 'Due Date', value: 'dueDate' },
@@ -140,6 +139,7 @@ const rentals = ref([])
 const loadRentals = async () => {
   try {
     const response = await getAllRentals()
+    console.log(response)
     rentals.value = response || []
   } catch (error) {
     console.error('Failed to load rentals:', error)
@@ -147,6 +147,8 @@ const loadRentals = async () => {
 }
 
 onBeforeMount(loadRentals)
+
+/* ---------------- Utility Functions ---------------- */
 
 function formatCurrency(value) {
   return new Intl.NumberFormat('en-US', {
@@ -156,7 +158,20 @@ function formatCurrency(value) {
 }
 
 function formatDate(date) {
+  if (!date) return '—'
   return new Date(date).toLocaleDateString()
+}
+
+/* --------------- Mark As Returned --------------- */
+
+async function markReturned(id) {
+  try {
+    await cancelRental(id)
+    window.location.reload() // 🔥 Full page refresh
+    await loadRentals()
+  } catch (err) {
+    console.error('Failed to mark returned:', err)
+  }
 }
 </script>
 

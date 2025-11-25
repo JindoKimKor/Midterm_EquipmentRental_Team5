@@ -40,7 +40,7 @@
               label="Name"
               variant="outlined"
               density="comfortable"
-              :rules="[rules.required]"
+              :rules="isEditMode ? [] : [rules.required]"
             />
           </v-col>
 
@@ -51,7 +51,7 @@
               type="email"
               variant="outlined"
               density="comfortable"
-              :rules="[rules.required, rules.email]"
+              :rules="isEditMode ? [] : [rules.required, rules.email]"
             />
           </v-col>
 
@@ -62,7 +62,7 @@
               label="Role"
               variant="outlined"
               density="comfortable"
-              :rules="[rules.required]"
+              :rules="isEditMode ? [] : [rules.required]"
               :disabled="useAuthStore.authRole != 'Admin'"
             />
           </v-col>

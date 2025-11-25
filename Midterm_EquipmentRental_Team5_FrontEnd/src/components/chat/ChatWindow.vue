@@ -7,13 +7,21 @@
             {{ getInitials(selectedUser.name) }}
           </v-avatar>
         </div>
+
         <div>
-          <h2 class="text-h6 mb-0 font-weight-bold text-truncate">{{ selectedUser.name }}</h2>
+          <h2 class="text-h6 mb-0 font-weight-bold text-truncate">
+            {{ selectedUser.name || 'User' }}
+          </h2>
         </div>
       </v-card-text>
     </v-card>
+
     <v-divider />
+
+    <!-- Message list now receives full userObj -->
     <MessageList :selectedUser="selectedUser" class="flex-grow-1 overflow-y-auto" />
+
+    <!-- Input uses userObj.id, not selectedUser.id -->
     <MessageInput :selectedUser="selectedUser" :chatId="chatId" />
   </div>
 </template>
@@ -24,16 +32,17 @@ import MessageInput from './MessageInput.vue'
 import { useChatStore } from '@/stores/ChatStore'
 import { getChatHistory } from '@/api/ChatController'
 import { createConnection, getConnection } from '@/services/signalr.ChatHub'
-import { onBeforeMount, onBeforeUnmount, watch } from 'vue'
+import { onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
 
 const chatStore = useChatStore()
 let messageListener = null
+const userObj = ref(null)
 
 const props = defineProps({
   selectedUser: {
     type: Object,
     required: true,
-    default: () => ({ name: 'User', id: null }),
+    default: () => ({ id: null, name: 'User' }),
   },
   chatId: {
     type: Number,
@@ -45,12 +54,12 @@ const loadChatHistory = async () => {
   try {
     chatStore.setConnecting(true)
     const response = await getChatHistory(props.chatId)
-    chatStore.loadMessages(response || [])
-    chatStore.setConnecting(false)
+    chatStore.loadMessages(response.messages || [])
   } catch (error) {
     console.error('Failed to load chat history:', error)
     chatStore.setError('Failed to load chat history')
     chatStore.loadMessages([])
+  } finally {
     chatStore.setConnecting(false)
   }
 }
@@ -58,14 +67,20 @@ const loadChatHistory = async () => {
 watch(
   () => props.chatId,
   async () => {
-    console.log('Trigger')
     await loadChatHistory()
   },
   { immediate: true },
 )
 
 onBeforeMount(async () => {
-  await initializeSignalR()
+  try {
+    await initializeSignalR()
+    if (props.selectedUser?.id) {
+      console.log(userObj.value)
+    }
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -79,7 +94,9 @@ const initializeSignalR = async () => {
   try {
     const connection = createConnection()
 
-    if (connection.state === 'Disconnected') await connection.start()
+    if (connection.state === 'Disconnected') {
+      await connection.start()
+    }
 
     if (messageListener) {
       connection.off('ReceiveMessage', messageListener)
@@ -87,10 +104,10 @@ const initializeSignalR = async () => {
 
     messageListener = (senderId, chatId, messageContent, timestamp, senderName) => {
       chatStore.addMessage({
-        senderId: senderId,
+        senderId,
         senderName: senderName || 'Unknown',
         content: messageContent,
-        chatId: chatId,
+        chatId,
         timestamp: timestamp || new Date().toISOString(),
         isRead: false,
       })
