@@ -7,7 +7,7 @@
 1. Navigate to backend directory:
 
 ```bash
-cd Midterm_EquipmentRental_Team5
+cd services/GreenRockRental_Api
 ```
 
 2. Run the API:
@@ -25,7 +25,7 @@ For Swagger Doc at: http://localhost:5115/swagger
 1. Navigate to frontend directory:
 
 ```bash
-cd Midterm_EquipmentRental_Team5_FrontEnd
+cd apps/GreenRockRental_Web
 ```
 
 2. Install dependencies:

@@ -411,18 +411,18 @@ $RECYCLE.BIN/
 .directory
 
 # ============================================================================
-# Frontend (Vue.js/Node.js) - Midterm_EquipmentRental_Team5_FrontEnd
+# Frontend (Vue.js/Node.js) - apps/GreenRockRental_Web
 # ============================================================================
-Midterm_EquipmentRental_Team5_FrontEnd/node_modules/
-Midterm_EquipmentRental_Team5_FrontEnd/dist/
-Midterm_EquipmentRental_Team5_FrontEnd/.env.local
-Midterm_EquipmentRental_Team5_FrontEnd/npm-debug.log*
-Midterm_EquipmentRental_Team5_FrontEnd/yarn-debug.log*
-Midterm_EquipmentRental_Team5_FrontEnd/yarn-error.log*
-Midterm_EquipmentRental_Team5_FrontEnd/pnpm-debug.log*
-Midterm_EquipmentRental_Team5_FrontEnd/.vite-inspect
-Midterm_EquipmentRental_Team5_FrontEnd/.eslintcache
-Midterm_EquipmentRental_Team5_FrontEnd/.prettierignore
+apps/GreenRockRental_Web/node_modules/
+apps/GreenRockRental_Web/dist/
+apps/GreenRockRental_Web/.env.local
+apps/GreenRockRental_Web/npm-debug.log*
+apps/GreenRockRental_Web/yarn-debug.log*
+apps/GreenRockRental_Web/yarn-error.log*
+apps/GreenRockRental_Web/pnpm-debug.log*
+apps/GreenRockRental_Web/.vite-inspect
+apps/GreenRockRental_Web/.eslintcache
+apps/GreenRockRental_Web/.prettierignore
 
 # ============================================================================
 # Backend (ASP.NET Core) - Additional Ignores
@@ -468,7 +468,7 @@ logs/
 # Build Artifacts & Dependencies (Optional - uncomment if needed)
 # ============================================================================
 # Uncomment if you want to ignore dist folders in frontend
-# Midterm_EquipmentRental_Team5_FrontEnd/dist/
+# apps/GreenRockRental_Web/dist/
 
 # Uncomment if you want to ignore all lock files (not recommended)
 # package-lock.json
