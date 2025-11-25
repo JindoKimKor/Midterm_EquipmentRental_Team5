@@ -173,7 +173,7 @@ namespace Midterm_EquipmentRental_Team5.Presentation.Controllers
                     Id = id,
                     UserName = request.UserName,
                     Email = request.Email,
-                    Password = customer.Password, // Don't allow password change via this endpoint
+                    Password = string.IsNullOrEmpty(request.Password) ? customer.Password : request.Password,
                     Phone = request.Phone,
                     Address = request.Address,
                     City = request.City,

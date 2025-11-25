@@ -14,6 +14,9 @@ namespace Midterm_EquipmentRental_Team5.Application.DTOs
         [EmailAddress]
         public string? Email { get; set; }
 
+        [MinLength(6)]
+        public string? Password { get; set; }
+
         public string? Phone { get; set; }
 
         public string? Address { get; set; }
